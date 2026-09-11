@@ -1,4 +1,5 @@
-Bütçem Premium v4 — GitHub Pages hotfix. JavaScript global `top` çakışması giderildi.
+# Bütçem Premium v6
 
+Bu sürüm ana ekran yerleşimini düzeltir ve bütçe toplamlarında kredi kartı bakiyesinin giderlere ikinci kez eklenmesini önler.
 
-V5: İlk zorunlu parola değişiminde mevcut parola yeniden sorulmaz.
+GitHub'da mevcut b-t-em reposuna bu klasörün içindekileri yükleyin ve Commit changes yapın. Pages ayarını değiştirmeyin.
