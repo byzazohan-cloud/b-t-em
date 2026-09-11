@@ -64,9 +64,9 @@ async function createSecureStore(data,pin,{forcePinChange=false}={}){
   sessionKey=key;state=clean;localStorage.removeItem(LEGACY_KEY);legacyState=null;
 }
 async function ensureFreshStore(){
-  if(secureMeta||legacyState) return;
-  await createSecureStore(cloneDefault(),'1234',{forcePinChange:true});
-  lockNow(false);
+  // İlk açılışta ağır şifreleme yapma; giriş ekranını hemen göster.
+  // Varsayılan mağaza, kullanıcı 1234 ile ilk kez giriş yaptığında oluşturulur.
+  return;
 }
 async function legacyVerify(pin){
   if(!legacyState) return false;
@@ -79,6 +79,13 @@ async function legacyVerify(pin){
 }
 async function unlock(pin){
   try{
+    // İlk kurulum: henüz güvenli mağaza yoksa yalnızca varsayılan 1234 kabul edilir.
+    if(!secureMeta && !legacyState){
+      if(String(pin)!=='1234') return false;
+      await createSecureStore(cloneDefault(),'1234',{forcePinChange:true});
+      secureMeta=readJSON(META_KEY);
+      return true;
+    }
     if(secureMeta){
       const key=await deriveKey(pin,unb64(secureMeta.salt),secureMeta.iterations||PBKDF2_ITERATIONS);
       const blob=readJSON(DATA_KEY); if(!blob) return false;
@@ -179,8 +186,20 @@ async function del(k,id){state[k]=state[k].filter(x=>x.id!==id);await save();clo
 function closeAndRender(){modal=null;render();notice('Kaydedildi.')}
 
 async function boot(){
-  if(!window.crypto?.subtle){document.querySelector('#app').innerHTML='<main class="phone"><div class="card"><h3>Güvenli bağlantı gerekli</h3><p>Bu sürüm Web Crypto gerektirir. Uygulamayı GitHub Pages üzerindeki HTTPS adresinden açın.</p></div></main>';return}
-  await ensureFreshStore();secureMeta=readJSON(META_KEY);legacyState=readJSON(LEGACY_KEY);setupSecurityGuards();render();
-  if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  try{
+    // UI'yi bekletmeden hemen giriş ekranını göster.
+    secureMeta=readJSON(META_KEY);legacyState=readJSON(LEGACY_KEY);
+    setupSecurityGuards();
+    render();
+    if(!window.crypto?.subtle){
+      document.querySelector('#app').innerHTML='<main class="phone"><div class="card"><h3>Güvenli bağlantı gerekli</h3><p>Bu sürüm Web Crypto gerektirir. Uygulamayı GitHub Pages üzerindeki HTTPS adresinden açın.</p></div></main>';
+      return;
+    }
+    await ensureFreshStore();
+    if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=5').catch(()=>{});
+  }catch(err){
+    console.error('Bütçem başlatma hatası',err);
+    document.querySelector('#app').innerHTML='<main class="phone"><div class="card"><h3>Uygulama başlatılamadı</h3><p>Sayfayı yenileyin. Sorun devam ederse tarayıcı site verilerini temizleyip tekrar deneyin.</p><p class="small">Hata kodu: STARTUP</p></div></main>';
+  }
 }
 boot();
