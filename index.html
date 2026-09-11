@@ -10,13 +10,28 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Bütçem" />
   <title>Bütçem</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json?v=6" />
   <link rel="apple-touch-icon" href="icons/icon-180.png" />
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="styles-v6.css" />
 </head>
 <body>
-  <div id="app"><main class="phone"><div class="login"><div class="lock">♙</div><div class="brand">Bütçem</div><div class="subtitle">Güvenli uygulama başlatılıyor…</div></div></main></div>
+  <div id="app">
+    <main class="phone">
+      <div class="login">
+        <div class="lock">♙</div>
+        <div class="brand">Bütçem</div>
+        <div class="subtitle">Verileriniz cihazınızda şifreli saklanır.</div>
+        <div class="avatar">M</div>
+        <h2>Mehmet</h2>
+        <form id="fallbackLogin" class="login-form">
+          <input type="password" inputmode="numeric" placeholder="Parola" autocomplete="current-password" disabled />
+          <button type="button" class="primary" disabled>Uygulama yükleniyor…</button>
+        </form>
+        <div class="security-note" style="margin-top:16px">Bu ekran 10 saniyeden uzun kalırsa yeni sürüm yüklenmemiş demektir.</div>
+      </div>
+    </main>
+  </div>
   <input id="fileRestore" type="file" accept=".butcem,application/json" hidden>
-  <script src="app.js?v=5" defer></script>
+  <script src="app-v6.js" defer></script>
 </body>
 </html>
