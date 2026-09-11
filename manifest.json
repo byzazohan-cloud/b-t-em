@@ -1,0 +1,17 @@
+{
+  "name": "Bütçem Premium",
+  "short_name": "Bütçem",
+  "description": "Kişisel gelir, gider, sabit ödemeler ve kredi kartı takibi.",
+  "lang": "tr-TR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#05080d",
+  "theme_color": "#05080d",
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
