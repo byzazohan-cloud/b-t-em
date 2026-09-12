@@ -1,0 +1,9 @@
+HANE v0.5.6 — ŞİFRELİ YEDEK
+
+- Aylık ve tüm veri yedekleri artık .hane uzantılıdır.
+- Yedek içerikleri AES-256-GCM ile şifrelenir.
+- Anahtar, o anda kullandığın 4 haneli HANE PIN'inden PBKDF2-SHA256 ile türetilir (310.000 iterasyon).
+- Yedek dosyasını metin editörüyle açan biri finans verilerini okuyamaz.
+- Geri yükleme için yedeği oluşturduğun PIN gerekir.
+- PIN'i daha sonra değiştirirsen eski yedekler eski PIN ile korunmaya devam eder.
+- CSV dışa aktarma bilerek okunabilir formatta kalır; CSV güvenli yedek değildir.

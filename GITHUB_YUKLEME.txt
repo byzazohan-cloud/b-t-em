@@ -1,0 +1,11 @@
+HANE v0.5.6 — GITHUB PAGES HAZIR
+
+1) Bu ZIP'i bilgisayarda ayıkla.
+2) GitHub'daki mevcut b-t-em deposuna klasörün İÇİNDEKİ tüm dosyaları yükle.
+   ÖNEMLİ: .github klasörü de yüklenmeli.
+3) Commit changes yap.
+4) GitHub > Settings > Pages > Build and deployment > Source bölümünü "GitHub Actions" yap.
+5) Üst menüde Actions sekmesine gir. "HANE GitHub Pages" işlemi yeşil tik olana kadar bekle.
+6) Settings > Pages ekranındaki Visit site ile aç.
+
+Bu paket kaynak kodu GitHub'da otomatik derler. Windows/Mac üzerinde Expo derlemesi yapman gerekmez.

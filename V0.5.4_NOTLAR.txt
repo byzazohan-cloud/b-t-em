@@ -1,0 +1,16 @@
+HANE v0.5.4 SAFE SVG
+====================
+Bu sürüm çalışan v0.5.2 PIN sürümünden oluşturuldu.
+
+DÜZELTME:
+- @expo/vector-icons tamamen kaldırıldı.
+- expo-font tamamen kaldırıldı.
+- İkonlar react-native-svg ile uygulamanın kendi içinde çiziliyor.
+- Web/PWA ikon fontu yükleme hatası artık mümkün değil.
+- PIN sistemi korunuyor.
+- Siyah + küçük altın detaylı premium tasarım korunuyor.
+- dist her derlemede sıfırdan oluşturuluyor.
+
+NETLIFY:
+Mevcut incredible-jalebi-03c51d projesinin DAĞITIMLAR bölümüne
+bu sürümün yeni dist klasörünü yükle.
