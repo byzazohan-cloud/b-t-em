@@ -18,3 +18,7 @@ GitHub Pages: main / root. ZIP içeriğini repository köküne yükleyin.
 - PIN tam 4 hanedir; 4. hanede hemen doğrulanır.
 - Bozuk/eski yarım kurulum algılanır ve otomatik temizlenir.
 - Service worker önbelleği devre dışı bırakılmıştır.
+
+
+## V4 kritik düzeltme
+`dues()` içindeki `a` değişkeni strict mode altında tanımlanmadan kullanılıyordu. `a is not defined` hatası giderildi. JS dosyası önbelleği kırmak için app-v5.js olarak değiştirildi.
