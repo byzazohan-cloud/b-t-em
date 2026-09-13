@@ -16,3 +16,7 @@ Bu sürüm DOM tamamen hazır olmadan dosya inputlarına event bağlamaz; `Canno
 
 ## V5 Kayıt düzeltmesi
 Gelir/Gider/Kart formlarında Kaydet işlemi await + hata yakalama ile sağlamlaştırıldı. Başarılı kayıt mesajı ve depolama hatası bildirimi eklendi. Tasarım değiştirilmedi.
+
+
+## V6 Kaydet düzeltmesi
+Form submit bağlayıcılarında paylaşılan değişken kullanımı kaldırıldı. Her form artık `event.currentTarget` ile kendi formunu kaydeder. Tasarım değiştirilmedi.
