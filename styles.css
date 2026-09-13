@@ -362,3 +362,221 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
 .miniCard.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
 .miniCard.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
 .miniCard.silver .sub,.miniCard.silver .num{color:#222!important}
+
+
+/* =========================================================
+   V17 — NATIVE iPHONE FEEL
+   V16 TASARIM / RENK / YERLEŞİM KİLİTLİDİR.
+   Yalnızca davranış, safe-area, dokunma ve yüzey hissi.
+   ========================================================= */
+
+:root{
+  --vh:1vh;
+  --ios-radius:14px;
+  --ios-blur:18px;
+}
+
+/* Safari/web-page hissini azalt */
+html{
+  background:#000;
+  overscroll-behavior:none;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  touch-action:manipulation;
+  scrollbar-width:none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.phone::-webkit-scrollbar,
+.sheet::-webkit-scrollbar{
+  display:none;
+  width:0;
+  height:0;
+}
+body{
+  width:100%;
+  min-height:100dvh;
+  min-height:calc(var(--vh,1vh) * 100);
+  overflow-x:hidden;
+  overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-user-select:none;
+  user-select:none;
+}
+input,textarea,select{
+  -webkit-user-select:text;
+  user-select:text;
+}
+
+/* Ana ekrana eklendiğinde tam uygulama gövdesi */
+.is-standalone body{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+}
+.is-standalone #app{
+  height:100dvh;
+  height:calc(var(--vh,1vh) * 100);
+  overflow:hidden;
+}
+.is-standalone .phone{
+  height:100dvh;
+  height:calc(var(--vh,1vh) * 100);
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+}
+
+/* Tarayıcıda da telefon alanı doğal kalsın */
+.phone{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  scroll-behavior:smooth;
+}
+
+/* Üst bar: iOS yüzey hissi — ölçü ve yerleşim korunur */
+.top{
+  background:rgba(0,0,0,.90)!important;
+  -webkit-backdrop-filter:blur(var(--ios-blur)) saturate(135%);
+  backdrop-filter:blur(var(--ios-blur)) saturate(135%);
+  border-bottom:1px solid rgba(255,255,255,.035);
+  transform:translateZ(0);
+}
+
+/* Alt tab bar: sabit native tab bar hissi, V16 ölçüleri korunur */
+.nav{
+  background:rgba(0,0,0,.88)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  backdrop-filter:blur(22px) saturate(150%);
+  border-top:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 -7px 24px rgba(0,0,0,.38)!important;
+  transform:translateZ(0);
+}
+.nav button{
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+  transition:opacity .12s ease, transform .12s ease;
+}
+.nav button:active{
+  opacity:.62;
+  transform:scale(.96);
+}
+
+/* Dokunma hissi: tasarım değiştirmeden basış tepkisi */
+button,
+.setting,
+.item,
+.themeCard,
+.miniCard,
+.credit,
+.section [data-action]{
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+}
+button{
+  transition:transform .10s ease, opacity .10s ease, filter .10s ease;
+}
+button:active{
+  transform:scale(.975);
+  opacity:.82;
+}
+.ib:active,.back:active,.close:active{
+  transform:scale(.93);
+}
+
+/* Kartlara çok hafif fiziksel yüzey hissi; renk/ölçü değişmez */
+.card,
+.reco,
+.credit,
+.miniCard,
+.item,
+.sum{
+  transform:translateZ(0);
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+}
+
+/* Modal alt-sheet daha native açılır; yerleşim aynı */
+.modal{
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+  overscroll-behavior:contain;
+}
+.sheet{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  border-bottom:0!important;
+  box-shadow:0 -18px 50px rgba(0,0,0,.72)!important;
+}
+
+/* Form kontrolleri: iOS'ta web-form hissini azalt */
+.field input,
+.field select,
+.field textarea{
+  -webkit-appearance:none;
+  appearance:none;
+  min-height:44px;
+}
+.field input[type="date"],
+.field input[type="color"]{
+  -webkit-appearance:auto;
+  appearance:auto;
+}
+.field textarea{
+  resize:none;
+}
+
+/* Fokus, klavye açıldığında daha doğal */
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  outline:none!important;
+}
+
+/* iOS'ta yanlışlıkla zoom/selection menüsü hissini azalt */
+a,button,.setting,.item,.section span{
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Uygulama içinde scroll bounce bölgesini temiz tut */
+.content{
+  padding-bottom:34px;
+}
+
+/* Ana ekrana eklenmiş modda masaüstü telefon çerçevesi hissi olmasın */
+@media (display-mode: standalone){
+  body{
+    display:block!important;
+  }
+  #app{
+    display:block!important;
+  }
+  .phone,.lock,.setup{
+    max-width:none!important;
+    width:100%!important;
+    box-shadow:none!important;
+  }
+  .nav,.sheet{
+    max-width:none!important;
+  }
+}
+
+/* Büyük ekranda mevcut V16 masaüstü önizlemesi korunur */
+@media (min-width:650px) and (display-mode: browser){
+  .phone,.lock,.setup{
+    border-left:1px solid #101010;
+    border-right:1px solid #101010;
+  }
+}
+
+/* Kullanıcı azaltılmış hareket seçmişse native geri bildirim dahi minimal */
+@media (prefers-reduced-motion: reduce){
+  button,.nav button{
+    transition:none!important;
+  }
+  button:active,.nav button:active{
+    transform:none!important;
+  }
+}

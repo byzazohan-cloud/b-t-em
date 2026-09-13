@@ -97,3 +97,17 @@ Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre 
 - Harcama Ekle / Ödeme Yaptım butonları küçültüldü.
 - Hızlı İşlemler butonları ve ikonları belirgin şekilde küçültüldü.
 - Ana tasarımın geri kalanına dokunulmadı.
+
+
+## V17 — Native iPhone Görünümü
+V16 kilitli tasarım, yerleşim, kart ölçüleri ve siyah + gold stil korunmuştur.
+
+Yalnızca uygulama hissi güçlendirildi:
+- iPhone safe-area ve standalone PWA davranışı iyileştirildi.
+- Ana ekrana eklendiğinde içerik tam uygulama yüksekliğinde çalışır.
+- Üst bar ve alt tab bar iOS benzeri blur/sabit yüzey davranışı kazanır.
+- Buton/tab dokunma geri bildirimi eklendi.
+- Modal alt-sheet ve scroll davranışı native uygulamaya yaklaştırıldı.
+- Scrollbar ve Safari web-sayfası hissi azaltıldı.
+- Form kontrollerinin iOS görünümü sadeleştirildi.
+- İş mantığına ve V16 tasarımına dokunulmadı.
