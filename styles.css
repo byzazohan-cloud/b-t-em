@@ -81,3 +81,21 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
   font-weight:800;
   text-transform:uppercase;
 }
+
+/* V12 — Mantık ve profil düzenlemeleri; ana stil korunur */
+.profileAvatarLarge{
+  width:98px!important;
+  height:98px!important;
+  margin:0 auto!important;
+  font-size:30px!important;
+}
+.profileEditBtn{
+  margin-top:12px!important;
+  padding:8px 12px!important;
+  font-size:9px!important;
+  border-color:rgba(216,173,79,.45)!important;
+  color:var(--gold2)!important;
+}
+#expenseType{
+  border-color:rgba(216,173,79,.50)!important;
+}

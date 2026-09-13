@@ -51,3 +51,14 @@ Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre 
 - Kira, Aidat, İnternet, Elektrik, Su, Doğalgaz, Cep Telefonu sabit gider mantığındadır.
 - Kart Ekle ve Gider Ekle aksiyonları belirgin buton oldu.
 - Siyah + gold tasarım korunmuştur.
+
+
+## V12
+- Gider Ekle tek ekran: NORMAL GİDER / SABİT GİDER.
+- Normal gider seçilirse yalnız HARCAMA TARİHİ görünür.
+- Sabit gider seçilirse yalnız sabit kategori listesi ve SON ÖDEME TARİHİ görünür.
+- Önerilen kartta gösterilen gün sayısı HESAP KESİM → SON ÖDEME arasındaki gerçek farktır.
+- Uygulama Ayarları içindeki KARANLIK MOD kaldırıldı.
+- Profil resmi büyütüldü; profil ekranına PROFİLİ DÜZENLE butonu eklendi.
+- İsim ve profil resmi düzenlenebilir.
+- Siyah + gold ana tasarım değiştirilmedi.
