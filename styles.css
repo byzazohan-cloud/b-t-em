@@ -248,3 +248,117 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
   font-size:16px!important;
   margin-bottom:3px!important;
 }
+
+/* V16 — GERÇEK KULLANILAN SINIFLAR ÜZERİNDEN KOMPAKT */
+
+/* Ana ekrandaki gerçek önerilen kart */
+.miniCard{
+  min-height:82px!important;
+  padding:8px 9px!important;
+  border-radius:12px!important;
+}
+.miniCard .bank{
+  font-size:10px!important;
+}
+.miniCard .sub{
+  font-size:8px!important;
+}
+.miniCard .num{
+  margin-top:12px!important;
+  font-size:9px!important;
+  letter-spacing:1px!important;
+}
+.reco{
+  padding:10px!important;
+  border-radius:15px!important;
+}
+.recoHead{
+  margin-bottom:7px!important;
+  font-size:10px!important;
+}
+.recoGrid{
+  gap:8px!important;
+}
+.recoInfo{
+  gap:5px!important;
+  font-size:8px!important;
+}
+.recoInfo b{
+  font-size:10px!important;
+}
+.recoInfo .btn,
+.recoInfo button{
+  min-height:28px!important;
+  padding:6px 7px!important;
+  font-size:8px!important;
+  border-radius:9px!important;
+}
+
+/* Kartlar sekmesindeki gerçek kartlar */
+.credit{
+  min-height:120px!important;
+  padding:9px 10px!important;
+  border-radius:14px!important;
+  margin-bottom:8px!important;
+}
+.credit .network{
+  top:10px!important;
+  right:11px!important;
+  font-size:9px!important;
+}
+.credit > b{
+  font-size:10px!important;
+}
+.credit > small{
+  font-size:7px!important;
+}
+.credit .digits{
+  margin:9px 0 7px!important;
+  font-size:10px!important;
+  letter-spacing:1px!important;
+}
+.credit .grid{
+  gap:3px!important;
+}
+.credit .grid small{
+  font-size:7px!important;
+}
+.credit .grid b{
+  font-size:9px!important;
+}
+.cardActions{
+  margin-top:6px!important;
+  gap:5px!important;
+}
+.cardActions .btn{
+  min-height:25px!important;
+  padding:4px 5px!important;
+  font-size:7px!important;
+  border-radius:8px!important;
+}
+
+/* Gerçek hızlı işlem butonları */
+.quick{
+  padding:8px!important;
+  gap:5px!important;
+}
+.quick button{
+  min-height:48px!important;
+  padding:6px 4px!important;
+  border-radius:10px!important;
+  font-size:8px!important;
+}
+.quick i{
+  font-size:16px!important;
+  margin-bottom:3px!important;
+}
+
+/* Önerilen kart gerçek kart stilini miras alır */
+.miniCard.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%);border-color:rgba(213,173,85,.52)}
+.miniCard.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)}
+.miniCard.blue{background:linear-gradient(145deg,#04111e,#0a3d67)}
+.miniCard.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)}
+.miniCard.green{background:linear-gradient(145deg,#03140d,#0b2a1e)}
+.miniCard.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
+.miniCard.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
+.miniCard.silver .sub,.miniCard.silver .num{color:#222!important}

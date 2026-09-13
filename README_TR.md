@@ -88,3 +88,12 @@ Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre 
 - Harcama Ekle / Ödeme Yaptım düğmeleri daha kompakt.
 - Hızlı İşlemler düğmeleri ve ikonları biraz küçültüldü.
 - V14 ana ekran üst alanı ve diğer tasarım/işlevler korunmuştur.
+
+## V16
+- V15'te yanlış hedeflenen mini kart sınıfı düzeltildi.
+- Ana ekrandaki gerçek `miniCard` küçültüldü.
+- Önerilen kart artık seçilen kartın stilini gerçekten miras alır.
+- Kartlar sekmesindeki kredi kartları belirgin şekilde daha kompakt.
+- Harcama Ekle / Ödeme Yaptım butonları küçültüldü.
+- Hızlı İşlemler butonları ve ikonları belirgin şekilde küçültüldü.
+- Ana tasarımın geri kalanına dokunulmadı.
