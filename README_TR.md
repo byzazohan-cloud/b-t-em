@@ -8,3 +8,13 @@ Temiz kurulum sürümü. Eski sürümlerin yerel veri ve önbellek kayıtlarıyl
 - Başlangıç hatasında boş ekran yerine sıfırlama ekranı gösterir.
 
 GitHub Pages: main / root. ZIP içeriğini repository köküne yükleyin.
+
+
+## V3 sağlamlık düzeltmeleri
+- Kurulum artık atomik: şifreli veri yazılmadan PIN kaydı oluşmaz.
+- Profil fotoğrafı otomatik 320px JPEG'e küçültülür.
+- Fiş/fatura fotoğrafları otomatik 1280px JPEG'e küçültülür.
+- Depolama kotası dolarsa açık hata gösterir.
+- PIN tam 4 hanedir; 4. hanede hemen doğrulanır.
+- Bozuk/eski yarım kurulum algılanır ve otomatik temizlenir.
+- Service worker önbelleği devre dışı bırakılmıştır.
