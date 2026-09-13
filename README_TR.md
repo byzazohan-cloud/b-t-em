@@ -120,3 +120,12 @@ Yalnızca uygulama hissi güçlendirildi:
 - Bozuk/yanlış dosya seçilirse açık hata mesajı gösterilir.
 - Aynı yedek dosyası tekrar seçilebilir.
 - V17 native görünüm ve V16 kilitli tasarım korunmuştur.
+
+
+## V19
+- V18 BACKUP FIX temel alındı.
+- V5 HANE amblemi.
+- Klasik premium parola ekranı ve ince TAMAM.
+- BU AY HARCANAN / BU AY ÖDENEN tutarlı butonları ve grafikli detay ekranları.
+- Sabit giderlerde ÖDEDİM / yeşil tik ve sürükle-bırak sıralama.
+- Profil fotoğrafında zoom/kadraj.
