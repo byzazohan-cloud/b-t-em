@@ -111,3 +111,12 @@ Yalnızca uygulama hissi güçlendirildi:
 - Scrollbar ve Safari web-sayfası hissi azaltıldı.
 - Form kontrollerinin iOS görünümü sadeleştirildi.
 - İş mantığına ve V16 tasarımına dokunulmadı.
+
+## V18 — iPhone Yedek Geri Yükleme Düzeltmesi
+- Yedek dosya seçicide `.hane` / MIME filtresi kaldırıldı.
+- iPhone Dosyalar uygulamasında HANE yedeği görünür hale gelir.
+- Dosya uzantısı yerine içerik doğrulanır.
+- Yalnız geçerli `HANE-LOCKED-BACKUP` yedekleri geri yüklenir.
+- Bozuk/yanlış dosya seçilirse açık hata mesajı gösterilir.
+- Aynı yedek dosyası tekrar seçilebilir.
+- V17 native görünüm ve V16 kilitli tasarım korunmuştur.
