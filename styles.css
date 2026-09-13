@@ -69,3 +69,15 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
 .cardActions{gap:6px!important;margin-top:9px!important}
 .cardActions .btn{padding:7px 6px!important;border-radius:10px!important;font-size:9px!important;min-height:31px!important}
 .setting[data-action="openTheme"],.seg button{cursor:pointer}
+
+/* V11 */
+.miniAddBtn{
+  border:1px solid rgba(216,173,79,.55);
+  background:#0b0b0b;
+  color:var(--gold2);
+  padding:7px 10px;
+  border-radius:10px;
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+}

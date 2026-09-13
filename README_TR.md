@@ -42,3 +42,12 @@ Renkler Kaydet düğmesine basmadan uygulamaya uygulanmaz. Önizleme taslak üze
 
 ## V10
 Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre takvimine göre düzeltildi. Kartlar ve butonlar küçültüldü. Görünen/metin girişleri büyük harf yapıldı. iPhone autocorrect/autocomplete açık. Hareket filtreleri ve Gün/Hafta/Ay/Yıl rapor seçimleri çalışır.
+
+## V11
+- Kredi kartı Hesap Kesim ve Son Ödeme artık takvimden gerçek tarih olarak seçilir.
+- HANE bu tarihleri sonraki aylara aynı günlerle otomatik taşır.
+- Normal Gider Ekle ekranından Son Ödeme kaldırıldı; yalnız Harcama Tarihi var.
+- Sabit gider/fatura için ayrı form ve Ödeme Tarihi var.
+- Kira, Aidat, İnternet, Elektrik, Su, Doğalgaz, Cep Telefonu sabit gider mantığındadır.
+- Kart Ekle ve Gider Ekle aksiyonları belirgin buton oldu.
+- Siyah + gold tasarım korunmuştur.
