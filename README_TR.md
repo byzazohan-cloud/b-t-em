@@ -1,24 +1,19 @@
-# HANE Premium V2
+# HANE Premium — Kilitli Tasarım
 
-Temiz kurulum sürümü. Eski sürümlerin yerel veri ve önbellek kayıtlarıyla çakışmaması için yeni veri anahtarları kullanır.
+Bu sürüm, onaylanan **tam siyah + az ama belirgin gold** tasarım dili korunarak hazırlanmıştır.
 
-- PIN tam 4 hanedir.
-- Yanlış PIN anında uyarı verir.
-- Eski service worker kayıtlarını başlangıçta kaldırır.
-- Başlangıç hatasında boş ekran yerine sıfırlama ekranı gösterir.
+- İlk kurulum: isim, profil fotoğrafı, 4 haneli PIN
+- İlk açılışta tüm tutarlar ₺0
+- AES-256-GCM şifreli yerel veri
+- Ana ekran: günlük söz, gelir/gider/kalan, halka grafik, önerilen kart, hızlı işlemler
+- Gelir/gider ekle, düzenle, sil
+- Geçmiş kayıtları düzenle
+- Sabit giderler
+- Kredi kartları ve hesap kesim/son ödeme tarihi
+- Hesap kesimine göre önerilen kart
+- Raporlar
+- Profil ve ayarlar
+- Şifreli .hane yedeği
+- Tema Stüdyosu: arka plan, detay ve grafik renkleri
 
-GitHub Pages: main / root. ZIP içeriğini repository köküne yükleyin.
-
-
-## V3 sağlamlık düzeltmeleri
-- Kurulum artık atomik: şifreli veri yazılmadan PIN kaydı oluşmaz.
-- Profil fotoğrafı otomatik 320px JPEG'e küçültülür.
-- Fiş/fatura fotoğrafları otomatik 1280px JPEG'e küçültülür.
-- Depolama kotası dolarsa açık hata gösterir.
-- PIN tam 4 hanedir; 4. hanede hemen doğrulanır.
-- Bozuk/eski yarım kurulum algılanır ve otomatik temizlenir.
-- Service worker önbelleği devre dışı bırakılmıştır.
-
-
-## V4 kritik düzeltme
-`dues()` içindeki `a` değişkeni strict mode altında tanımlanmadan kullanılıyordu. `a is not defined` hatası giderildi. JS dosyası önbelleği kırmak için app-v5.js olarak değiştirildi.
+GitHub Pages için ZIP içeriğini repository köküne yükle. Pages: main / (root).
