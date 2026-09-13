@@ -20,3 +20,16 @@ Gelir/Gider/Kart formlarında Kaydet işlemi await + hata yakalama ile sağlamla
 
 ## V6 Kaydet düzeltmesi
 Form submit bağlayıcılarında paylaşılan değişken kullanımı kaldırıldı. Her form artık `event.currentTarget` ile kendi formunu kaydeder. Tasarım değiştirilmedi.
+
+
+## V7 Tema Stüdyosu
+Renkler Kaydet düğmesine basmadan uygulamaya uygulanmaz. Önizleme taslak üzerinde çalışır. Varsayılana Dön siyah + gold varsayılanını yalnızca önizlemeye getirir; Kaydetmeden kalıcı olmaz. İptal değişiklikleri atar.
+
+## V8 — Harcanan / Ödenen + düşük pil tüketimi
+- Ana ekrana “Bu Ay Harcanan” ve “Bu Ay Ödenen” ayrımı eklendi.
+- Kart harcaması yapıldığı ayın giderine eklenir.
+- Kart ödemesi ikinci kez gider sayılmaz; “Bu Ay Ödenen” ve Hareketler içinde borç kapatma olarak görünür.
+- Kartın hesap kesim tarihi, harcamanın hangi ekstreye ait olduğunu arka planda hesaplar.
+- Kart ekranına Harcama Ekle ve Ödeme Yap eklendi.
+- Uygulama arka planda sürekli sorgulama yapmaz; GPS kullanmaz; kamera yalnızca kullanıcı açınca çalışır; grafik yalnızca rapor ekranında çizilir.
+- Hareketli efektler minimumdur ve cihazın azaltılmış hareket tercihine uyar.
