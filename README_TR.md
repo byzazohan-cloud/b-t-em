@@ -62,3 +62,21 @@ Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre 
 - Profil resmi büyütüldü; profil ekranına PROFİLİ DÜZENLE butonu eklendi.
 - İsim ve profil resmi düzenlenebilir.
 - Siyah + gold ana tasarım değiştirilmedi.
+
+
+## V13
+- Aynı kategoriden birden fazla sabit gider desteklenir. Örn. CEP TELEFONU · HAT 1 / HAT 2 / HAT 3 / HAT 4.
+- Önerilen Kart bölümündeki TÜMÜNÜ GÖR doğrudan KARTLAR sekmesine gider.
+- Kart stili seçenekleri artırıldı: BLACKGOLD, TITANIUM, BLUE, BURGUNDY, GREEN, PURPLE, SILVER.
+- Ayrıntılı grafiğin altında GELİR / GİDER / KALAN renk açıklaması gösterilir.
+- Günün sözü yerel güne göre her gün otomatik değişir.
+- Profil motto alanı günlük sözden bağımsızdır.
+
+## V14 — Yalnız Ana Sayfa Üst Alanı
+- V13 özelliklerinin tamamı korunmuştur.
+- Yalnız ana sayfanın üst alanı değiştirildi.
+- Küçük üst-bar profil fotoğrafı kaldırıldı.
+- Profil fotoğrafı ana başlıkta büyütüldü ve sola alındı.
+- Sağında MERHABA / PROFİL ADI / TARİH gösterilir.
+- HANE başlığı, ayar ve bildirim düğmeleri korunur.
+- BUGÜNÜN SÖZÜ ve onun altındaki bütün ekran yapısı/değerler/fonksiyonlar değiştirilmemiştir.

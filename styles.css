@@ -99,3 +99,87 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
 #expenseType{
   border-color:rgba(216,173,79,.50)!important;
 }
+
+/* V13 — Ek kart stilleri, grafik legend */
+.credit.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)}
+.credit.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)}
+.credit.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
+.credit.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
+.credit.silver small,.credit.silver .digits{color:#222!important}
+.chartLegend{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-top:10px;
+  font-size:9px;
+  color:#aaa;
+  flex-wrap:wrap;
+}
+.chartLegend span{display:flex;align-items:center;gap:5px}
+.chartLegend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.section [data-action="goCards"]{cursor:pointer}
+
+
+/* V14 — SADECE ANA SAYFA ÜST ALANI */
+.homeTop{
+  grid-template-columns:42px 1fr 42px!important;
+}
+.topSpacer{
+  width:42px;
+  height:42px;
+}
+.homeHero{
+  display:grid;
+  grid-template-columns:78px 1fr 38px;
+  gap:11px;
+  align-items:center;
+  margin:2px 0 10px;
+}
+.homeHeroAvatar{
+  width:78px!important;
+  height:78px!important;
+  font-size:23px!important;
+  margin:0!important;
+  flex:none;
+}
+.homeHeroText{
+  min-width:0;
+  align-self:center;
+}
+.homeHeroText small{
+  display:block;
+  color:var(--gold2);
+  font-size:9px;
+  font-weight:800;
+  line-height:1.1;
+  margin-bottom:2px;
+}
+.homeHeroText h2{
+  margin:0 0 4px;
+  font-size:19px;
+  line-height:1.05;
+  color:#fff;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.homeHeroText .date{
+  font-size:9px;
+  line-height:1.25;
+  color:#aeb2b7;
+}
+.homeHeroBell{
+  align-self:start;
+}
+@media(max-width:360px){
+  .homeHero{
+    grid-template-columns:68px 1fr 36px;
+    gap:9px;
+  }
+  .homeHeroAvatar{
+    width:68px!important;
+    height:68px!important;
+  }
+  .homeHeroText h2{font-size:17px}
+  .homeHeroText .date{font-size:8px}
+}
