@@ -48,3 +48,13 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* V9: Bu Ay kartı daha kompakt */
+.cashCard{padding:9px 11px!important;border-radius:14px}
+.cashRow small{font-size:9px!important;letter-spacing:.03em}
+.cashRow>b,.cashRow div>b{font-size:17px!important;margin:3px 0 1px!important}
+.cashRow span{font-size:9px!important;line-height:1.25}
+.cashDivider{margin:8px 0!important}
+.cashSplit{gap:2px!important;margin-top:5px!important}
+.cashSplit span{font-size:9px!important}
+.cashSplit b{font-size:9px!important}

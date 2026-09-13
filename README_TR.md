@@ -33,3 +33,8 @@ Renkler Kaydet düğmesine basmadan uygulamaya uygulanmaz. Önizleme taslak üze
 - Kart ekranına Harcama Ekle ve Ödeme Yap eklendi.
 - Uygulama arka planda sürekli sorgulama yapmaz; GPS kullanmaz; kamera yalnızca kullanıcı açınca çalışır; grafik yalnızca rapor ekranında çizilir.
 - Hareketli efektler minimumdur ve cihazın azaltılmış hareket tercihine uyar.
+
+## V9
+- Ayarlar > Tema Stüdyosu satırı doğrudan `openTheme` aksiyonuna bağlandı; tıklama güvenilir hale getirildi.
+- “Bu Ay Harcanan / Bu Ay Ödenen” kartı yaklaşık %20–25 daha kompakt yapıldı.
+- Ana siyah + gold tasarım ve diğer yerleşimler değiştirilmedi.
