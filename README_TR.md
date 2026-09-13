@@ -80,3 +80,11 @@ Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre 
 - Sağında MERHABA / PROFİL ADI / TARİH gösterilir.
 - HANE başlığı, ayar ve bildirim düğmeleri korunur.
 - BUGÜNÜN SÖZÜ ve onun altındaki bütün ekran yapısı/değerler/fonksiyonlar değiştirilmemiştir.
+
+## V15
+- Kartlar sekmesindeki bütün kartlar daha kompakt hale getirildi.
+- Ana ekrandaki önerilen kart daha küçük tutuldu.
+- Önerilen kart, Kartlarım bölümünde seçilen kart stilini kullanır.
+- Harcama Ekle / Ödeme Yaptım düğmeleri daha kompakt.
+- Hızlı İşlemler düğmeleri ve ikonları biraz küçültüldü.
+- V14 ana ekran üst alanı ve diğer tasarım/işlevler korunmuştur.

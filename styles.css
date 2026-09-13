@@ -183,3 +183,68 @@ body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,t
   .homeHeroText h2{font-size:17px}
   .homeHeroText .date{font-size:8px}
 }
+
+/* V15 — Kartlar ve hızlı işlemler daha kompakt */
+
+/* Kartlar sekmesindeki bütün kredi kartları */
+.credit{
+  min-height:138px!important;
+  padding:10px 11px!important;
+  border-radius:15px!important;
+  margin-bottom:9px!important;
+}
+.credit .network{font-size:10px!important}
+.credit> b{font-size:11px!important}
+.credit> small{font-size:8px!important}
+.credit .digits{
+  margin:11px 0 9px!important;
+  font-size:11px!important;
+  letter-spacing:1.2px!important;
+}
+.credit .grid{
+  gap:4px!important;
+}
+.credit .grid small{font-size:8px!important}
+.credit .grid b{font-size:10px!important}
+.cardActions{
+  gap:5px!important;
+  margin-top:7px!important;
+}
+.cardActions .btn{
+  min-height:27px!important;
+  padding:5px 5px!important;
+  border-radius:9px!important;
+  font-size:8px!important;
+}
+
+/* Ana ekrandaki önerilen kart daha küçük */
+.miniCredit,.recommendCard,.credit.mini{
+  min-height:112px!important;
+  padding:9px 10px!important;
+  border-radius:14px!important;
+}
+.miniCredit .digits,.recommendCard .digits,.credit.mini .digits{
+  margin:8px 0 7px!important;
+  font-size:10px!important;
+}
+
+/* Önerilen kart da Kartlarım'da seçilen stil ailesini kullanır */
+.miniCredit.titanium,.recommendCard.titanium,.credit.mini.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)}
+.miniCredit.burgundy,.recommendCard.burgundy,.credit.mini.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)}
+.miniCredit.purple,.recommendCard.purple,.credit.mini.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
+.miniCredit.silver,.recommendCard.silver,.credit.mini.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
+
+/* Hızlı işlemler: kutular ve ikonlar biraz küçüldü */
+.quick,.quickActions{
+  gap:6px!important;
+}
+.quick button,.quickActions button,.quick .q,.quickActions .q{
+  min-height:54px!important;
+  padding:7px 5px!important;
+  border-radius:11px!important;
+  font-size:8px!important;
+}
+.quick button span,.quickActions button span,.quick .q span,.quickActions .q span{
+  font-size:16px!important;
+  margin-bottom:3px!important;
+}
