@@ -38,3 +38,7 @@ Renkler Kaydet düğmesine basmadan uygulamaya uygulanmaz. Önizleme taslak üze
 - Ayarlar > Tema Stüdyosu satırı doğrudan `openTheme` aksiyonuna bağlandı; tıklama güvenilir hale getirildi.
 - “Bu Ay Harcanan / Bu Ay Ödenen” kartı yaklaşık %20–25 daha kompakt yapıldı.
 - Ana siyah + gold tasarım ve diğer yerleşimler değiştirilmedi.
+
+
+## V10
+Tema Stüdyosu değişken hatası giderildi. Kart ödeme süresi gerçek ekstre takvimine göre düzeltildi. Kartlar ve butonlar küçültüldü. Görünen/metin girişleri büyük harf yapıldı. iPhone autocorrect/autocomplete açık. Hareket filtreleri ve Gün/Hafta/Ay/Yıl rapor seçimleri çalışır.
