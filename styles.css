@@ -676,3 +676,53 @@ html.lightMode .nav button{color:#666b72!important}html.lightMode .nav .active{c
 @media (min-height:820px) and (max-width:430px){
   .premiumHaneLock{padding-top:calc(var(--safeT) + 78px)!important}
 }
+
+/* V19.3.3 — PIN 9:16 gerçek denge + kart renklerini tema değişiminden koru */
+/* Kredi kartı renkleri açık/koyu tema değişiminden bağımsız kalır. */
+html.lightMode .credit.blackgold,html.darkMode .credit.blackgold,.credit.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%)!important;border-color:rgba(213,173,85,.52)!important;color:#fff!important}
+html.lightMode .credit.titanium,html.darkMode .credit.titanium,.credit.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)!important;color:#fff!important}
+html.lightMode .credit.blue,html.darkMode .credit.blue,.credit.blue{background:linear-gradient(145deg,#04111e,#0a3d67)!important;color:#fff!important}
+html.lightMode .credit.burgundy,html.darkMode .credit.burgundy,.credit.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)!important;color:#fff!important}
+html.lightMode .credit.green,html.darkMode .credit.green,.credit.green{background:linear-gradient(145deg,#03140d,#0b2a1e)!important;color:#fff!important}
+html.lightMode .credit.purple,html.darkMode .credit.purple,.credit.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)!important;color:#fff!important}
+html.lightMode .credit.silver,html.darkMode .credit.silver,.credit.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555)!important;color:#111!important}
+html.lightMode .credit.silver small,html.lightMode .credit.silver .digits,html.lightMode .credit.silver b,html.darkMode .credit.silver small,html.darkMode .credit.silver .digits,html.darkMode .credit.silver b,.credit.silver small,.credit.silver .digits,.credit.silver b{color:#222!important}
+/* Diğer renkli kartlarda metinler kart üstünde okunur kalır. */
+.credit:not(.silver) small,.credit:not(.silver) .digits,.credit:not(.silver) b{color:#fff}
+.credit:not(.silver) .grid b[style]{color:var(--red)!important}
+
+/* Ana ekrandaki önerilen kart renkleri de korunur. */
+html.lightMode .miniCard.blackgold,html.darkMode .miniCard.blackgold,.miniCard.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%)!important;border-color:rgba(213,173,85,.52)!important;color:#fff!important}
+html.lightMode .miniCard.titanium,html.darkMode .miniCard.titanium,.miniCard.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)!important;color:#fff!important}
+html.lightMode .miniCard.blue,html.darkMode .miniCard.blue,.miniCard.blue{background:linear-gradient(145deg,#04111e,#0a3d67)!important;color:#fff!important}
+html.lightMode .miniCard.burgundy,html.darkMode .miniCard.burgundy,.miniCard.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)!important;color:#fff!important}
+html.lightMode .miniCard.green,html.darkMode .miniCard.green,.miniCard.green{background:linear-gradient(145deg,#03140d,#0b2a1e)!important;color:#fff!important}
+html.lightMode .miniCard.purple,html.darkMode .miniCard.purple,.miniCard.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)!important;color:#fff!important}
+html.lightMode .miniCard.silver,html.darkMode .miniCard.silver,.miniCard.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555)!important;color:#111!important}
+
+/* PIN ekranını sabit yukarı itmek yerine gerçek görünür yüksekliğin ortasına yerleştir. */
+.premiumHaneLock{
+  box-sizing:border-box!important;
+  min-height:100svh!important;
+  height:100svh!important;
+  justify-content:center!important;
+  padding:calc(var(--safeT) + 18px) 20px calc(var(--safeB) + 18px)!important;
+  overflow:hidden!important;
+}
+.exactV5Lock{width:min(204px,52vw)!important;margin:0 auto 7px!important}
+.lockWelcome{margin-top:3px!important;font-size:10px!important;letter-spacing:.11em!important}
+.lockAvatar{width:74px!important;height:74px!important;margin-top:11px!important}
+.premiumHaneLock h2{font-size:15px!important;margin:7px 0 0!important}
+.premiumHaneLock .pinDots{margin:13px 0 14px!important;gap:14px!important}
+.premiumKeypad{grid-template-columns:repeat(3,66px)!important;gap:11px 12px!important}
+.premiumKeypad button{width:66px!important;height:60px!important;font-size:21px!important;border-radius:50%!important}
+.lockOk{width:min(286px,80vw)!important;height:40px!important;margin-top:14px!important;border-radius:12px!important;font-size:11px!important}
+@media (max-height:740px){
+  .exactV5Lock{width:162px!important;margin-bottom:3px!important}
+  .lockAvatar{width:58px!important;height:58px!important;margin-top:6px!important}
+  .premiumHaneLock h2{font-size:13px!important;margin-top:4px!important}
+  .premiumHaneLock .pinDots{margin:8px 0 9px!important}
+  .premiumKeypad{grid-template-columns:repeat(3,57px)!important;gap:7px 8px!important}
+  .premiumKeypad button{width:57px!important;height:49px!important;font-size:18px!important}
+  .lockOk{height:34px!important;margin-top:8px!important}
+}

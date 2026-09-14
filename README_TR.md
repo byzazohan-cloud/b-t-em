@@ -137,3 +137,9 @@ Yalnızca uygulama hissi güçlendirildi:
 - Diğer seçildiğinde özel kategori adı yazılabilir.
 - Uygulama Ayarları içine Karanlık Mod aç/kapat eklendi.
 - V19.1 kilit veri yapısı ve mevcut çalışan özellikler korunmuştur.
+
+## V19.3.3 düzeltmesi
+- PIN ekranı 9:16 telefonlarda görünür ekran yüksekliğinin gerçek merkezine alındı; tuşlar daha dengeli ve daha dairesel hale getirildi.
+- Açık/koyu tema geçişinin kredi kartı stil ve renklerini ezmesi engellendi. Black Gold, Titanium, Blue, Burgundy, Green, Purple ve Silver kart stilleri korunur.
+- Ana ekrandaki önerilen kart da seçilen kart stilini korur.
+- CSS/JS sürüm sorguları 19.3.3'e yükseltildi; telefondaki eski stil önbelleğinin kullanılma ihtimali azaltıldı.
