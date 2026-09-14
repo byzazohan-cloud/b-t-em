@@ -654,3 +654,25 @@ html.lightMode .premiumCatBtn,html.lightMode .paySourceSeg button,html.lightMode
 html.lightMode .field input::placeholder,html.lightMode .field textarea::placeholder{color:#8a857d!important}
 html.lightMode .nav{background:rgba(255,255,255,.98)!important;border-top-color:#d8d3c8!important}
 html.lightMode .nav button{color:#666b72!important}html.lightMode .nav .active{color:#b88725!important}
+
+/* V19.3.2 — gerçek 9:16 telefon PIN ekranı dikey denge düzeltmesi */
+.premiumHaneLock{
+  justify-content:flex-start!important;
+  padding-top:calc(var(--safeT) + clamp(72px,8.2dvh,96px))!important;
+  padding-bottom:calc(var(--safeB) + 22px)!important;
+}
+.exactV5Lock{width:min(188px,48vw)!important;margin:0 auto 5px!important}
+.lockWelcome{margin-top:4px!important}
+.lockAvatar{width:68px!important;height:68px!important;margin-top:9px!important}
+.premiumHaneLock h2{margin:5px 0 0!important}
+.premiumHaneLock .pinDots{margin:10px 0 11px!important}
+.premiumKeypad{grid-template-columns:repeat(3,62px)!important;gap:8px 9px!important}
+.premiumKeypad button{width:62px!important;height:50px!important}
+.lockOk{margin-top:10px!important;height:37px!important}
+@media (max-height:760px){
+  .premiumHaneLock{padding-top:calc(var(--safeT) + 30px)!important}
+  .exactV5Lock{width:154px!important}
+}
+@media (min-height:820px) and (max-width:430px){
+  .premiumHaneLock{padding-top:calc(var(--safeT) + 78px)!important}
+}
