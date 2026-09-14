@@ -614,3 +614,43 @@ html.lightMode .premiumCatBtn.active,html.lightMode .paySourceSeg button.active,
 html.lightMode small,html.lightMode .section span,html.lightMode label{color:#68635b}
 html.lightMode .bottomNav,html.lightMode .topbar{background:rgba(255,255,255,.96);border-color:#d8d3c8}
 html.lightMode .toast{background:#fff;color:#111;border-color:#ccc}
+
+/* V19.3 — sağlam açık/koyu tema, 9:16 dengeli PIN ve zorunlu güncelleme */
+html.darkMode,html.darkMode body,html.darkMode #app,html.darkMode .phone,html.darkMode .content{background:#000!important;color:#f7f7f7!important}
+html.darkMode .homeHero{background:#000!important;color:#fff!important}
+html.darkMode .card,html.darkMode .sum,html.darkMode .item,html.darkMode .setting,html.darkMode .notice,html.darkMode .sheet,html.darkMode .themeCard{background:linear-gradient(180deg,#0a0b0d,#07080a)!important;color:#f7f7f7!important;border-color:#292929!important}
+html.darkMode .donutBox{background:linear-gradient(180deg,#0a0b0d,#07080a)!important}
+html.darkMode .donut:after{background:#030303!important}html.darkMode .donutC b,html.darkMode .legend b,html.darkMode .section b{color:#f7f7f7!important}
+html.darkMode .homeHeroText small,html.darkMode .homeHeroText h2{color:#f7f7f7!important}html.darkMode .date{color:#aeb2b7!important}
+html.darkMode .field input,html.darkMode .field select,html.darkMode .field textarea{background:#0b0d10!important;color:#fff!important;border-color:#2d2d2d!important}
+html.darkMode .premiumCatBtn,html.darkMode .paySourceSeg button,html.darkMode .seg button,html.darkMode .btn{background:#090a0b;color:#fff;border-color:#303030}
+html.darkMode .monthAction,html.darkMode .quick button{background:linear-gradient(160deg,#0e1013,#070809)!important;color:#fff!important}
+html.darkMode .nav{background:rgba(0,0,0,.98)!important}
+html.darkMode .top{background:linear-gradient(180deg,#000 72%,rgba(0,0,0,.90) 88%,rgba(0,0,0,.72))!important}
+
+/* Açık modda ana ekranın bütün yüzeyleri gerçekten açık olsun */
+html.lightMode .phone,html.lightMode .content,html.lightMode .homeHero{background:#f3f1eb!important;color:#191919!important}
+html.lightMode .homeHeroText small,html.lightMode .homeHeroText h2,html.lightMode .section b{color:#191919!important}
+html.lightMode .donutC b,html.lightMode .legend b{color:#191919!important}
+html.lightMode .donut:after{background:#fff!important;box-shadow:inset 0 0 0 1px #ddd!important}
+html.lightMode .quote{background:#fff!important}.lightMode .quote span{color:#222!important}
+
+/* PIN ekranı: telefon 9:16 alanına dengeli oturur, taşma yapmaz */
+.premiumHaneLock{min-height:100dvh!important;height:100dvh!important;justify-content:center!important;padding:calc(14px + var(--safeT)) 20px calc(14px + var(--safeB))!important;overflow:hidden!important;gap:0!important}
+.exactV5Lock{width:min(190px,48vw)!important;margin:0 auto 2px!important}.lockAvatar{width:68px!important;height:68px!important;margin-top:9px!important}.premiumHaneLock h2{margin:5px 0 0!important}.premiumHaneLock .pinDots{margin:10px 0!important}.premiumKeypad{grid-template-columns:repeat(3,62px)!important;gap:8px!important}.premiumKeypad button{width:62px!important;height:50px!important}.lockOk{margin-top:9px!important;height:36px!important}
+@media (max-height:760px){.exactV5Lock{width:155px!important}.lockWelcome{margin-top:2px!important}.lockAvatar{width:56px!important;height:56px!important;margin-top:5px!important}.premiumKeypad{grid-template-columns:repeat(3,56px)!important;gap:6px!important}.premiumKeypad button{width:56px!important;height:44px!important}.premiumHaneLock .pinDots{margin:7px 0!important}.lockOk{height:32px!important;margin-top:6px!important}}
+
+.forceUpdate{width:100%;max-width:430px;min-height:100dvh;background:#000;display:grid;place-items:center;padding:24px}.forceUpdateBox{text-align:center;border:1px solid rgba(216,173,79,.55);border-radius:22px;background:linear-gradient(160deg,#0d0d0d,#050505);padding:24px 18px;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55)}.forceUpdateLogo{width:190px;max-width:70%;margin:auto}.forceUpdateBox h2{color:var(--gold2);font-size:16px;letter-spacing:.08em}.forceUpdateBox p{font-size:11px;line-height:1.55;color:#c8c8c8}.forceUpdateBox button{width:100%;height:46px;border:0;border-radius:13px;background:linear-gradient(145deg,#f2d17d,#be8f34);color:#111;font-weight:900;margin-top:10px}
+
+/* V19.3.1 — açık mod metin kontrast düzeltmesi */
+html.lightMode{color-scheme:light}
+html.lightMode body,html.lightMode #app,html.lightMode .phone,html.lightMode .content,html.lightMode .page,html.lightMode .appShell{color:#191919!important}
+html.lightMode .card,html.lightMode .item,html.lightMode .setting,html.lightMode .sum,html.lightMode .notice,html.lightMode .sheet,html.lightMode .themeCard,html.lightMode .donutBox{color:#191919!important}
+html.lightMode .setting>span:nth-child(2),html.lightMode .item b,html.lightMode .sum strong,html.lightMode .section b,html.lightMode .legend b,html.lightMode .donutC b,html.lightMode .cashSplit b,html.lightMode .recoInfo,html.lightMode .recoInfo b{color:#191919!important}
+html.lightMode .sum label,html.lightMode .item small,html.lightMode .field label,html.lightMode .cashRow span,html.lightMode .date,html.lightMode .donutC small,html.lightMode .miniCard .sub{color:#68635b!important}
+html.lightMode .quote span{color:#222!important}
+html.lightMode .quick button,html.lightMode .monthAction{background:#fff!important;color:#191919!important;border-color:#d4cdbf!important}
+html.lightMode .premiumCatBtn,html.lightMode .paySourceSeg button,html.lightMode .seg button,html.lightMode .btn:not(.gold){color:#191919!important}
+html.lightMode .field input::placeholder,html.lightMode .field textarea::placeholder{color:#8a857d!important}
+html.lightMode .nav{background:rgba(255,255,255,.98)!important;border-top-color:#d8d3c8!important}
+html.lightMode .nav button{color:#666b72!important}html.lightMode .nav .active{color:#b88725!important}
