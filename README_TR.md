@@ -129,3 +129,11 @@ Yalnızca uygulama hissi güçlendirildi:
 - BU AY HARCANAN / BU AY ÖDENEN tutarlı butonları ve grafikli detay ekranları.
 - Sabit giderlerde ÖDEDİM / yeşil tik ve sürükle-bırak sıralama.
 - Profil fotoğrafında zoom/kadraj.
+
+
+## V19.1.1 Gider Kategorileri + Karanlık Mod
+- Normal gider kategorileri genişletildi.
+- Manav, Harçlık ve Fırın eklendi.
+- Diğer seçildiğinde özel kategori adı yazılabilir.
+- Uygulama Ayarları içine Karanlık Mod aç/kapat eklendi.
+- V19.1 kilit veri yapısı ve mevcut çalışan özellikler korunmuştur.
