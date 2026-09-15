@@ -767,3 +767,19 @@ html.lightMode .miniCard.silver,html.darkMode .miniCard.silver,.miniCard.silver{
 .luxuryReco .luxCardMini{width:100%;max-width:310px;margin:auto}.luxRecoInfo{display:grid!important;grid-template-columns:1fr 1fr!important;margin-top:10px;text-align:center}
 html.lightMode .luxCardFace:not(.silver),html.lightMode .luxCardMini:not(.silver){color:#fff!important}
 @media(max-width:390px){.luxCardFace{padding:16px 18px;border-radius:21px}.luxCardTop b{font-size:15px}.luxChip{margin-top:15px}.luxCardDates,.luxCardMoney{margin-top:8px}.luxCardFace .cardActions{margin-top:8px}.luxCardMini{width:138px}}
+
+/* V19.4.4 */
+.haneExactIcon.actionExact{width:46px!important;height:46px!important;margin-right:8px;vertical-align:middle}
+.quick .haneExactIcon.actionExact,.quickAction .haneExactIcon.actionExact{width:58px!important;height:58px!important;margin:0 auto 6px}
+.compactMainCard .luxCardFace{width:min(100%,390px)!important;aspect-ratio:1.62/1!important;padding:17px 19px!important;border-radius:21px!important}
+.compactMainCard .luxChip{margin-top:13px!important}.compactMainCard .luxCardDates,.compactMainCard .luxCardMoney{margin-top:7px!important}
+.compactMainCard .cardActions{margin-top:7px!important}
+.halfCardDeck{display:flex;align-items:flex-end;gap:0;overflow-x:auto;padding:8px 10px 18px 4px;scrollbar-width:none}
+.halfCardDeck::-webkit-scrollbar{display:none}
+.halfCard{position:relative;flex:0 0 94px;height:76px;margin-right:-20px;padding:0;border:0;background:transparent;overflow:hidden;border-radius:14px 14px 8px 8px;opacity:.62;transition:.18s}
+.halfCard .luxCardMini{position:absolute;left:0;top:0;width:150px!important;height:95px!important;transform:scale(.82);transform-origin:top left;border-radius:15px!important}
+.halfCard>span{position:absolute;left:8px;bottom:5px;z-index:5;font-size:8px;font-weight:900;color:#fff;text-shadow:0 1px 4px #000}
+.halfCard.selected{height:88px;opacity:1;z-index:5;transform:translateY(-4px)}
+.halfCard.selected .luxCardMini{outline:2px solid #d8ad4f;outline-offset:-2px}
+.flexFixedWrap{max-width:430px;margin:10px auto 4px;overflow:hidden}.flexFixedWrap>*{max-width:100%!important}
+.financeDots{display:flex;justify-content:center;gap:7px;margin:8px 0 16px}.financeDots button{width:7px;height:7px;border-radius:50%;border:0;background:#555}.financeDots button.active{background:#d8ad4f;transform:scale(1.35)}
