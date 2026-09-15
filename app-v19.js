@@ -39,7 +39,7 @@ function haneLogo(size=54,cls=''){
   return `<img class="haneLogoImg ${cls}" src="icons/hane-v5-emblem.jpg" width="${n}" alt="HANE">`;
 }
 function haneFullLogo(cls=''){
-  return `<img class="haneFullLogo ${cls}" src="icons/hane-v5-logo.jpg" alt="HANE">`;
+  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
   const p={
@@ -47,7 +47,8 @@ home:`<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10"/><path d="M10 20v
 transactions:`<path d="M6 5h12M6 10h12M6 15h8M6 20h10"/><circle cx="3" cy="5" r="1"/><circle cx="3" cy="10" r="1"/><circle cx="3" cy="15" r="1"/><circle cx="3" cy="20" r="1"/>`,
 fixed:`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>`,
 cards:`<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 9h18M7 15h5"/>`,
-settings:`<circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.3-6.5 7.5-6.5s6.7 2.3 7.5 6.5"/><path d="M17.5 5.5 19 4m-1.5 6.5L19 12"/>`,
+profile:`<circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.3-6.5 7.5-6.5s6.7 2.3 7.5 6.5"/>`,
+settings:`<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.1M12 19.1v2.1M2.8 12h2.1M19.1 12h2.1M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/><path d="M8.3 4.3 9 2.5h6l.7 1.8 1.7.7 1.8-.8 2.6 2.6-.8 1.8.7 1.7 1.8.7v3.7l-1.8.7-.7 1.7.8 1.8-2.6 2.6-1.8-.8-1.7.7-.7 1.8H9l-.7-1.8-1.7-.7-1.8.8-2.6-2.6.8-1.8-.7-1.7-1.8-.7V11l1.8-.7L3 8.6l-.8-1.8 2.6-2.6 1.8.8z"/>`,
 income:`<path d="M12 20V5m-5 5 5-5 5 5M5 20h14"/>`,
 expense:`<path d="M12 4v15m-5-5 5 5 5-5M5 4h14"/>`,
 report:`<path d="M5 20V10M10 20V5M15 20v-8M20 20V8M3 20h19"/>`,
@@ -155,7 +156,7 @@ function buildTopBar(){
   const t={transactions:'HAREKETLER',fixed:'GİDERLER',cards:'FİNANS',reports:'RAPORLAR',profile:'PROFİL',backup:'YEDEKLEME',settings:'AYARLAR',categories:'KATEGORİLER',theme:'TEMA STÜDYOSU',alerts:'HATIRLATMALAR',about:'HAKKINDA',monthSpent:'BU AY HARCANAN',monthPaid:'BU AY ÖDENEN'};
   return`<div class="top"><button class="back" data-action="back">‹</button><div class="brand">${t[current]||'HANE'}</div><div class="topRight"><button class="ib premiumTopIcon" data-tab="alerts">${premiumIcon('bell',28)}</button><button class="ib premiumTopIcon" data-tab="settings">${premiumIcon('settings',28)}</button></div></div>`
 }
-function nav(){const items=[['home','home','ANA EKRAN'],['transactions','transactions','HAREKETLER'],['fixed','fixed','GİDERLER'],['cards','cards','FİNANS'],['profile','settings','PROFİL']];return`<nav class="nav premiumNav">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon">${premiumIcon(x[1],34)}</span><span>${x[2]}</span></button>`).join('')}</nav>`}
+function nav(){const items=[['home','home','ANA EKRAN'],['transactions','transactions','HAREKETLER'],['fixed','fixed','GİDERLER'],['cards','cards','FİNANS'],['profile','profile','PROFİL']];return`<nav class="nav premiumNav">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon">${premiumIcon(x[1],34)}</span><span>${x[2]}</span></button>`).join('')}</nav>`}
 function menuBody(){const a=[['home','🏠','ANA EKRAN'],['transactions','📋','HAREKETLER'],['fixed','🧾','GİDERLER'],['cards','💳','KARTLAR / ESNEK HESAP'],['reports','📊','RAPORLAR'],['alerts','🔔','HATIRLATMALAR'],['settings','⚙️','AYARLAR'],['profile','👤','PROFİL']];return `<div class="menuList">${a.map(x=>`<button data-action="menuGo" data-go="${x[0]}"><i>${x[1]}</i><b>${x[2]}</b><span>›</span></button>`).join('')}</div>`}
 
 function monthLabel(m=state.selectedMonth){const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR')}

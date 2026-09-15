@@ -744,3 +744,7 @@ html.lightMode .miniCard.silver,html.darkMode .miniCard.silver,.miniCard.silver{
 .premiumNav button.active{color:var(--gold2);opacity:1}
 .premiumNav button.active .navIcon{border-color:rgba(216,173,79,.52);background:radial-gradient(circle at 50% 20%,rgba(240,205,119,.18),rgba(216,173,79,.05) 48%,rgba(0,0,0,.1));box-shadow:inset 0 1px rgba(255,240,190,.15),0 0 18px rgba(216,173,79,.12)}
 .premiumNav button.active:after{content:"";position:absolute;bottom:0;width:22px;height:2px;border-radius:99px;background:var(--gold2);box-shadow:0 0 8px rgba(216,173,79,.55)}
+/* V19.4.3 exact logo + distinct profile/settings */
+.exactV5Lock{width:min(250px,62vw)!important;aspect-ratio:1/1;margin:0 auto 6px!important}
+.exactV5Lock .haneFullLogo,.lockV5Logo{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:25%!important;display:block!important;box-shadow:0 16px 44px rgba(0,0,0,.55),0 0 0 1px rgba(216,173,79,.22)!important}
+@media(max-height:760px){.exactV5Lock{width:170px!important}}
