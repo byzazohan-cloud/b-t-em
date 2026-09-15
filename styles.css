@@ -873,3 +873,24 @@ html.lightMode .luxCardFace:not(.silver),html.lightMode .luxCardMini:not(.silver
 }
 /* No category editor panel is allowed to float into movement/history screens. */
 #cleanCategoryManager{display:none!important}
+
+/* V19.5.4 — direct quick-action binding and full category tile */
+.card.quick button .hardQuickIcon{
+ display:flex!important;width:66px!important;height:66px!important;
+ flex:0 0 66px!important;margin:0 auto 8px!important;
+ padding:0!important;border-radius:17px!important;overflow:hidden!important;
+ background:transparent!important;
+}
+.card.quick button .hardQuickIcon img{
+ position:static!important;display:block!important;width:100%!important;height:100%!important;
+ object-fit:cover!important;object-position:center!important;transform:none!important;
+}
+/* Category tiles: show the approved complete tile, no poster zoom */
+.cleanCatIcon,.forcedCategoryIcon .cleanCatIcon,
+.catManageRow .cleanCatIcon{
+ width:52px!important;height:52px!important;padding:0!important;overflow:hidden!important;border-radius:14px!important;
+}
+.cleanCatIcon>img,.forcedCategoryIcon .cleanCatIcon>img,.catManageRow .cleanCatIcon>img{
+ position:static!important;width:100%!important;height:100%!important;
+ object-fit:cover!important;object-position:center!important;transform:none!important;
+}
