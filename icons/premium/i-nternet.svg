@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#16181d"/><stop offset="1" stop-color="#050608"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff4bf"/><stop offset=".28" stop-color="#6ed4ff"/><stop offset=".62" stop-color="#f3c76a"/><stop offset="1" stop-color="#6ed4ff"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect x="4" y="4" width="92" height="92" rx="24" fill="url(#bg)" stroke="#8b6a2b" stroke-width="2"/>
+<circle cx="50" cy="50" r="34" fill="#6ed4ff" opacity=".10"/>
+<g fill="none" stroke="url(#metal)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+<path d="M26 50 50 30l24 20v28H58V60H42v18H26z"/><path d="M30 28c12-10 28-10 40 0M38 36c7-6 17-6 24 0"/><circle cx="50" cy="44" r="4"/>
+</g>
+<style>.cut{fill:none;stroke:#090a0d;stroke-width:4}</style>
+</svg>

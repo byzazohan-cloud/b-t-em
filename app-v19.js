@@ -27,6 +27,7 @@ const NORMAL_C=['Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim
 const FIXED_C=['Kira','Aidat','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu'];
 const I={Kira:'⌂',Aidat:'▦',Market:'🛒',Manav:'🍎',Fırın:'🥖',Harçlık:'₺',Yemek:'🍽',Restoran:'♨',Giyim:'♛',Akaryakıt:'⛽',Faturalar:'▣',İnternet:'◉',Elektrik:'⚡',Su:'💧',Doğalgaz:'🔥','Cep Telefonu':'▯',Ulaşım:'◆',Sağlık:'✚',Eğitim:'✎',Ev:'⌂',Temizlik:'✦',Çocuk:'★','Evcil Hayvan':'♣','Kişisel Bakım':'✧',Abonelik:'◎',Eğlence:'♪',Tatil:'☀',Hediye:'🎁',Sigorta:'◇',Vergi:'▤',Diğer:'●'};
 const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957',Fırın:'#e5a85b',Harçlık:'#d9b44a',Yemek:'#ff8b5c',Restoran:'#ff6f61',Giyim:'#c084fc',Akaryakıt:'#f59e0b',Faturalar:'#ff8c42','İnternet':'#6ed4ff',Elektrik:'#ffd84d',Su:'#3fa9ff','Doğalgaz':'#ff6b45','Cep Telefonu':'#b879ff','Ulaşım':'#4dd6c7','Sağlık':'#ff5f78',Eğitim:'#60a5fa',Ev:'#d8ad4f',Temizlik:'#22d3ee',Çocuk:'#fb7185','Evcil Hayvan':'#34d399','Kişisel Bakım':'#f472b6',Abonelik:'#818cf8',Eğlence:'#f06dad',Tatil:'#fbbf24',Hediye:'#e879f9',Sigorta:'#38bdf8',Vergi:'#94a3b8',Diğer:'#9ca3af'};
+const PREMIUM_ICON_FILES={"Kira": "kira", "Aidat": "aidat", "Market": "market", "Manav": "manav", "Fırın": "firin", "Harçlık": "harclik", "Yemek": "yemek", "Restoran": "restoran", "Giyim": "giyim", "Akaryakıt": "akaryakit", "Ulaşım": "ulasim", "Sağlık": "saglik", "Eğitim": "egitim", "Ev": "ev", "Temizlik": "temizlik", "Eğlence": "eglence", "Faturalar": "faturalar", "İnternet": "i-nternet", "Elektrik": "elektrik", "Su": "su", "Doğalgaz": "dogalgaz", "Cep Telefonu": "cep-telefonu", "Diğer": "diger"};
 function catPremiumIcon(cat){const k=CAT_COLORS[cat]?cat:'Diğer';return `<span class="catGem" style="--cat:${CAT_COLORS[k]||'#d8ad4f'}"><span>${I[k]||'●'}</span></span>`}
 function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id===x.cardId);return c?`KART · ${esc(c.bank)} ${esc(c.name)}`:'KART'}return 'NAKİT'}
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>d.toISOString().slice(0,10),ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
@@ -526,7 +527,13 @@ const oldNormalize=normalizeV19;
 normalizeV19=function(st){st=oldNormalize(st);st.customCategories=Array.isArray(st.customCategories)?st.customCategories:[];st.accounts=Array.isArray(st.accounts)?st.accounts:[];st.flexAccounts=Array.isArray(st.flexAccounts)?st.flexAccounts:[];return st};
 function normalCategories(){return [...new Set([...BASE_NORMAL.filter(x=>x!=='Diğer'),...(state?.customCategories||[]).map(x=>x.name),'Diğer'])]}
 function catIcon(cat){const c=(state?.customCategories||[]).find(x=>x.name===cat);return c?.icon||I[cat]||'●'}
-catPremiumIcon=function(cat){const c=(state?.customCategories||[]).find(x=>x.name===cat),color=c?.color||CAT_COLORS[cat]||'#d8ad4f';return `<span class="catGem" style="--cat:${color}"><span>${esc(c?.icon||I[cat]||'●')}</span></span>`};
+catPremiumIcon=function(cat){
+ const c=(state?.customCategories||[]).find(x=>x.name===cat);
+ const color=c?.color||CAT_COLORS[cat]||'#d8ad4f';
+ const f=PREMIUM_ICON_FILES[cat];
+ if(f) return `<span class="catGem premiumAsset" style="--cat:${color}"><img src="icons/premium/${f}.svg" alt="${esc(cat)}"></span>`;
+ return `<span class="catGem" style="--cat:${color}"><span>${esc(c?.icon||I[cat]||'●')}</span></span>`;
+};
 const oldExpenseForm=expenseForm;
 expenseForm=function(x={}){const old=[...NORMAL_C];NORMAL_C.splice(0,NORMAL_C.length,...normalCategories());const out=oldExpenseForm(x);NORMAL_C.splice(0,NORMAL_C.length,...old);return out};
 function sideMenu(){if(!sideMenuOpen)return'';const a=[['home','ANA EKRAN'],['transactions','HAREKETLER'],['fixed','GİDERLER'],['cards','KARTLAR / HESAPLAR'],['reports','RAPORLAR'],['alerts','HATIRLATMALAR'],['profile','AYARLAR']];return `<div class="sideShade" data-action="toggleMenu"></div><aside class="sideMenu"><div class="sideBrand">${haneLogo(42)}<b>HANE</b></div>${a.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}">${x[1]}<span>›</span></button>`).join('')}</aside>`}
