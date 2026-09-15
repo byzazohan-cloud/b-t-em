@@ -809,3 +809,15 @@ html.lightMode .luxCardFace:not(.silver),html.lightMode .luxCardMini:not(.silver
 .iconPicker button{border:1px solid rgba(255,255,255,.1);border-radius:15px;background:rgba(255,255,255,.035);padding:7px 3px;color:inherit}.iconPicker button.selected{outline:2px solid #d8ad4f;background:rgba(216,173,79,.12)}
 .iconPicker .haneExactIcon{width:50px!important;height:50px!important;margin:auto}.iconPicker small{display:block;font-size:8px;margin-top:4px}
 .btn.danger{border-color:#a53a3a!important;color:#ff8b8b!important}
+
+/* V19.5.1 CLEAN */
+.cleanCatIcon{width:50px!important;height:50px!important}
+.cleanQuickIcon{width:62px!important;height:62px!important;flex:0 0 62px!important;margin:0 auto 7px!important;border-radius:17px!important;overflow:hidden}
+.cleanQuickIcon img{width:100%;height:100%;object-fit:cover;display:block}
+.cleanCategoryManager{margin:18px 0 90px}
+.cleanCategoryManager .catManageRow{display:flex!important;width:100%;align-items:center;gap:12px}
+.cleanIconPicker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:330px;overflow:auto}
+.cleanIconPicker button{padding:7px 3px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:inherit}
+.cleanIconPicker button.selected{outline:2px solid #d8ad4f;background:rgba(216,173,79,.12)}
+.cleanIconPicker .haneExactIcon{width:48px!important;height:48px!important;margin:auto}
+.cleanIconPicker small{display:block;font-size:8px;margin-top:4px}
