@@ -143,3 +143,7 @@ Yalnızca uygulama hissi güçlendirildi:
 - Açık/koyu tema geçişinin kredi kartı stil ve renklerini ezmesi engellendi. Black Gold, Titanium, Blue, Burgundy, Green, Purple ve Silver kart stilleri korunur.
 - Ana ekrandaki önerilen kart da seçilen kart stilini korur.
 - CSS/JS sürüm sorguları 19.3.3'e yükseltildi; telefondaki eski stil önbelleğinin kullanılma ihtimali azaltıldı.
+
+
+## V19.4.4
+Onaylanan görseldeki renkli premium Hızlı İşlemler ve alt navigasyon ikonları uygulamaya entegre edildi.
