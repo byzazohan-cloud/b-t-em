@@ -783,3 +783,29 @@ html.lightMode .luxCardFace:not(.silver),html.lightMode .luxCardMini:not(.silver
 .halfCard.selected .luxCardMini{outline:2px solid #d8ad4f;outline-offset:-2px}
 .flexFixedWrap{max-width:430px;margin:10px auto 4px;overflow:hidden}.flexFixedWrap>*{max-width:100%!important}
 .financeDots{display:flex;justify-content:center;gap:7px;margin:8px 0 16px}.financeDots button{width:7px;height:7px;border-radius:50%;border:0;background:#555}.financeDots button.active{background:#d8ad4f;transform:scale(1.35)}
+
+/* V19.4.5 */
+.forcedCategoryIcon{display:inline-flex;vertical-align:middle;margin-right:10px;flex:0 0 auto}
+.forcedCategoryIcon .haneExactIcon{width:48px!important;height:48px!important}
+.txRow .haneExactIcon,.movement .haneExactIcon,.expenseRow .haneExactIcon,.historyRow .haneExactIcon{width:48px!important;height:48px!important}
+
+/* V19.4.6 — large approved premium quick-action icons */
+.haneQuickPremium{
+ display:flex!important;width:64px!important;height:64px!important;
+ margin:0 auto 8px!important;border-radius:17px!important;
+ overflow:hidden!important;flex:0 0 64px!important;
+ box-shadow:0 10px 24px rgba(0,0,0,.34)!important;
+}
+.haneQuickPremium img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important}
+.quick button,.quickAction,.quickActions button,.quickGrid button{align-items:center}
+@media(max-width:390px){.haneQuickPremium{width:58px!important;height:58px!important;flex-basis:58px!important}}
+
+/* V19.4.7 category manager */
+.categoryManager{margin-top:18px}
+.catManageList{display:grid;gap:9px}
+.catManageRow{width:100%;display:flex;align-items:center;gap:12px;padding:10px;border:1px solid rgba(216,173,79,.18);border-radius:17px;background:rgba(255,255,255,.035);color:inherit;text-align:left}
+.catManageRow .haneExactIcon{width:52px!important;height:52px!important}.catManageRow span{flex:1}.catManageRow b{display:block}.catManageRow small{display:block;opacity:.58;margin-top:3px}.catManageRow em{font-style:normal;font-size:25px;color:#d8ad4f}
+.iconPicker{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;max-height:330px;overflow:auto;margin:8px 0 16px}
+.iconPicker button{border:1px solid rgba(255,255,255,.1);border-radius:15px;background:rgba(255,255,255,.035);padding:7px 3px;color:inherit}.iconPicker button.selected{outline:2px solid #d8ad4f;background:rgba(216,173,79,.12)}
+.iconPicker .haneExactIcon{width:50px!important;height:50px!important;margin:auto}.iconPicker small{display:block;font-size:8px;margin-top:4px}
+.btn.danger{border-color:#a53a3a!important;color:#ff8b8b!important}
