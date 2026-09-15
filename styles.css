@@ -1,0 +1,732 @@
+:root{
+  --bg:#000000;--panel:#090a0c;--panel2:#0d0f12;--line:#242424;
+  --gold:#d5ad55;--gold2:#f1cf7a;--text:#f7f7f7;--muted:#92979e;
+  --green:#19d77d;--red:#ff4657;--blue:#278ff5;--gi:#278ff5;--ge:#ff4657;--gr:#19d77d;
+  --safeT:env(safe-area-inset-top);--safeB:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{display:flex;justify-content:center;overflow-x:hidden}button,input,select,textarea{font:inherit}button{cursor:pointer}
+#app{width:100%;display:flex;justify-content:center}
+.phone{width:100%;max-width:430px;min-height:100dvh;background:#000;padding-bottom:calc(76px + var(--safeB));position:relative;overflow-x:hidden}
+.top{position:sticky;top:0;z-index:20;padding:calc(11px + var(--safeT)) 16px 8px;display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,#000 72%,rgba(0,0,0,.90) 88%,rgba(0,0,0,.72));backdrop-filter:blur(16px)}
+.ava{width:42px;height:42px;border-radius:50%;border:1px solid rgba(213,173,85,.9);background:linear-gradient(145deg,#f5d47a,#9b7024);display:grid;place-items:center;color:#111;font-weight:900;overflow:hidden;box-shadow:0 0 0 2px rgba(213,173,85,.05)}
+.ava img{width:100%;height:100%;object-fit:cover}.brand{flex:1;text-align:center;color:var(--gold2);font-weight:900;letter-spacing:.15em;font-size:16px}
+.ib,.back{width:40px;height:40px;border:1px solid #272727;border-radius:14px;background:#070809;color:var(--gold2);font-size:17px}
+.content{padding:8px 14px 30px}.card{background:linear-gradient(180deg,#0a0b0d,#07080a);border:1px solid #292929;border-radius:19px;box-shadow:0 14px 34px rgba(0,0,0,.32)}
+.goldline{border-color:rgba(213,173,85,.58)}
+.greet{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:1px}.greet small{color:var(--gold2);font-size:11px}.greet h2{margin:2px 0 3px;font-size:21px;line-height:1.05}.date{font-size:11px;color:#aeb2b7}
+.quote{margin:10px 0 12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(213,173,85,.48);background:linear-gradient(145deg,#0d0c08,#070707);box-shadow:inset 0 0 24px rgba(213,173,85,.025)}
+.quote b{display:block;color:var(--gold2);font-size:11px;margin-bottom:3px}.quote span{font-size:12px;color:#e2e2e2;line-height:1.35}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.sum{padding:11px 10px;border:1px solid #2a2a2a;border-radius:15px;background:linear-gradient(180deg,#0c0e11,#090a0c);min-width:0}.sum label{font-size:10px;color:#a7abb0}.sum strong{display:block;margin-top:5px;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em}
+.donutBox{margin-top:11px;padding:14px 12px;display:grid;grid-template-columns:1.02fr .98fr;gap:14px;align-items:center;border-color:#2b2b2b}.donut{width:174px;height:174px;border-radius:50%;position:relative;display:grid;place-items:center;background:conic-gradient(var(--gi) 0 var(--p1),var(--ge) var(--p1) var(--p2),var(--gr) var(--p2) 100%);filter:drop-shadow(0 8px 20px rgba(0,0,0,.28))}.donut:after{content:"";position:absolute;width:118px;height:118px;border-radius:50%;background:#030303;box-shadow:inset 0 0 0 1px #171717}.donutC{position:relative;z-index:2;text-align:center}.donutC small{display:block;color:#b0b0b0;font-size:11px}.donutC b{font-size:22px;letter-spacing:-.03em}.legend{min-width:0}.legend div{display:grid;grid-template-columns:9px 1fr auto;gap:7px;align-items:center;margin:10px 0;font-size:11px}.legend b{white-space:nowrap}.dot{width:8px;height:8px;border-radius:50%}
+.section{display:flex;justify-content:space-between;align-items:center;margin:17px 1px 8px}.section b{font-size:15px}.section span{font-size:11px;color:var(--gold2)}
+.reco{padding:14px;border:1px solid rgba(213,173,85,.72);border-radius:19px;background:linear-gradient(145deg,#070707,#050505);box-shadow:0 0 0 1px rgba(213,173,85,.035),0 14px 34px rgba(0,0,0,.38)}
+.recoHead{display:flex;justify-content:space-between;align-items:center;color:var(--gold2);font-size:13px;margin-bottom:11px;font-weight:700}.recoGrid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px}.miniCard{padding:14px;border:1px solid rgba(213,173,85,.78);border-radius:15px;background:linear-gradient(145deg,#050505 15%,#151107 100%);min-height:132px;position:relative;overflow:hidden;box-shadow:inset 0 0 28px rgba(213,173,85,.035)}
+.miniCard:after{content:"";position:absolute;right:-38px;bottom:-55px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(213,173,85,.17),transparent 67%)}.miniCard .bank{font-weight:800;font-size:13px}.miniCard .sub{font-size:10px;color:#bcbcbc;margin-top:2px}.miniCard .num{letter-spacing:2.2px;margin-top:29px;font-size:12px;position:relative;z-index:1}.recoInfo{font-size:11px;color:#d7d7d7;display:flex;flex-direction:column;justify-content:center;gap:10px}.recoInfo b{color:var(--gold2);font-size:16px;line-height:1.1}.btn{border:1px solid #343434;background:#0a0c0f;color:#fff;border-radius:13px;padding:12px 14px;font-weight:800}.btn.gold{border:0;background:linear-gradient(145deg,#f2d17d,#be8f34);color:#12100b;box-shadow:0 6px 14px rgba(213,173,85,.15)}
+.quick{padding:11px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.quick button{border:1px solid #2c2c2c;background:linear-gradient(180deg,#0d0f12,#08090b);color:#fff;border-radius:14px;padding:11px 5px;font-size:10px;min-height:76px}.quick i{display:block;font-style:normal;font-size:21px;margin-bottom:6px}.quick button:nth-child(1) i{color:var(--green)}.quick button:nth-child(2) i{color:var(--red)}.quick button:nth-child(3) i{color:var(--gold2)}
+.nav{position:fixed;bottom:0;width:100%;max-width:430px;height:calc(70px + var(--safeB));padding:8px 5px var(--safeB);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(0,0,0,.98);border-top:1px solid #242424;z-index:30;box-shadow:0 -10px 24px rgba(0,0,0,.26)}.nav button{border:0;background:none;color:#858b92;font-size:9px;display:flex;flex-direction:column;align-items:center;gap:4px}.nav button span:first-child{font-size:20px;line-height:1}.nav .active{color:var(--gold2)}
+.list{display:flex;flex-direction:column;gap:8px}.item{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:11px;border:1px solid #292929;border-radius:14px;background:linear-gradient(180deg,#0b0d10,#08090b)}.ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#141414}.item b{display:block;font-size:13px}.item small{font-size:10px;color:#999}.right{text-align:right}.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;border:1px solid #252525;border-radius:12px;background:#0a0c0f}.seg button{border:0;background:none;color:#aaa;padding:8px 3px;border-radius:9px;font-size:11px}.seg .active{background:var(--gold2);color:#111;font-weight:800}
+.form{display:flex;flex-direction:column;gap:11px}.field label{display:block;font-size:11px;color:#bbb;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #2d2d2d;background:#0b0d10;color:#fff;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(213,173,85,.65);box-shadow:0 0 0 2px rgba(213,173,85,.07)}.row2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:60;display:flex;align-items:flex-end;justify-content:center}.sheet{width:100%;max-width:430px;max-height:92dvh;overflow:auto;background:#050505;border:1px solid #2c2c2c;border-radius:23px 23px 0 0;padding:18px 14px calc(22px + var(--safeB));box-shadow:0 -20px 60px rgba(0,0,0,.65)}.sheetHead{display:flex;gap:10px;align-items:center;margin-bottom:12px}.sheetHead b{flex:1}.close{width:34px;height:34px;border-radius:50%;border:1px solid #333;background:#0a0a0a;color:#fff}
+.credit{padding:16px;min-height:184px;margin-bottom:12px;position:relative;border-radius:19px;overflow:hidden;box-shadow:0 16px 34px rgba(0,0,0,.38)}.credit.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%);border-color:rgba(213,173,85,.52)}.credit.green{background:linear-gradient(145deg,#03140d,#0b2a1e)}.credit.blue{background:linear-gradient(145deg,#04111e,#0a3d67)}.credit .network{position:absolute;right:15px;top:15px;font-weight:900}.credit .digits{letter-spacing:2px;margin:25px 0 17px}.credit .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.credit small{display:block;color:#aaa;font-size:10px}.credit b{font-size:13px}.profile{padding:19px;text-align:center}.profile .ava{width:82px;height:82px;margin:auto}.setting{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:13px;border-bottom:1px solid #252525;font-size:13px}.notice{padding:12px 13px;border:1px solid #2b2b2b;border-radius:13px;background:#0a0c0f;color:#aaa;font-size:11px;line-height:1.5}
+.lock,.setup{width:100%;max-width:430px;min-height:100dvh;background:#000;padding:calc(28px + var(--safeT)) 20px calc(28px + var(--safeB));display:flex;flex-direction:column;align-items:center;justify-content:center}.logo{font-size:67px;color:var(--gold2);filter:drop-shadow(0 8px 16px rgba(213,173,85,.12))}.lock h1,.setup h1{color:var(--gold2);letter-spacing:.18em}.pinDots{display:flex;gap:14px;margin:18px 0}.pinDots i{width:11px;height:11px;border-radius:50%;background:#ddd}.pinDots .on{background:var(--gold2)}.keypad{display:grid;grid-template-columns:repeat(3,68px);gap:11px}.keypad button{width:68px;height:58px;border-radius:50%;border:1px solid #383838;background:#0a0c0f;color:#fff;font-size:20px}.keypad .zero{grid-column:2}.keypad .del{grid-column:3}.themeGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.themeCard{padding:12px;border:1px solid #2c2c2c;border-radius:14px;background:#0b0d10}.swatch{height:58px;border-radius:10px;margin-bottom:8px}.preview{padding:12px;border:1px solid rgba(213,173,85,.45);border-radius:14px;background:#050505}.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + var(--safeB));z-index:100;background:#111;border:1px solid #333;color:#fff;padding:10px 14px;border-radius:12px;font-size:11px}
+@media(min-width:650px){.phone,.lock,.setup{box-shadow:0 0 0 1px #161616,0 0 70px rgba(0,0,0,.8)}}
+@media(max-width:390px){.content{padding-left:12px;padding-right:12px}.donut{width:158px;height:158px}.donut:after{width:107px;height:107px}.donutC b{font-size:20px}.recoGrid{gap:9px}.miniCard{padding:12px}.quick{gap:6px}.quick button{font-size:9px}}
+
+/* V8: Bu Ay Harcanan / Ödenen + düşük güç */
+.cashCard{padding:13px 14px}
+.cashRow small{display:block;color:var(--gold2);font-size:10px;font-weight:800;letter-spacing:.04em}
+.cashRow>b,.cashRow div>b{display:block;font-size:21px;margin:5px 0 2px}
+.cashRow span{font-size:10px;color:var(--muted)}
+.cashDivider{height:1px;background:#232323;margin:12px 0}
+.cashSplit{display:grid;gap:4px;margin-top:8px}
+.cashSplit span{display:flex;justify-content:space-between;gap:10px}
+.cashSplit b{color:#ddd}
+.cardActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.cashDetail .notice{line-height:1.55}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* V9: Bu Ay kartı daha kompakt */
+.cashCard{padding:9px 11px!important;border-radius:14px}
+.cashRow small{font-size:9px!important;letter-spacing:.03em}
+.cashRow>b,.cashRow div>b{font-size:17px!important;margin:3px 0 1px!important}
+.cashRow span{font-size:9px!important;line-height:1.25}
+.cashDivider{margin:8px 0!important}
+.cashSplit{gap:2px!important;margin-top:5px!important}
+.cashSplit span{font-size:9px!important}
+.cashSplit b{font-size:9px!important}
+
+/* V10 */
+.phone,.sheet,.lock,.setup{text-transform:uppercase}
+.field input[type="text"],.field textarea,.field select{text-transform:uppercase}
+.credit{min-height:158px!important;padding:12px 13px!important;border-radius:17px!important}
+.credit .digits{margin:16px 0 12px!important;font-size:12px!important}
+.credit .grid{gap:5px!important}
+.credit small{font-size:9px!important}.credit b{font-size:12px!important}
+.cardActions{gap:6px!important;margin-top:9px!important}
+.cardActions .btn{padding:7px 6px!important;border-radius:10px!important;font-size:9px!important;min-height:31px!important}
+.setting[data-action="openTheme"],.seg button{cursor:pointer}
+
+/* V11 */
+.miniAddBtn{
+  border:1px solid rgba(216,173,79,.55);
+  background:#0b0b0b;
+  color:var(--gold2);
+  padding:7px 10px;
+  border-radius:10px;
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+/* V12 — Mantık ve profil düzenlemeleri; ana stil korunur */
+.profileAvatarLarge{
+  width:98px!important;
+  height:98px!important;
+  margin:0 auto!important;
+  font-size:30px!important;
+}
+.profileEditBtn{
+  margin-top:12px!important;
+  padding:8px 12px!important;
+  font-size:9px!important;
+  border-color:rgba(216,173,79,.45)!important;
+  color:var(--gold2)!important;
+}
+#expenseType{
+  border-color:rgba(216,173,79,.50)!important;
+}
+
+/* V13 — Ek kart stilleri, grafik legend */
+.credit.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)}
+.credit.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)}
+.credit.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
+.credit.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
+.credit.silver small,.credit.silver .digits{color:#222!important}
+.chartLegend{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-top:10px;
+  font-size:9px;
+  color:#aaa;
+  flex-wrap:wrap;
+}
+.chartLegend span{display:flex;align-items:center;gap:5px}
+.chartLegend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.section [data-action="goCards"]{cursor:pointer}
+
+
+/* V14 — SADECE ANA SAYFA ÜST ALANI */
+.homeTop{
+  grid-template-columns:42px 1fr 42px!important;
+}
+.topSpacer{
+  width:42px;
+  height:42px;
+}
+.homeHero{
+  display:grid;
+  grid-template-columns:78px 1fr 38px;
+  gap:11px;
+  align-items:center;
+  margin:2px 0 10px;
+}
+.homeHeroAvatar{
+  width:78px!important;
+  height:78px!important;
+  font-size:23px!important;
+  margin:0!important;
+  flex:none;
+}
+.homeHeroText{
+  min-width:0;
+  align-self:center;
+}
+.homeHeroText small{
+  display:block;
+  color:var(--gold2);
+  font-size:9px;
+  font-weight:800;
+  line-height:1.1;
+  margin-bottom:2px;
+}
+.homeHeroText h2{
+  margin:0 0 4px;
+  font-size:19px;
+  line-height:1.05;
+  color:#fff;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.homeHeroText .date{
+  font-size:9px;
+  line-height:1.25;
+  color:#aeb2b7;
+}
+.homeHeroBell{
+  align-self:start;
+}
+@media(max-width:360px){
+  .homeHero{
+    grid-template-columns:68px 1fr 36px;
+    gap:9px;
+  }
+  .homeHeroAvatar{
+    width:68px!important;
+    height:68px!important;
+  }
+  .homeHeroText h2{font-size:17px}
+  .homeHeroText .date{font-size:8px}
+}
+
+/* V15 — Kartlar ve hızlı işlemler daha kompakt */
+
+/* Kartlar sekmesindeki bütün kredi kartları */
+.credit{
+  min-height:138px!important;
+  padding:10px 11px!important;
+  border-radius:15px!important;
+  margin-bottom:9px!important;
+}
+.credit .network{font-size:10px!important}
+.credit> b{font-size:11px!important}
+.credit> small{font-size:8px!important}
+.credit .digits{
+  margin:11px 0 9px!important;
+  font-size:11px!important;
+  letter-spacing:1.2px!important;
+}
+.credit .grid{
+  gap:4px!important;
+}
+.credit .grid small{font-size:8px!important}
+.credit .grid b{font-size:10px!important}
+.cardActions{
+  gap:5px!important;
+  margin-top:7px!important;
+}
+.cardActions .btn{
+  min-height:27px!important;
+  padding:5px 5px!important;
+  border-radius:9px!important;
+  font-size:8px!important;
+}
+
+/* Ana ekrandaki önerilen kart daha küçük */
+.miniCredit,.recommendCard,.credit.mini{
+  min-height:112px!important;
+  padding:9px 10px!important;
+  border-radius:14px!important;
+}
+.miniCredit .digits,.recommendCard .digits,.credit.mini .digits{
+  margin:8px 0 7px!important;
+  font-size:10px!important;
+}
+
+/* Önerilen kart da Kartlarım'da seçilen stil ailesini kullanır */
+.miniCredit.titanium,.recommendCard.titanium,.credit.mini.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)}
+.miniCredit.burgundy,.recommendCard.burgundy,.credit.mini.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)}
+.miniCredit.purple,.recommendCard.purple,.credit.mini.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
+.miniCredit.silver,.recommendCard.silver,.credit.mini.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
+
+/* Hızlı işlemler: kutular ve ikonlar biraz küçüldü */
+.quick,.quickActions{
+  gap:6px!important;
+}
+.quick button,.quickActions button,.quick .q,.quickActions .q{
+  min-height:54px!important;
+  padding:7px 5px!important;
+  border-radius:11px!important;
+  font-size:8px!important;
+}
+.quick button span,.quickActions button span,.quick .q span,.quickActions .q span{
+  font-size:16px!important;
+  margin-bottom:3px!important;
+}
+
+/* V16 — GERÇEK KULLANILAN SINIFLAR ÜZERİNDEN KOMPAKT */
+
+/* Ana ekrandaki gerçek önerilen kart */
+.miniCard{
+  min-height:82px!important;
+  padding:8px 9px!important;
+  border-radius:12px!important;
+}
+.miniCard .bank{
+  font-size:10px!important;
+}
+.miniCard .sub{
+  font-size:8px!important;
+}
+.miniCard .num{
+  margin-top:12px!important;
+  font-size:9px!important;
+  letter-spacing:1px!important;
+}
+.reco{
+  padding:10px!important;
+  border-radius:15px!important;
+}
+.recoHead{
+  margin-bottom:7px!important;
+  font-size:10px!important;
+}
+.recoGrid{
+  gap:8px!important;
+}
+.recoInfo{
+  gap:5px!important;
+  font-size:8px!important;
+}
+.recoInfo b{
+  font-size:10px!important;
+}
+.recoInfo .btn,
+.recoInfo button{
+  min-height:28px!important;
+  padding:6px 7px!important;
+  font-size:8px!important;
+  border-radius:9px!important;
+}
+
+/* Kartlar sekmesindeki gerçek kartlar */
+.credit{
+  min-height:120px!important;
+  padding:9px 10px!important;
+  border-radius:14px!important;
+  margin-bottom:8px!important;
+}
+.credit .network{
+  top:10px!important;
+  right:11px!important;
+  font-size:9px!important;
+}
+.credit > b{
+  font-size:10px!important;
+}
+.credit > small{
+  font-size:7px!important;
+}
+.credit .digits{
+  margin:9px 0 7px!important;
+  font-size:10px!important;
+  letter-spacing:1px!important;
+}
+.credit .grid{
+  gap:3px!important;
+}
+.credit .grid small{
+  font-size:7px!important;
+}
+.credit .grid b{
+  font-size:9px!important;
+}
+.cardActions{
+  margin-top:6px!important;
+  gap:5px!important;
+}
+.cardActions .btn{
+  min-height:25px!important;
+  padding:4px 5px!important;
+  font-size:7px!important;
+  border-radius:8px!important;
+}
+
+/* Gerçek hızlı işlem butonları */
+.quick{
+  padding:8px!important;
+  gap:5px!important;
+}
+.quick button{
+  min-height:48px!important;
+  padding:6px 4px!important;
+  border-radius:10px!important;
+  font-size:8px!important;
+}
+.quick i{
+  font-size:16px!important;
+  margin-bottom:3px!important;
+}
+
+/* Önerilen kart gerçek kart stilini miras alır */
+.miniCard.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%);border-color:rgba(213,173,85,.52)}
+.miniCard.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)}
+.miniCard.blue{background:linear-gradient(145deg,#04111e,#0a3d67)}
+.miniCard.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)}
+.miniCard.green{background:linear-gradient(145deg,#03140d,#0b2a1e)}
+.miniCard.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)}
+.miniCard.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555);color:#111}
+.miniCard.silver .sub,.miniCard.silver .num{color:#222!important}
+
+
+/* =========================================================
+   V17 — NATIVE iPHONE FEEL
+   V16 TASARIM / RENK / YERLEŞİM KİLİTLİDİR.
+   Yalnızca davranış, safe-area, dokunma ve yüzey hissi.
+   ========================================================= */
+
+:root{
+  --vh:1vh;
+  --ios-radius:14px;
+  --ios-blur:18px;
+}
+
+/* Safari/web-page hissini azalt */
+html{
+  background:#000;
+  overscroll-behavior:none;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  touch-action:manipulation;
+  scrollbar-width:none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.phone::-webkit-scrollbar,
+.sheet::-webkit-scrollbar{
+  display:none;
+  width:0;
+  height:0;
+}
+body{
+  width:100%;
+  min-height:100dvh;
+  min-height:calc(var(--vh,1vh) * 100);
+  overflow-x:hidden;
+  overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-user-select:none;
+  user-select:none;
+}
+input,textarea,select{
+  -webkit-user-select:text;
+  user-select:text;
+}
+
+/* Ana ekrana eklendiğinde tam uygulama gövdesi */
+.is-standalone body{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+}
+.is-standalone #app{
+  height:100dvh;
+  height:calc(var(--vh,1vh) * 100);
+  overflow:hidden;
+}
+.is-standalone .phone{
+  height:100dvh;
+  height:calc(var(--vh,1vh) * 100);
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+}
+
+/* Tarayıcıda da telefon alanı doğal kalsın */
+.phone{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  scroll-behavior:smooth;
+}
+
+/* Üst bar: iOS yüzey hissi — ölçü ve yerleşim korunur */
+.top{
+  background:rgba(0,0,0,.90)!important;
+  -webkit-backdrop-filter:blur(var(--ios-blur)) saturate(135%);
+  backdrop-filter:blur(var(--ios-blur)) saturate(135%);
+  border-bottom:1px solid rgba(255,255,255,.035);
+  transform:translateZ(0);
+}
+
+/* Alt tab bar: sabit native tab bar hissi, V16 ölçüleri korunur */
+.nav{
+  background:rgba(0,0,0,.88)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  backdrop-filter:blur(22px) saturate(150%);
+  border-top:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 -7px 24px rgba(0,0,0,.38)!important;
+  transform:translateZ(0);
+}
+.nav button{
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+  transition:opacity .12s ease, transform .12s ease;
+}
+.nav button:active{
+  opacity:.62;
+  transform:scale(.96);
+}
+
+/* Dokunma hissi: tasarım değiştirmeden basış tepkisi */
+button,
+.setting,
+.item,
+.themeCard,
+.miniCard,
+.credit,
+.section [data-action]{
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+}
+button{
+  transition:transform .10s ease, opacity .10s ease, filter .10s ease;
+}
+button:active{
+  transform:scale(.975);
+  opacity:.82;
+}
+.ib:active,.back:active,.close:active{
+  transform:scale(.93);
+}
+
+/* Kartlara çok hafif fiziksel yüzey hissi; renk/ölçü değişmez */
+.card,
+.reco,
+.credit,
+.miniCard,
+.item,
+.sum{
+  transform:translateZ(0);
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+}
+
+/* Modal alt-sheet daha native açılır; yerleşim aynı */
+.modal{
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+  overscroll-behavior:contain;
+}
+.sheet{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  border-bottom:0!important;
+  box-shadow:0 -18px 50px rgba(0,0,0,.72)!important;
+}
+
+/* Form kontrolleri: iOS'ta web-form hissini azalt */
+.field input,
+.field select,
+.field textarea{
+  -webkit-appearance:none;
+  appearance:none;
+  min-height:44px;
+}
+.field input[type="date"],
+.field input[type="color"]{
+  -webkit-appearance:auto;
+  appearance:auto;
+}
+.field textarea{
+  resize:none;
+}
+
+/* Fokus, klavye açıldığında daha doğal */
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  outline:none!important;
+}
+
+/* iOS'ta yanlışlıkla zoom/selection menüsü hissini azalt */
+a,button,.setting,.item,.section span{
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Uygulama içinde scroll bounce bölgesini temiz tut */
+.content{
+  padding-bottom:34px;
+}
+
+/* Ana ekrana eklenmiş modda masaüstü telefon çerçevesi hissi olmasın */
+@media (display-mode: standalone){
+  body{
+    display:block!important;
+  }
+  #app{
+    display:block!important;
+  }
+  .phone,.lock,.setup{
+    max-width:none!important;
+    width:100%!important;
+    box-shadow:none!important;
+  }
+  .nav,.sheet{
+    max-width:none!important;
+  }
+}
+
+/* Büyük ekranda mevcut V16 masaüstü önizlemesi korunur */
+@media (min-width:650px) and (display-mode: browser){
+  .phone,.lock,.setup{
+    border-left:1px solid #101010;
+    border-right:1px solid #101010;
+  }
+}
+
+/* Kullanıcı azaltılmış hareket seçmişse native geri bildirim dahi minimal */
+@media (prefers-reduced-motion: reduce){
+  button,.nav button{
+    transition:none!important;
+  }
+  button:active,.nav button:active{
+    transform:none!important;
+  }
+}
+
+/* V19 */
+.haneLogo{display:block;color:var(--gold2);filter:drop-shadow(0 5px 14px rgba(213,173,85,.18))}.brandLogo{display:flex!important;align-items:center;justify-content:center;gap:7px}.brandLogo span{letter-spacing:.15em}.logoSvgWrap,.lockLogoWrap{color:var(--gold2);display:grid;place-items:center}
+.monthActionGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.monthAction{position:relative;min-height:100px;border:1px solid #2c2c2c;border-radius:16px;background:linear-gradient(160deg,#0e1013,#070809);color:#fff;padding:12px;text-align:left;overflow:hidden}.monthAction i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(216,173,79,.62);color:var(--gold2);font-style:normal;font-size:22px;background:linear-gradient(145deg,#17140d,#080808);margin-bottom:8px}.monthAction span{display:block;font-size:10px;font-weight:900;color:#fff;letter-spacing:.04em}.monthAction b{display:block;font-size:19px;color:#fff;margin-top:5px}.monthAction em{position:absolute;right:10px;top:10px;color:var(--gold2);font-style:normal;font-size:22px}.paidAction i{color:var(--green);border-color:rgba(25,215,125,.42)}
+.detailHero{padding:14px;display:grid;grid-template-columns:1fr 126px;gap:12px;align-items:center}.detailHero small{font-size:9px;color:var(--gold2);font-weight:900}.detailHero h2{margin:5px 0 3px;font-size:26px;color:#fff}.detailHero span{font-size:8px;color:#aeb2b7;font-weight:800}.detailDonut{width:122px;height:122px;border-radius:50%;display:grid;place-items:center;position:relative}.detailDonut:after{content:"";position:absolute;inset:19px;background:#050505;border-radius:50%;box-shadow:inset 0 0 0 1px #222}.detailDonut>div{position:relative;z-index:2;text-align:center}.detailDonut b{display:block;font-size:18px;color:#fff}.detailDonut small{font-size:8px;color:#aaa}.detailMiniGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.detailMini{border:1px solid #292929;border-radius:14px;background:#090a0c;padding:11px}.detailMini i{font-style:normal;color:var(--gold2);font-size:22px;display:block;margin-bottom:5px}.detailMini span{display:block;font-size:8px;color:#fff;font-weight:800}.detailMini b{display:block;margin-top:4px;font-size:14px;color:#fff}.detailCategoryList{display:flex;flex-direction:column;gap:8px}.detailCat{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid #292929;border-radius:14px;background:#090a0c}.detailCatIcon,.premiumIco{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#17140d,#0a0a0a);border:1px solid rgba(216,173,79,.35);color:var(--gold2);font-size:20px}.detailCatMid>div:first-child{display:flex;justify-content:space-between;gap:8px}.detailCatMid b{font-size:10px;color:#fff}.detailCatMid span{font-size:9px;color:#aaa}.detailBar{height:5px;background:#1b1b1b;border-radius:99px;overflow:hidden;margin-top:7px}.detailBar i{display:block;height:100%;border-radius:99px}.detailCat strong{font-size:11px;color:#fff;white-space:nowrap}
+.fixedList .fixedItem{grid-template-columns:28px 40px 1fr auto!important}.dragHandle{border:0;background:transparent;color:var(--gold2);font-size:18px;padding:10px 2px;touch-action:none}.fixedItem.dragging{opacity:.45}.fixedItem.dragOver{border-color:var(--gold2)}.fixedItem.isPaid{border-color:rgba(25,215,125,.30)}.fixedRight{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px}.paidToggle{border:1px solid rgba(216,173,79,.45);background:#0a0a0a;color:var(--gold2);border-radius:9px;padding:5px 7px;font-size:8px;font-weight:900}.paidToggle.on{border-color:rgba(25,215,125,.55);color:var(--green);background:rgba(25,215,125,.06)}.sortHint{margin-bottom:8px!important;padding:8px 10px!important;font-size:9px!important}
+.premiumHaneLock{justify-content:flex-start!important;padding-top:calc(22px + var(--safeT))!important;overflow:auto}.lockBrandName{color:var(--gold2);font-weight:900;letter-spacing:.22em;font-size:18px;margin-top:2px}.lockWelcome{color:#fff;font-size:9px;letter-spacing:.10em;margin-top:6px}.lockAvatar{width:72px!important;height:72px!important;margin-top:12px!important;font-size:24px!important}.premiumHaneLock h2{font-size:14px;margin:7px 0 0;color:#fff}.premiumKeypad{grid-template-columns:repeat(3,64px)!important;gap:9px!important}.premiumKeypad button{width:64px!important;height:54px!important;border-color:rgba(216,173,79,.42)!important;background:linear-gradient(145deg,#111,#070707)!important;font-size:20px!important}.blankKey{opacity:.28}.lockOk{width:min(270px,78vw);height:38px;margin-top:12px;border:0;border-radius:11px;background:linear-gradient(145deg,#f2d17d,#be8f34);color:#111;font-size:11px;font-weight:900}.premiumHaneLock .pinDots{margin:13px 0!important}.premiumHaneLock .pinDots i{background:#3d3d3d}.premiumHaneLock .pinDots .on{background:var(--gold2)}
+.cropOverlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:140;display:flex;align-items:flex-end;justify-content:center}.cropSheet{width:100%;max-width:430px;background:#050505;border:1px solid #2d2d2d;border-radius:22px 22px 0 0;padding:14px 14px calc(20px + var(--safeB))}.cropHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.cropHead b{font-size:11px;color:#fff}.cropHead button{border:0;background:none;color:#fff;font-size:24px}.cropStage{position:relative;width:min(320px,88vw);aspect-ratio:1;margin:0 auto;border-radius:14px;overflow:hidden;background:#000;touch-action:none}#cropCanvas{width:100%;height:100%;display:block;touch-action:none}.cropGuide{position:absolute;inset:10%;border:1px solid rgba(216,173,79,.6);border-radius:50%;pointer-events:none}.cropZoomLabel{display:block;font-size:8px;color:#fff;font-weight:900;margin:10px 0 5px}.cropSheet input[type="range"]{width:100%;accent-color:var(--gold2)}.cropActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+@media(max-height:700px){.premiumHaneLock{padding-top:calc(12px + var(--safeT))!important}.lockAvatar{width:58px!important;height:58px!important;margin-top:7px!important}.premiumKeypad{grid-template-columns:repeat(3,58px)!important;gap:7px!important}.premiumKeypad button{width:58px!important;height:48px!important}.lockOk{height:34px;margin-top:8px}}
+
+/* V19.1 — V5 logo + premium icon set */
+.haneLogoImg{object-fit:cover;object-position:center;background:#050505;border-radius:50%;filter:drop-shadow(0 4px 10px rgba(225,184,90,.22))}
+.haneFullLogo{display:block;max-width:100%;height:auto;object-fit:contain}.exactV5Lock{width:190px;max-width:58vw;margin:0 auto 3px}.lockV5Logo,.aboutV5{border-radius:18px}.aboutV5Logo{width:220px;max-width:75vw;margin:0 auto 10px}
+.premiumSvg{stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.premiumNav .navIcon{width:42px;height:38px;border-radius:13px;display:grid;place-items:center;color:#a9adb2;border:1px solid transparent;background:linear-gradient(145deg,#0d0e10,#050505)}
+.premiumNav button.active .navIcon{color:var(--gold2);border-color:rgba(216,173,79,.50);background:radial-gradient(circle at 35% 25%,rgba(244,215,134,.16),transparent 48%),linear-gradient(145deg,#17130a,#080808);box-shadow:0 0 18px rgba(216,173,79,.12)}
+.premiumNav button>span:last-child{font-size:8px!important;font-weight:800!important;letter-spacing:.025em}.premiumNav button.active>span:last-child{color:var(--gold2)!important}
+.quick button i{width:48px!important;height:44px!important;border-radius:14px!important;display:grid!important;place-items:center!important;background:radial-gradient(circle at 30% 22%,rgba(244,215,134,.15),transparent 44%),linear-gradient(145deg,#17130a,#080808)!important;border:1px solid rgba(216,173,79,.46)!important;color:var(--gold2)!important;margin:0 auto 7px!important}
+.quick button{font-size:9px!important;font-weight:850!important;color:#fff!important}
+.settingIco{width:42px;height:42px;border-radius:13px;display:grid!important;place-items:center!important;color:var(--gold2);border:1px solid rgba(216,173,79,.38);background:radial-gradient(circle at 30% 20%,rgba(244,215,134,.12),transparent 46%),linear-gradient(145deg,#15120b,#080808)}
+.settingIco.dangerIco{color:var(--red);border-color:rgba(255,70,88,.35)}.setting{min-height:58px!important}.setting>span:nth-child(2){font-size:10px!important;font-weight:800!important;color:#fff}.premiumTopIcon{color:var(--gold2)!important}
+/* V19.1 locked patch — premium gider categories + payment source + report movements */
+.premiumCatGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:7px}.premiumCatBtn{min-height:78px;border:1px solid #292929;border-radius:14px;background:linear-gradient(150deg,#0e0f11,#070707);color:#ddd;padding:8px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}.premiumCatBtn b{font-size:8px;line-height:1.1;text-align:center}.premiumCatBtn.active{border-color:var(--cat,#d8ad4f);box-shadow:inset 0 0 0 1px rgba(216,173,79,.18),0 0 16px rgba(216,173,79,.08);color:#fff}.catGem{--cat:#d8ad4f;width:39px;height:39px;border-radius:12px;display:grid;place-items:center;color:var(--cat);border:1px solid color-mix(in srgb,var(--cat) 58%,transparent);background:radial-gradient(circle at 30% 22%,color-mix(in srgb,var(--cat) 24%,transparent),transparent 48%),linear-gradient(145deg,#171717,#080808);box-shadow:inset 0 0 12px color-mix(in srgb,var(--cat) 8%,transparent)}.catGem span{font-size:19px;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--cat) 35%,transparent))}.hiddenCatSelect{display:none!important}.paySourceSeg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.paySourceSeg button{height:44px;border-radius:12px;border:1px solid #303030;background:#090a0b;color:#aaa;font-weight:900;font-size:10px}.paySourceSeg button.active{border-color:rgba(216,173,79,.65);color:var(--gold2);background:linear-gradient(145deg,#17130a,#080808);box-shadow:0 0 14px rgba(216,173,79,.1)}.fieldHint{display:block;color:#999;font-size:8px;margin-top:5px}.reportMoves .item{grid-template-columns:42px 1fr auto}.reportMoves .premiumIco>.catGem{width:38px;height:38px;border:0;background:transparent}.reportMoveRight{text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}.reportMoveRight>div{display:flex;gap:5px}.reportMoveRight button{border:1px solid rgba(216,173,79,.4);background:#0b0b0b;color:var(--gold2);border-radius:8px;padding:5px 6px;font-size:7px;font-weight:900}.reportMoveRight button.danger{border-color:rgba(255,70,88,.35);color:var(--red)}
+
+/* V19.1.1 — light/dark mode toggle without changing locked layout */
+html.lightMode body,html.lightMode #app{background:#f3f1eb;color:#191919}
+html.lightMode .appShell,html.lightMode .page,html.lightMode .content{background:#f3f1eb;color:#191919}
+html.lightMode .card,html.lightMode .item,html.lightMode .setting,html.lightMode .sum,html.lightMode .notice,html.lightMode .sheet,html.lightMode .themeCard{background:#fff;color:#191919;border-color:#d8d3c8}
+html.lightMode .field input,html.lightMode .field select,html.lightMode .field textarea{background:#fff;color:#191919;border-color:#cfc8ba}
+html.lightMode .premiumCatBtn,html.lightMode .paySourceSeg button,html.lightMode .seg button,html.lightMode .btn{background:#fff;color:#191919;border-color:#d4cdbf}
+html.lightMode .premiumCatBtn.active,html.lightMode .paySourceSeg button.active,html.lightMode .seg button.active,html.lightMode .btn.gold{color:#111}
+html.lightMode small,html.lightMode .section span,html.lightMode label{color:#68635b}
+html.lightMode .bottomNav,html.lightMode .topbar{background:rgba(255,255,255,.96);border-color:#d8d3c8}
+html.lightMode .toast{background:#fff;color:#111;border-color:#ccc}
+
+/* V19.3 — sağlam açık/koyu tema, 9:16 dengeli PIN ve zorunlu güncelleme */
+html.darkMode,html.darkMode body,html.darkMode #app,html.darkMode .phone,html.darkMode .content{background:#000!important;color:#f7f7f7!important}
+html.darkMode .homeHero{background:#000!important;color:#fff!important}
+html.darkMode .card,html.darkMode .sum,html.darkMode .item,html.darkMode .setting,html.darkMode .notice,html.darkMode .sheet,html.darkMode .themeCard{background:linear-gradient(180deg,#0a0b0d,#07080a)!important;color:#f7f7f7!important;border-color:#292929!important}
+html.darkMode .donutBox{background:linear-gradient(180deg,#0a0b0d,#07080a)!important}
+html.darkMode .donut:after{background:#030303!important}html.darkMode .donutC b,html.darkMode .legend b,html.darkMode .section b{color:#f7f7f7!important}
+html.darkMode .homeHeroText small,html.darkMode .homeHeroText h2{color:#f7f7f7!important}html.darkMode .date{color:#aeb2b7!important}
+html.darkMode .field input,html.darkMode .field select,html.darkMode .field textarea{background:#0b0d10!important;color:#fff!important;border-color:#2d2d2d!important}
+html.darkMode .premiumCatBtn,html.darkMode .paySourceSeg button,html.darkMode .seg button,html.darkMode .btn{background:#090a0b;color:#fff;border-color:#303030}
+html.darkMode .monthAction,html.darkMode .quick button{background:linear-gradient(160deg,#0e1013,#070809)!important;color:#fff!important}
+html.darkMode .nav{background:rgba(0,0,0,.98)!important}
+html.darkMode .top{background:linear-gradient(180deg,#000 72%,rgba(0,0,0,.90) 88%,rgba(0,0,0,.72))!important}
+
+/* Açık modda ana ekranın bütün yüzeyleri gerçekten açık olsun */
+html.lightMode .phone,html.lightMode .content,html.lightMode .homeHero{background:#f3f1eb!important;color:#191919!important}
+html.lightMode .homeHeroText small,html.lightMode .homeHeroText h2,html.lightMode .section b{color:#191919!important}
+html.lightMode .donutC b,html.lightMode .legend b{color:#191919!important}
+html.lightMode .donut:after{background:#fff!important;box-shadow:inset 0 0 0 1px #ddd!important}
+html.lightMode .quote{background:#fff!important}.lightMode .quote span{color:#222!important}
+
+/* PIN ekranı: telefon 9:16 alanına dengeli oturur, taşma yapmaz */
+.premiumHaneLock{min-height:100dvh!important;height:100dvh!important;justify-content:center!important;padding:calc(14px + var(--safeT)) 20px calc(14px + var(--safeB))!important;overflow:hidden!important;gap:0!important}
+.exactV5Lock{width:min(190px,48vw)!important;margin:0 auto 2px!important}.lockAvatar{width:68px!important;height:68px!important;margin-top:9px!important}.premiumHaneLock h2{margin:5px 0 0!important}.premiumHaneLock .pinDots{margin:10px 0!important}.premiumKeypad{grid-template-columns:repeat(3,62px)!important;gap:8px!important}.premiumKeypad button{width:62px!important;height:50px!important}.lockOk{margin-top:9px!important;height:36px!important}
+@media (max-height:760px){.exactV5Lock{width:155px!important}.lockWelcome{margin-top:2px!important}.lockAvatar{width:56px!important;height:56px!important;margin-top:5px!important}.premiumKeypad{grid-template-columns:repeat(3,56px)!important;gap:6px!important}.premiumKeypad button{width:56px!important;height:44px!important}.premiumHaneLock .pinDots{margin:7px 0!important}.lockOk{height:32px!important;margin-top:6px!important}}
+
+.forceUpdate{width:100%;max-width:430px;min-height:100dvh;background:#000;display:grid;place-items:center;padding:24px}.forceUpdateBox{text-align:center;border:1px solid rgba(216,173,79,.55);border-radius:22px;background:linear-gradient(160deg,#0d0d0d,#050505);padding:24px 18px;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55)}.forceUpdateLogo{width:190px;max-width:70%;margin:auto}.forceUpdateBox h2{color:var(--gold2);font-size:16px;letter-spacing:.08em}.forceUpdateBox p{font-size:11px;line-height:1.55;color:#c8c8c8}.forceUpdateBox button{width:100%;height:46px;border:0;border-radius:13px;background:linear-gradient(145deg,#f2d17d,#be8f34);color:#111;font-weight:900;margin-top:10px}
+
+/* V19.3.1 — açık mod metin kontrast düzeltmesi */
+html.lightMode{color-scheme:light}
+html.lightMode body,html.lightMode #app,html.lightMode .phone,html.lightMode .content,html.lightMode .page,html.lightMode .appShell{color:#191919!important}
+html.lightMode .card,html.lightMode .item,html.lightMode .setting,html.lightMode .sum,html.lightMode .notice,html.lightMode .sheet,html.lightMode .themeCard,html.lightMode .donutBox{color:#191919!important}
+html.lightMode .setting>span:nth-child(2),html.lightMode .item b,html.lightMode .sum strong,html.lightMode .section b,html.lightMode .legend b,html.lightMode .donutC b,html.lightMode .cashSplit b,html.lightMode .recoInfo,html.lightMode .recoInfo b{color:#191919!important}
+html.lightMode .sum label,html.lightMode .item small,html.lightMode .field label,html.lightMode .cashRow span,html.lightMode .date,html.lightMode .donutC small,html.lightMode .miniCard .sub{color:#68635b!important}
+html.lightMode .quote span{color:#222!important}
+html.lightMode .quick button,html.lightMode .monthAction{background:#fff!important;color:#191919!important;border-color:#d4cdbf!important}
+html.lightMode .premiumCatBtn,html.lightMode .paySourceSeg button,html.lightMode .seg button,html.lightMode .btn:not(.gold){color:#191919!important}
+html.lightMode .field input::placeholder,html.lightMode .field textarea::placeholder{color:#8a857d!important}
+html.lightMode .nav{background:rgba(255,255,255,.98)!important;border-top-color:#d8d3c8!important}
+html.lightMode .nav button{color:#666b72!important}html.lightMode .nav .active{color:#b88725!important}
+
+/* V19.3.2 — gerçek 9:16 telefon PIN ekranı dikey denge düzeltmesi */
+.premiumHaneLock{
+  justify-content:flex-start!important;
+  padding-top:calc(var(--safeT) + clamp(72px,8.2dvh,96px))!important;
+  padding-bottom:calc(var(--safeB) + 22px)!important;
+}
+.exactV5Lock{width:min(188px,48vw)!important;margin:0 auto 5px!important}
+.lockWelcome{margin-top:4px!important}
+.lockAvatar{width:68px!important;height:68px!important;margin-top:9px!important}
+.premiumHaneLock h2{margin:5px 0 0!important}
+.premiumHaneLock .pinDots{margin:10px 0 11px!important}
+.premiumKeypad{grid-template-columns:repeat(3,62px)!important;gap:8px 9px!important}
+.premiumKeypad button{width:62px!important;height:50px!important}
+.lockOk{margin-top:10px!important;height:37px!important}
+@media (max-height:760px){
+  .premiumHaneLock{padding-top:calc(var(--safeT) + 30px)!important}
+  .exactV5Lock{width:154px!important}
+}
+@media (min-height:820px) and (max-width:430px){
+  .premiumHaneLock{padding-top:calc(var(--safeT) + 78px)!important}
+}
+
+/* V19.3.3 — PIN 9:16 gerçek denge + kart renklerini tema değişiminden koru */
+/* Kredi kartı renkleri açık/koyu tema değişiminden bağımsız kalır. */
+html.lightMode .credit.blackgold,html.darkMode .credit.blackgold,.credit.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%)!important;border-color:rgba(213,173,85,.52)!important;color:#fff!important}
+html.lightMode .credit.titanium,html.darkMode .credit.titanium,.credit.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)!important;color:#fff!important}
+html.lightMode .credit.blue,html.darkMode .credit.blue,.credit.blue{background:linear-gradient(145deg,#04111e,#0a3d67)!important;color:#fff!important}
+html.lightMode .credit.burgundy,html.darkMode .credit.burgundy,.credit.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)!important;color:#fff!important}
+html.lightMode .credit.green,html.darkMode .credit.green,.credit.green{background:linear-gradient(145deg,#03140d,#0b2a1e)!important;color:#fff!important}
+html.lightMode .credit.purple,html.darkMode .credit.purple,.credit.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)!important;color:#fff!important}
+html.lightMode .credit.silver,html.darkMode .credit.silver,.credit.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555)!important;color:#111!important}
+html.lightMode .credit.silver small,html.lightMode .credit.silver .digits,html.lightMode .credit.silver b,html.darkMode .credit.silver small,html.darkMode .credit.silver .digits,html.darkMode .credit.silver b,.credit.silver small,.credit.silver .digits,.credit.silver b{color:#222!important}
+/* Diğer renkli kartlarda metinler kart üstünde okunur kalır. */
+.credit:not(.silver) small,.credit:not(.silver) .digits,.credit:not(.silver) b{color:#fff}
+.credit:not(.silver) .grid b[style]{color:var(--red)!important}
+
+/* Ana ekrandaki önerilen kart renkleri de korunur. */
+html.lightMode .miniCard.blackgold,html.darkMode .miniCard.blackgold,.miniCard.blackgold{background:linear-gradient(145deg,#030303 20%,#161209 100%)!important;border-color:rgba(213,173,85,.52)!important;color:#fff!important}
+html.lightMode .miniCard.titanium,html.darkMode .miniCard.titanium,.miniCard.titanium{background:linear-gradient(145deg,#191919,#3a3a3a 55%,#111)!important;color:#fff!important}
+html.lightMode .miniCard.blue,html.darkMode .miniCard.blue,.miniCard.blue{background:linear-gradient(145deg,#04111e,#0a3d67)!important;color:#fff!important}
+html.lightMode .miniCard.burgundy,html.darkMode .miniCard.burgundy,.miniCard.burgundy{background:linear-gradient(145deg,#2a080d,#5a1721 58%,#130407)!important;color:#fff!important}
+html.lightMode .miniCard.green,html.darkMode .miniCard.green,.miniCard.green{background:linear-gradient(145deg,#03140d,#0b2a1e)!important;color:#fff!important}
+html.lightMode .miniCard.purple,html.darkMode .miniCard.purple,.miniCard.purple{background:linear-gradient(145deg,#16091f,#4a1c63 58%,#0b0410)!important;color:#fff!important}
+html.lightMode .miniCard.silver,html.darkMode .miniCard.silver,.miniCard.silver{background:linear-gradient(145deg,#4a4a4a,#b5b5b5 52%,#555)!important;color:#111!important}
+
+/* PIN ekranını sabit yukarı itmek yerine gerçek görünür yüksekliğin ortasına yerleştir. */
+.premiumHaneLock{
+  box-sizing:border-box!important;
+  min-height:100svh!important;
+  height:100svh!important;
+  justify-content:center!important;
+  padding:calc(var(--safeT) + 18px) 20px calc(var(--safeB) + 18px)!important;
+  overflow:hidden!important;
+}
+.exactV5Lock{width:min(204px,52vw)!important;margin:0 auto 7px!important}
+.lockWelcome{margin-top:3px!important;font-size:10px!important;letter-spacing:.11em!important}
+.lockAvatar{width:74px!important;height:74px!important;margin-top:11px!important}
+.premiumHaneLock h2{font-size:15px!important;margin:7px 0 0!important}
+.premiumHaneLock .pinDots{margin:13px 0 14px!important;gap:14px!important}
+.premiumKeypad{grid-template-columns:repeat(3,66px)!important;gap:11px 12px!important}
+.premiumKeypad button{width:66px!important;height:60px!important;font-size:21px!important;border-radius:50%!important}
+.lockOk{width:min(286px,80vw)!important;height:40px!important;margin-top:14px!important;border-radius:12px!important;font-size:11px!important}
+@media (max-height:740px){
+  .exactV5Lock{width:162px!important;margin-bottom:3px!important}
+  .lockAvatar{width:58px!important;height:58px!important;margin-top:6px!important}
+  .premiumHaneLock h2{font-size:13px!important;margin-top:4px!important}
+  .premiumHaneLock .pinDots{margin:8px 0 9px!important}
+  .premiumKeypad{grid-template-columns:repeat(3,57px)!important;gap:7px 8px!important}
+  .premiumKeypad button{width:57px!important;height:49px!important;font-size:18px!important}
+  .lockOk{height:34px!important;margin-top:8px!important}
+}
+
+/* V19.4 — premium icon, menu and finance experience */
+.premiumSvg{stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.premiumTopIcon{width:44px!important;height:44px!important;font-size:25px!important}.topRight{display:flex;gap:7px;align-items:center}.menuBtn{font-size:28px!important;font-weight:300}.homeTop{grid-template-columns:auto 1fr auto!important}.homeTop .brand{justify-self:center}.navIcon{width:40px;height:40px;display:grid;place-items:center}.premiumNav button{position:relative}.premiumNav button.active:before{content:'';position:absolute;top:0;left:20%;right:20%;height:3px;border-radius:0 0 4px 4px;background:var(--gold2);box-shadow:0 0 12px var(--gold)}.premiumNav .premiumSvg{width:34px;height:34px}.settingIco{font-size:29px!important;min-width:38px}.catGem{width:44px!important;height:44px!important;font-size:23px!important}.premiumCatBtn .catGem{width:48px!important;height:48px!important}.item .ico{min-width:48px!important;width:48px!important;height:48px!important;font-size:25px!important}.menuList{display:grid;gap:8px}.menuList button{min-height:58px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;display:grid;grid-template-columns:44px 1fr 24px;align-items:center;text-align:left;padding:8px 12px}.menuList i{font-style:normal;font-size:26px}.menuList b{font-size:13px}.menuList span{font-size:24px;color:var(--gold2)}.summary .sum[data-action]{cursor:pointer;transition:.18s}.summary .sum[data-action]:active{transform:scale(.96);border-color:var(--gold)}
+.financeTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:4px 0 14px}.financeTabs button{height:42px;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:13px;font-weight:800;font-size:11px}.financeTabs button.active{border-color:var(--gold);color:var(--gold2);box-shadow:inset 0 0 0 1px #d8ad4f44}.financeCarousel{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 4px 14px;scrollbar-width:none}.financeCarousel::-webkit-scrollbar{display:none}.financeCarousel>.luxuryCard{min-width:calc(100% - 18px);scroll-snap-align:center;box-sizing:border-box}.luxuryCard{position:relative;overflow:hidden;border:1px solid #d8ad4f66;border-radius:24px;padding:20px!important;min-height:260px;box-shadow:0 18px 45px #0008,inset 0 1px 0 #fff2}.luxuryCard:before{content:'';position:absolute;width:180px;height:180px;border:1px solid #ffffff12;border-radius:50%;right:-70px;top:-75px}.cardTop{display:flex;justify-content:space-between;align-items:center;font-size:18px;letter-spacing:.06em}.cardTop span{font-size:11px;letter-spacing:.15em}.chip{font-size:34px;margin:20px 0 4px;color:#d8ad4f}.luxuryCard .digits{font-size:17px;letter-spacing:.14em;margin:8px 0 15px}.luxuryCard .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.luxuryCard .grid small{display:block;font-size:9px;letter-spacing:.08em}.luxuryCard .grid b{font-size:13px}.luxuryCard .cardActions{display:grid;grid-template-columns:1fr 1fr 42px;gap:7px;margin-top:16px}.luxuryCard .cardActions .btn{height:40px;padding:0 7px;font-size:9px}.iconEdit{border:1px solid #ffffff35;border-radius:12px;background:#ffffff10;color:inherit;font-size:18px}.bankAccount{background:linear-gradient(145deg,#07131f,#123b52 60%,#050a0e)!important;color:#fff}.bankAccount h2{font-size:29px;margin:34px 0 12px}.flexAccount{background:linear-gradient(145deg,#160b21,#4b235e 58%,#09040d)!important;color:#fff}.financeDots{display:flex;gap:7px;overflow-x:auto;padding:0 2px 10px}.financeDots button,.financeDots span{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:99px;padding:7px 10px;font-size:9px}.categoryManage{display:grid;grid-template-columns:1fr 1fr;gap:9px}.categoryManage button{display:grid;grid-template-columns:52px 1fr 20px;align-items:center;text-align:left;min-height:64px;padding:7px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--text)}.categoryManage b{font-size:11px}.categoryManage em{font-style:normal;color:var(--gold2);font-size:18px}
