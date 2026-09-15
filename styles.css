@@ -736,3 +736,11 @@ html.lightMode .miniCard.silver,html.darkMode .miniCard.silver,.miniCard.silver{
 .premiumQuick .qExpense{background:linear-gradient(145deg,rgba(235,76,87,.28),rgba(50,8,14,.9))!important;border-color:rgba(255,100,110,.55)!important}
 .premiumQuick .qCard{background:linear-gradient(145deg,rgba(216,173,79,.30),rgba(48,34,7,.92))!important;border-color:rgba(244,205,112,.6)!important}
 .premiumQuick .qReport{background:linear-gradient(145deg,rgba(73,133,255,.30),rgba(8,23,55,.92))!important;border-color:rgba(101,157,255,.6)!important}
+/* V19.4.2 — Ultra luxury bottom navigation */
+.premiumNav{height:calc(78px + var(--safeB));padding:7px 8px var(--safeB);background:linear-gradient(180deg,rgba(12,12,12,.94),rgba(0,0,0,.99))!important;border-top:1px solid rgba(216,173,79,.24)!important;box-shadow:0 -12px 34px rgba(0,0,0,.72),inset 0 1px rgba(255,255,255,.025)!important}
+.premiumNav button{position:relative;gap:3px;font-size:8px;font-weight:800;letter-spacing:.035em;opacity:.86}
+.premiumNav .navIcon{width:43px;height:43px;display:grid;place-items:center;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012));box-shadow:inset 0 1px rgba(255,255,255,.06),0 5px 14px rgba(0,0,0,.28)}
+.premiumNav .premiumSvg{width:27px;height:27px;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))}
+.premiumNav button.active{color:var(--gold2);opacity:1}
+.premiumNav button.active .navIcon{border-color:rgba(216,173,79,.52);background:radial-gradient(circle at 50% 20%,rgba(240,205,119,.18),rgba(216,173,79,.05) 48%,rgba(0,0,0,.1));box-shadow:inset 0 1px rgba(255,240,190,.15),0 0 18px rgba(216,173,79,.12)}
+.premiumNav button.active:after{content:"";position:absolute;bottom:0;width:22px;height:2px;border-radius:99px;background:var(--gold2);box-shadow:0 0 8px rgba(216,173,79,.55)}

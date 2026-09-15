@@ -47,7 +47,7 @@ home:`<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10"/><path d="M10 20v
 transactions:`<path d="M6 5h12M6 10h12M6 15h8M6 20h10"/><circle cx="3" cy="5" r="1"/><circle cx="3" cy="10" r="1"/><circle cx="3" cy="15" r="1"/><circle cx="3" cy="20" r="1"/>`,
 fixed:`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>`,
 cards:`<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 9h18M7 15h5"/>`,
-settings:`<circle cx="12" cy="12" r="3"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/><circle cx="12" cy="12" r="8"/>`,
+settings:`<circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.3-6.5 7.5-6.5s6.7 2.3 7.5 6.5"/><path d="M17.5 5.5 19 4m-1.5 6.5L19 12"/>`,
 income:`<path d="M12 20V5m-5 5 5-5 5 5M5 20h14"/>`,
 expense:`<path d="M12 4v15m-5-5 5 5 5-5M5 4h14"/>`,
 report:`<path d="M5 20V10M10 20V5M15 20v-8M20 20V8M3 20h19"/>`,
