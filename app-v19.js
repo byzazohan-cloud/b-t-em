@@ -581,3 +581,71 @@ bind=function(){oldBind();const cf=$('#categoryForm');if(cf)cf.onsubmit=async e=
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bootHane,{once:true});
 else bootHane();
+
+// V19.4.3 exact approved icon mapping
+const HANE_EXACT_ICON_MAP={"Market":"market","Manav":"manav","Fırın":"firin","Restoran":"restoran","Yemek":"restoran","Giyim":"giyim","Sağlık":"saglik","Akaryakıt":"akaryakit","Eğitim":"egitim","Kira":"kira","Aidat":"aidat","Elektrik":"elektrik","Su":"su","Doğalgaz":"dogalgaz","İnternet":"internet","Cep Telefonu":"cep-telefonu","Harçlık":"harclik","Eğlence":"eglence","Diğer":"diger","Bakım Onarım":"bakim-onarim","Bakım/Onarım":"bakim-onarim","Ulaşım":"arac","Araç":"arac","Seyahat":"seyahat","Hediye":"hediye"};
+catPremiumIcon=function(cat){
+ const key=HANE_EXACT_ICON_MAP[cat];
+ if(key) return `<span class="haneExactIcon"><img src="icons/approved-exact/${key}.webp" alt="${esc(cat)}"></span>`;
+ const c=(state?.customCategories||[]).find(x=>x.name===cat);
+ const color=c?.color||CAT_COLORS[cat]||'#d8ad4f';
+ return `<span class="catGem" style="--cat:${color}"><span>${esc(c?.icon||I[cat]||'●')}</span></span>`;
+};
+
+/* V19.4.3 — Kartlar bölümü: Hesaplar kaldırıldı, premium kart galerisi */
+function luxuryCardFace(c, compact=false){
+ const info=cardPaymentInfo(c);
+ return `<div class="${compact?'luxCardMini':'luxCardFace'} ${c.style||'blackgold'}" data-action="${compact?'financePick':'editCard'}" ${compact?`data-index="${state.cards.indexOf(c)}"`:`data-id="${c.id}"`}>
+   <div class="luxCardGlow"></div>
+   <div class="luxCardTop"><b>${esc(c.bank||'BANKA')}</b><span>${esc(c.network||'VISA')}</span></div>
+   <div class="luxChip"><i></i><em>)))</em></div>
+   <div class="luxCardName">${esc(c.name||'PREMIUM KART')}</div>
+   <div class="luxDigits">•••• •••• •••• ${esc(c.last4||'0000')}</div>
+   ${compact?'':`<div class="luxCardDates"><span>HESAP KESİM<b>${info.statementDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}</b></span><span>SON ÖDEME<b>${info.dueDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}</b></span></div>
+   <div class="luxCardMoney"><span>LİMİT<b>${money(c.limit)}</b></span><span>GÜNCEL BORÇ<b>${money(c.balance)}</b></span></div>
+   <div class="cardActions"><button class="btn" data-action="cardSpend" data-id="${c.id}">＋ HARCAMA EKLE</button><button class="btn gold" data-action="cardPay" data-id="${c.id}">₺ ÖDEME YAPTIM</button></div>
+   <button class="financeEdit" data-action="editCard" data-id="${c.id}">KARTI DÜZENLE</button>`}
+ </div>`;
+}
+cards=function(){
+ const list=state.cards||[];
+ financeIndex=Math.max(0,Math.min(financeIndex,Math.max(0,list.length-1)));
+ const x=list[financeIndex];
+ return `<div class="financeTabs cardOnlyTabs">
+   <button class="active" data-action="financeTab" data-kind="cards">KARTLAR</button>
+   <button data-action="financeTab" data-kind="flex">ESNEK HESAP</button>
+ </div>
+ ${financeTab==='flex'
+ ? `<div class="section"><b>ESNEK HESAPLAR</b><button class="miniAddBtn" data-action="addFlex">+ EKLE</button></div>${(state.flexAccounts||[]).length?`<div class="financeSwipe">${financeCard(state.flexAccounts[Math.min(financeIndex,state.flexAccounts.length-1)],'flex')}</div>`:'<div class="notice">HENÜZ ESNEK HESAP YOK.</div>'}`
+ : `<div class="section"><b>KARTLARIM</b><button class="miniAddBtn" data-action="addCard">+ KART EKLE</button></div>
+ ${x?`<div class="luxSwipe" id="luxSwipe"><button class="luxArrow left" data-action="financePrev">‹</button>${luxuryCardFace(x)}<button class="luxArrow right" data-action="financeNext">›</button></div>
+ <div class="section allCardsTitle"><b>BÜTÜN KARTLAR</b><span>${list.length} KART</span></div>
+ <div class="allCardsStrip">${list.map((c,i)=>`<div class="${i===financeIndex?'selected':''}">${luxuryCardFace(c,true)}<small>${esc(c.bank)}</small></div>`).join('')}</div>`
+ : '<div class="notice">HENÜZ KREDİ KARTI EKLENMEDİ.</div>'}`}`;
+};
+
+const _homeV1943=home;
+home=function(){
+ let h=_homeV1943(), r=rec();
+ if(!r) return h;
+ const old=/<div class="reco"><div class="recoHead">[\s\S]*?<\/div><\/div><\/div>/;
+ const neo=`<div class="reco luxuryReco"><div class="recoHead"><span>ÖNERİLEN KART</span><span data-action="goCards">TÜMÜNÜ GÖR ›</span></div>${luxuryCardFace(r,true)}<div class="recoInfo luxRecoInfo"><div>Hesap Kesim <b>${r.statementDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}</b></div><div>Son Ödeme <b>${r.dueDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}</b></div></div></div>`;
+ return h.replace(old,neo);
+};
+
+const _bindV1943=bind;
+bind=function(){
+ _bindV1943();
+ const sw=document.getElementById('luxSwipe');
+ if(sw){
+   let sx=0;
+   sw.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+   sw.addEventListener('touchend',e=>{
+     const dx=e.changedTouches[0].clientX-sx;
+     if(Math.abs(dx)>45){
+       const l=state.cards||[];
+       if(l.length){financeIndex=dx<0?(financeIndex+1)%l.length:(financeIndex-1+l.length)%l.length;render();}
+     }
+   },{passive:true});
+ }
+};
