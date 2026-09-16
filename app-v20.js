@@ -22,7 +22,7 @@ const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelecto
 const META='HANE_LOCKED_META_V1',DATA='HANE_LOCKED_DATA_V1';
 const enc=new TextEncoder(),dec=new TextDecoder();let state=null,key=null,current='home',modal=null,pin='',timer=null,setupPhoto='',themeDraft=null,reportPeriod='month',txFilter='all',financeTab='cards';
 const Q=['Bugün küçük adımlar, yarın büyük rahatlık getirir.','Disiplin, özgürlüğün kapısını açar.','Küçük birikimler büyük huzur getirir.','Planlı para, güçlü yarınlar demektir.'];
-let navHistory=['home'],calendarDate=new Date(),customStart=iso(new Date(new Date().getFullYear(),new Date().getMonth(),1)),customEnd=iso();
+let navHistory=['home'],calendarDate=new Date(),customStart='',customEnd='';
 let C=['Kira','Aidat','Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim','Akaryakıt','Ulaşım','Sağlık','Eğitim','Ev','Temizlik','Eğlence','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu','Diğer'];
 let NORMAL_C=['Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim','Akaryakıt','Ulaşım','Sağlık','Eğitim','Ev','Temizlik','Eğlence','Diğer'];
 let FIXED_C=['Kira','Aidat','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu'];
@@ -33,6 +33,7 @@ function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]
 function catPremiumIcon(cat){return `<span class="catGem" style="--cat:${catColor(cat)}"><span>${catIcon(cat)}</span></span>`}
 function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id===x.cardId);return c?`KART · ${esc(c.bank)} ${esc(c.name)}`:'KART'}return 'NAKİT'}
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>d.toISOString().slice(0,10),ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+customStart=iso(new Date(new Date().getFullYear(),new Date().getMonth(),1)); customEnd=iso();
 const money=n=>new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:0}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
 function haneLogo(size=54,cls=''){
