@@ -154,3 +154,9 @@ Bu paket yalnızca kullanıcı tarafından onaylanan kilit sürüm V19.4.8 üzer
 2. Esnek Hesaplar dikey kompakt premium kart + harcama/ödeme hareketlerinin Hareketler ve Raporlar bağlantısı.
 3. Önceki ekrana dönen gerçek navigasyon geçmişi + tarayıcı geri hareketi.
 4. Ana sayfa Gelir/Gider/Kalan ayrıntıları + kayıt üzerinden Düzenle/Sil.
+
+## Bu paket ekleri
+- Yaklaşan Ödemeler: Bugün / Yarın / Bu Hafta / Yaklaşıyor / Gecikmiş / Ödendi.
+- Akıllı Takvim: sabit gider, kredi kartı ve esnek hesap gelecek ödeme tarihleri renkli olarak takvimde.
+- Aylık Finans Özeti: gelir, gider, net, ödenen, geçen aya göre fark, kategori, en büyük harcama, yaklaşan ödeme.
+- Kredi kartı taksit sistemi: tek çekim/taksitli, 2-36 taksit, aylara otomatik dağıtım ve x/y taksit gösterimi.
