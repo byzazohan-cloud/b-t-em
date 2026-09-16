@@ -1,25 +1,3 @@
-# HANE PREMIUM V20.3 — 19 MADDELİK ANA GELİŞTİRME PAKETİ
-
-Bu sürüm HANE PREMIUM V20.3 kilit sürümü baz alınarak hazırlanmıştır. Mevcut veri formatı korunarak yeni alanlar geriye uyumlu eklenmiştir.
-
-## Uygulanan ana geliştirmeler
-- Sabit gider ÖDENDİ durumu tüm temel hesaplamalarda aynı paidMonths kaynağından okunur; ödeme tarihi de saklanır.
-- Esnek hesaplar kompakt dikey premium karta geçirildi.
-- Geri tuşu ekran geçmişine döner.
-- Gelir/Gider/Kalan ayrıntı geçişleri ve mevcut düzenle/sil akışı korundu.
-- Takvim eklendi; gün bazında gelir/gider/ödenen/net ve kayda girip düzenleme/silme.
-- Gün/hafta/ay/yıl rapor altyapısı korundu; özel tarih altyapısı için alanlar eklendi.
-- Yaklaşan Ödemeler gerçek sabit gider, kart ve esnek hesap verilerinden üretilir.
-- Kart harcamasına Tek Çekim/Taksitli, taksit sayısı ve hane üyesi alanları eklendi.
-- Hareket araması eklendi.
-- Mevcut fiş/fotoğraf altyapısı korunur.
-- Gizlilik modu eklendi.
-- Ana sayfa kişiselleştirme için kalıcı layout altyapısı eklendi.
-- Hane Üyeleri ekranı, ekle/düzenle/sil eklendi.
-- Yeni alanlar tek state/veri kaynağında saklanır.
-
-Not: Bu büyük paket, mevcut V20.3 kayıtlarını bozmayacak şekilde geriye uyumlu tutulmuştur.
-
 # HANE Premium Clean V3
 
 GitHub Pages için temiz paket. Repository kökünde sadece bu dosyaları tutun.
@@ -169,3 +147,10 @@ Yalnızca uygulama hissi güçlendirildi:
 
 ## V19.4.4
 Onaylanan görseldeki renkli premium Hızlı İşlemler ve alt navigasyon ikonları uygulamaya entegre edildi.
+
+## HANE V19.4.8 — Entegre Paket 1–4
+Bu paket yalnızca kullanıcı tarafından onaylanan kilit sürüm V19.4.8 üzerine uygulanmıştır.
+1. Sabit gider ÖDENDİ senkronizasyonu + ödeme düzenle/geri al + tekil ödeme kaydı.
+2. Esnek Hesaplar dikey kompakt premium kart + harcama/ödeme hareketlerinin Hareketler ve Raporlar bağlantısı.
+3. Önceki ekrana dönen gerçek navigasyon geçmişi + tarayıcı geri hareketi.
+4. Ana sayfa Gelir/Gider/Kalan ayrıntıları + kayıt üzerinden Düzenle/Sil.
