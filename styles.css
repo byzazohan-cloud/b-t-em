@@ -839,3 +839,12 @@ html.lightMode .reportSeg button.active{background:linear-gradient(145deg,#e8c46
 @media(max-width:390px){.compactFinanceValues{grid-template-columns:1fr 1fr}.compactFinanceMeta{display:grid;grid-template-columns:1fr 1fr}.compactFinanceValues b{font-size:11px}}
 /* HANE 19.4.8 — advanced finance package */
 .advancedFilters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 14px}.advancedFilters input,.advancedFilters select{min-width:0;background:#0b0b0c;color:var(--text);border:1px solid #2b2b2d;border-radius:12px;padding:11px}.advancedFilters .btn{grid-column:1/-1}.receiptViewer img{width:100%;max-height:58vh;object-fit:contain;border-radius:16px;border:1px solid #3a3020;margin-bottom:12px}.homeEditActions{display:flex;gap:6px}.homeEditActions button{border:1px solid #4a3b20;background:#111;color:var(--gold2);border-radius:9px;padding:7px 9px}.monthlyFinanceCompact{margin-top:18px;margin-bottom:24px}.privacyOn .money{filter:blur(4px)}
+
+/* HANE V19.4.8 — form yatay sabitleme + takvim swipe */
+html,body,#app,.phone,.content{max-width:100%;overflow-x:hidden}
+.modal,.sheet,.form,.field,.row2,.row3{max-width:100%;min-width:0;box-sizing:border-box}
+.sheet{overflow-x:hidden!important;touch-action:pan-y}
+.form>* ,.field,.field input,.field select,.field textarea{min-width:0;max-width:100%;box-sizing:border-box}
+.row2,.row3{width:100%}
+.calendarPage{touch-action:pan-y;overscroll-behavior-x:contain;user-select:none;-webkit-user-select:none}
+.calendarPage.swiping{pointer-events:none}

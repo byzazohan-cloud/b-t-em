@@ -356,6 +356,19 @@ async function reorderFixed(sourceId,targetId){if(!sourceId||!targetId||sourceId
 function bindFixedSorting(){let dragId=null,touchId=null,touchTarget=null;$$('.fixedItem').forEach(item=>{item.addEventListener('dragstart',e=>{dragId=item.dataset.fixedId;e.dataTransfer?.setData('text/plain',dragId);item.classList.add('dragging')});item.addEventListener('dragend',()=>item.classList.remove('dragging'));item.addEventListener('dragover',e=>e.preventDefault());item.addEventListener('drop',e=>{e.preventDefault();reorderFixed(dragId||e.dataTransfer?.getData('text/plain'),item.dataset.fixedId)});const h=item.querySelector('.dragHandle');if(!h)return;h.addEventListener('touchstart',e=>{touchId=item.dataset.fixedId;touchTarget=item;e.stopPropagation()},{passive:true});h.addEventListener('touchmove',e=>{const t=e.touches?.[0];if(!t)return;const over=document.elementFromPoint(t.clientX,t.clientY)?.closest?.('.fixedItem');$$('.fixedItem').forEach(x=>x.classList.remove('dragOver'));if(over){over.classList.add('dragOver');touchTarget=over}},{passive:true});h.addEventListener('touchend',()=>{const targetId=touchTarget?.dataset?.fixedId;$$('.fixedItem').forEach(x=>x.classList.remove('dragOver'));if(targetId)reorderFixed(touchId,targetId);touchId=null;touchTarget=null},{passive:true})})}
 function bind(){
   bindFixedSorting();
+  // Takvimde yatay kaydırma: sola sonraki ay, sağa önceki ay.
+  const calPage=document.querySelector('.calendarPage');
+  if(calPage){
+    let sx=0,sy=0,tracking=false;
+    calPage.addEventListener('touchstart',e=>{const t=e.touches&&e.touches[0];if(!t)return;sx=t.clientX;sy=t.clientY;tracking=true},{passive:true});
+    calPage.addEventListener('touchend',e=>{
+      if(!tracking)return;tracking=false;const t=e.changedTouches&&e.changedTouches[0];if(!t)return;
+      const dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)<55||Math.abs(dx)<=Math.abs(dy)*1.25)return;
+      let [y,m]=calendarMonth.split('-').map(Number);
+      if(dx<0){m++;if(m>12){m=1;y++}}else{m--;if(m<1){m=12;y--}}
+      calendarMonth=y+'-'+String(m).padStart(2,'0');calendarDay='';render();
+    },{passive:true});
+  }
   $$('[data-tab]').forEach(x=>x.onclick=()=>{const next=x.dataset.tab;if(next==='theme')themeDraft={...(state.theme||{})};else if(current==='theme')themeDraft=null;goTo(next)});
   $$('[data-action]').forEach(x=>x.onclick=e=>{if(x.closest('form')&&x.type==='submit')return;e.stopPropagation();act(x.dataset.action,x)});
 
