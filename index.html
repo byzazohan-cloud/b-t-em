@@ -13,9 +13,9 @@
 <meta name="color-scheme" content="dark light">
 <meta name="application-name" content="HANE">
 
-<link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="./manifest.json?v=19.4.8.20260917-pwa2">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
-<link rel="stylesheet" href="./styles.css?v=19.4.8-mobile-1">
+<link rel="stylesheet" href="./styles.css?v=19.4.8.20260917-pwa2">
 <title>HANE</title>
 </head>
 <body>
@@ -23,6 +23,32 @@
 <input id="profileInput" type="file" accept="image/*" hidden>
 <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 <input id="restoreInput" type="file" hidden>
-<script defer src="./app-v19.js?v=19.4.8.20260916-swipe1"></script>
+<script defer src="./app-v19.js?v=19.4.8.20260917-pwa2"></script>
+
+<script>
+(function(){
+  const BUILD = '19.4.8.20260917-pwa2';
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js?v=' + BUILD, {updateViaCache:'none'});
+      await reg.update();
+      reg.addEventListener('updatefound', () => {
+        const worker = reg.installing;
+        if (!worker) return;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
+        });
+      });
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        location.reload();
+      });
+    } catch (e) { console.warn('HANE update worker:', e); }
+  });
+})();
+</script>
 </body>
 </html>
