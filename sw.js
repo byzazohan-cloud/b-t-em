@@ -1,5 +1,5 @@
 /* HANE PWA update worker - network first for app shell */
-const CACHE_NAME = 'hane-v19-4-8-record-category-recalc-20260917b';
+const CACHE_NAME = 'hane-v19-4-8-final-fixed-category-ui-20260917c';
 const APP_SHELL = [
   './', './index.html', './styles.css', './app-v19.js', './manifest.json',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'

@@ -79,8 +79,17 @@ function normalizeV19(st){
   st.settings=st.settings||{};if(typeof st.settings.darkMode!=='boolean')st.settings.darkMode=true;
   if(typeof st.settings.privacy!=='boolean')st.settings.privacy=false;st.members=Array.isArray(st.members)?st.members:[];if(!st.members.length)st.members=[{id:'me',name:'BEN',icon:'👤'}];st.homeLayout=Array.isArray(st.homeLayout)?st.homeLayout:['summary','quick','quote','chart','month','recommended','monthly'];st.homeHidden=Array.isArray(st.homeHidden)?st.homeHidden:[];
   st.expenses.forEach((x,i)=>{if(typeof x.sortOrder!=='number')x.sortOrder=i;if(!Array.isArray(x.paidMonths))x.paidMonths=[];if(!x.source)x.source='cash'});
-  // Kategori kaynağı yalnızca kaydın kendi category alanıdır; başlık/ikon üzerinden kategori tahmini yapılmaz.
+  // Kategori kaynağı yalnızca kaydın kendi category alanıdır; başlık/ikon üzerinden sürekli kategori tahmini yapılmaz.
   st.expenses.forEach(x=>{if(!x.category||!String(x.category).trim())x.category='Diğer'});
+  // 2026-09-17 tek seferlik eski-veri onarımı: önceki hatalı paketin Kira'ya yazdığı
+  // açık Cep Telefonu sabit giderlerini gerçek kategori alanına geri taşı. Sonraki hesaplar yine yalnız category alanından yapılır.
+  if(!st.settings.legacyFixedCategoryRepair20260917){
+    st.expenses.forEach(x=>{
+      const title=String(x.title||'').toLocaleLowerCase('tr-TR').replace(/\s+/g,' ').trim();
+      if(x.recurring && x.category==='Kira' && title.includes('cep telefon')) x.category='Cep Telefonu';
+    });
+    st.settings.legacyFixedCategoryRepair20260917=true;
+  }
   // Eski ödeme kayıtlarının kategori bilgisini bağlı oldukları gerçek sabit giderle senkron tut.
   st.fixedPayments.forEach(p=>{const ex=st.expenses.find(x=>x.id===p.expenseId);if(ex)p.category=ex.category||'Diğer'});
   return st;

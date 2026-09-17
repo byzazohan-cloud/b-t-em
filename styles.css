@@ -914,3 +914,33 @@ img,svg,canvas{max-width:100%}
 .fixedRight button{max-width:112px!important;white-space:normal!important;line-height:1.15!important}
 .fixedCatDetailHero{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border:1px solid rgba(216,173,79,.35);border-radius:18px;padding:16px;background:linear-gradient(145deg,#12100b,#090909);margin-bottom:14px}.fixedCatDetailHero small{color:#96989d;font-size:9px;letter-spacing:.12em}.fixedCatDetailHero h2{margin:4px 0 0;font-size:20px;color:#fff}.fixedCatDetailHero strong{color:var(--gold2);font-size:18px;white-space:nowrap}.fixedCatDetailItem{grid-template-columns:46px minmax(0,1fr)!important;gap:9px!important}.fixedCatDetailMain{min-width:0}.fixedCatDetailMain>b{font-size:13px}.fixedCatDetailMain small{display:block;margin-top:4px;font-size:9px;line-height:1.3;color:#96989d}.fixedCatDetailRight{grid-column:2;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.fixedCatDetailRight>strong{color:var(--red);font-size:13px}.fixedCatDetailRight>div{display:flex;gap:5px}
 @media(max-width:390px){.fixedItem{grid-template-columns:48px minmax(0,1fr) 100px!important;padding:12px 10px!important;gap:8px!important}.fixedItem>.ico{width:48px!important;height:48px!important;min-width:48px!important}.fixedRight{width:100px!important;min-width:100px!important}.fixedMain>b{font-size:13px!important}.fixedRight>b{font-size:13px!important}}
+
+/* HANE 19.4.8 — final fixed-expense mobile layout: metin sıkışmasını kesin engelle */
+.fixedList .fixedItem{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:52px minmax(0,1fr)!important;
+  column-gap:12px!important;
+  align-items:center!important;
+  min-height:112px!important;
+  padding:14px 132px 14px 14px!important;
+  overflow:hidden!important;
+}
+.fixedList .fixedItem>.ico{grid-column:1!important;width:52px!important;height:52px!important;min-width:52px!important}
+.fixedList .fixedMain{grid-column:2!important;min-width:0!important;width:100%!important;overflow:visible!important}
+.fixedList .fixedMain>b{font-size:13px!important;line-height:1.25!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important;hyphens:none!important;letter-spacing:0!important}
+.fixedList .fixedMain small{font-size:9px!important;line-height:1.35!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important}
+.fixedList .fixedRight{
+  position:absolute!important;right:14px!important;top:50%!important;transform:translateY(-50%)!important;
+  width:108px!important;min-width:108px!important;display:flex!important;flex-direction:column!important;
+  align-items:flex-end!important;justify-content:center!important;gap:7px!important
+}
+.fixedList .fixedRight>b{font-size:13px!important;white-space:nowrap!important}
+.fixedList .fixedRight button{max-width:108px!important;font-size:8px!important;white-space:normal!important}
+@media(max-width:370px){
+  .fixedList .fixedItem{grid-template-columns:46px minmax(0,1fr)!important;column-gap:9px!important;padding:12px 112px 12px 10px!important}
+  .fixedList .fixedItem>.ico{width:46px!important;height:46px!important;min-width:46px!important}
+  .fixedList .fixedRight{right:10px!important;width:94px!important;min-width:94px!important}
+  .fixedList .fixedRight button{max-width:94px!important}
+  .fixedList .fixedMain>b{font-size:12px!important}
+}
