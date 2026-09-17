@@ -1009,3 +1009,11 @@ button:active,[data-action]:active,[data-tab]:active,.item:active{background-col
 .nav.v1947CleanNav button.active{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .reportSeg button.active,.cardPayTypeSeg button.active{color:var(--gold2)!important;text-shadow:0 0 12px rgba(216,173,79,.18)}
 @media(max-width:390px){.catGem{width:35px;height:35px}.premiumIco .catGem{width:37px;height:37px}.catGem .catSvg{width:20px;height:20px}}
+
+/* HANE V6 — gerçek envanter, tek ikon/tek kaynak */
+.hanePremiumAsset{display:block;object-fit:contain;flex:0 0 auto;vertical-align:middle;filter:drop-shadow(0 2px 7px rgba(216,173,79,.18));}
+.catGem .hanePremiumAsset,.premiumIco .hanePremiumAsset{width:100%;height:100%;max-width:34px;max-height:34px;}
+.catGem{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important;}
+.premiumSvg,.catSvg{display:none!important;}
+.navIcon .hanePremiumAsset,.quickIcon .hanePremiumAsset{margin:auto;}
+button:active .hanePremiumAsset,[aria-selected="true"] .hanePremiumAsset,.active .hanePremiumAsset{filter:drop-shadow(0 0 8px rgba(255,211,103,.48)) brightness(1.08);}

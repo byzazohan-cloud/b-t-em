@@ -28,11 +28,11 @@ let NORMAL_C=['Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim',
 let FIXED_C=['Kira','Aidat','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu'];
 const I={Kira:'🏠',Aidat:'🏢',Market:'🛒',Manav:'🍎',Fırın:'🥖',Harçlık:'💵',Yemek:'🍽️',Restoran:'🍴',Giyim:'👕',Akaryakıt:'⛽',Faturalar:'🧾',İnternet:'📡',Elektrik:'⚡',Su:'💧',Doğalgaz:'🔥','Cep Telefonu':'📱',Ulaşım:'◆',Sağlık:'✚',Eğitim:'✎',Ev:'⌂',Temizlik:'✦',Çocuk:'★','Evcil Hayvan':'♣','Kişisel Bakım':'✧',Abonelik:'◎',Eğlence:'♪',Tatil:'☀',Hediye:'🎁',Sigorta:'◇',Vergi:'▤',Diğer:'●'};
 const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957',Fırın:'#e5a85b',Harçlık:'#d9b44a',Yemek:'#ff8b5c',Restoran:'#ff6f61',Giyim:'#c084fc',Akaryakıt:'#f59e0b',Faturalar:'#ff8c42','İnternet':'#6ed4ff',Elektrik:'#ffd84d',Su:'#3fa9ff','Doğalgaz':'#ff6b45','Cep Telefonu':'#b879ff','Ulaşım':'#4dd6c7','Sağlık':'#ff5f78',Eğitim:'#60a5fa',Ev:'#d8ad4f',Temizlik:'#22d3ee',Çocuk:'#fb7185','Evcil Hayvan':'#34d399','Kişisel Bakım':'#f472b6',Abonelik:'#818cf8',Eğlence:'#f06dad',Tatil:'#fbbf24',Hediye:'#e879f9',Sigorta:'#38bdf8',Vergi:'#94a3b8',Diğer:'#9ca3af'};
-function iconAssetName(v){return String(v||'Diger').replaceAll(' ','_').replace(/[ıİ]/g,'i').replace(/[ğĞ]/g,'g').replace(/[şŞ]/g,'s').replace(/[üÜ]/g,'u').replace(/[öÖ]/g,'o').replace(/[çÇ]/g,'c')}
 function categoryIconSvg(cat,size=22){
-  const built=['Kira','Aidat','Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim','Akaryakıt','Ulaşım','Sağlık','Eğitim','Ev','Temizlik','Eğlence','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu','Diğer'];
-  const use=built.includes(cat)?cat:'Diğer';
-  return `<img class="catAsset" src="icons/premium-v5/cat_${iconAssetName(use)}.png" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  const key=String(cat||'Diğer').toLocaleLowerCase('tr-TR').replaceAll('ı','i').replaceAll('ğ','g').replaceAll('ü','u').replaceAll('ş','s').replaceAll('ö','o').replaceAll('ç','c').replace(/\s+/g,'-');
+  const known=new Set(['kira','aidat','market','manav','firin','harclik','yemek','restoran','giyim','akaryakit','ulasim','saglik','egitim','ev','temizlik','eglence','faturalar','internet','elektrik','su','dogalgaz','cep-telefonu','diger']);
+  const file=known.has(key)?key:'diger';
+  return `<img class="hanePremiumAsset catAsset" src="icons/premium/cat-${file}.svg" width="${size}" height="${size}" alt="" aria-hidden="true">`;
 }
 function catIcon(cat){return categoryIconSvg(cat,22)}
 function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]||'#d8ad4f'}
@@ -49,9 +49,9 @@ function haneFullLogo(cls=''){
   return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1947" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
-  const map={home:'home',transactions:'transactions',fixed:'fixed',cards:'cards',profile:'profile',settings:'settings',income:'income',expense:'expense',report:'report',pluscard:'newrecord',bell:'bell',lock:'security',palette:'light',backup:'backup',info:'info',trash:'trash',globe:'globe'};
-  const file=map[name]||'home';
-  return `<img class="premiumAsset" src="icons/premium-v5/${file}.png" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  const known=new Set(['home','transactions','fixed','cards','profile','settings','income','expense','report','pluscard','bell','lock','palette','backup','info','trash','globe']);
+  const file=known.has(name)?name:'home';
+  return `<img class="hanePremiumAsset systemAsset" src="icons/premium/sys-${file}.svg" width="${size}" height="${size}" alt="" aria-hidden="true">`;
 }
 function normalizeV19(st){
   st.cardPayments=Array.isArray(st.cardPayments)?st.cardPayments:[];
