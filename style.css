@@ -1,0 +1,8 @@
+/* DESIGN V5 — approved unified ultra-luxe icon catalogue */
+.premiumAsset,.catAsset{display:block;object-fit:cover;border-radius:24%;filter:saturate(1.04) contrast(1.03);}
+.premiumIco .premiumAsset,.premiumIco .catAsset,.catGem .catAsset{width:30px!important;height:30px!important;}
+.catGem{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important;}
+.navIcon .premiumAsset{width:31px!important;height:31px!important;border-radius:26%;}
+.settingIco .premiumAsset{width:30px!important;height:30px!important;}
+.quick .premiumAsset,.monthAction .premiumAsset{width:30px!important;height:30px!important;}
+.nav button.active .premiumAsset,.seg button.active .premiumAsset{filter:saturate(1.1) brightness(1.12);box-shadow:0 0 12px rgba(216,173,79,.28)}

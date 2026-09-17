@@ -28,12 +28,11 @@ let NORMAL_C=['Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim',
 let FIXED_C=['Kira','Aidat','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu'];
 const I={Kira:'🏠',Aidat:'🏢',Market:'🛒',Manav:'🍎',Fırın:'🥖',Harçlık:'💵',Yemek:'🍽️',Restoran:'🍴',Giyim:'👕',Akaryakıt:'⛽',Faturalar:'🧾',İnternet:'📡',Elektrik:'⚡',Su:'💧',Doğalgaz:'🔥','Cep Telefonu':'📱',Ulaşım:'◆',Sağlık:'✚',Eğitim:'✎',Ev:'⌂',Temizlik:'✦',Çocuk:'★','Evcil Hayvan':'♣','Kişisel Bakım':'✧',Abonelik:'◎',Eğlence:'♪',Tatil:'☀',Hediye:'🎁',Sigorta:'◇',Vergi:'▤',Diğer:'●'};
 const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957',Fırın:'#e5a85b',Harçlık:'#d9b44a',Yemek:'#ff8b5c',Restoran:'#ff6f61',Giyim:'#c084fc',Akaryakıt:'#f59e0b',Faturalar:'#ff8c42','İnternet':'#6ed4ff',Elektrik:'#ffd84d',Su:'#3fa9ff','Doğalgaz':'#ff6b45','Cep Telefonu':'#b879ff','Ulaşım':'#4dd6c7','Sağlık':'#ff5f78',Eğitim:'#60a5fa',Ev:'#d8ad4f',Temizlik:'#22d3ee',Çocuk:'#fb7185','Evcil Hayvan':'#34d399','Kişisel Bakım':'#f472b6',Abonelik:'#818cf8',Eğlence:'#f06dad',Tatil:'#fbbf24',Hediye:'#e879f9',Sigorta:'#38bdf8',Vergi:'#94a3b8',Diğer:'#9ca3af'};
+function iconAssetName(v){return String(v||'Diger').replaceAll(' ','_').replace(/[ıİ]/g,'i').replace(/[ğĞ]/g,'g').replace(/[şŞ]/g,'s').replace(/[üÜ]/g,'u').replace(/[öÖ]/g,'o').replace(/[çÇ]/g,'c')}
 function categoryIconSvg(cat,size=22){
-  const files={
-    'Kira':'kira','Aidat':'aidat','Market':'market','Manav':'manav','Fırın':'firin','Harçlık':'harclik','Yemek':'yemek','Restoran':'restoran','Giyim':'giyim','Akaryakıt':'akaryakit','Ulaşım':'ulasim','Sağlık':'saglik','Eğitim':'egitim','Ev':'ev','Temizlik':'temizlik','Eğlence':'eglence','Faturalar':'faturalar','İnternet':'internet','Elektrik':'elektrik','Su':'su','Doğalgaz':'dogalgaz','Cep Telefonu':'cep-telefonu','Diğer':'diger'
-  };
-  const f=files[cat]||'diger';
-  return `<img class="catSvg luxeIconImg" src="icons/luxe/${f}.webp" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  const built=['Kira','Aidat','Market','Manav','Fırın','Harçlık','Yemek','Restoran','Giyim','Akaryakıt','Ulaşım','Sağlık','Eğitim','Ev','Temizlik','Eğlence','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu','Diğer'];
+  const use=built.includes(cat)?cat:'Diğer';
+  return `<img class="catAsset" src="icons/premium-v5/cat_${iconAssetName(use)}.png" width="${size}" height="${size}" alt="" aria-hidden="true">`;
 }
 function catIcon(cat){return categoryIconSvg(cat,22)}
 function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]||'#d8ad4f'}
@@ -50,28 +49,9 @@ function haneFullLogo(cls=''){
   return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1947" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
-  const luxe={home:'home',transactions:'transactions',fixed:'expenses',cards:'finance',profile:'profile',settings:'settings',income:'income',expense:'expense',report:'report'};
-  if(luxe[name]) return `<img class="premiumSvg luxeIconImg systemLuxeIcon" src="icons/luxe/${luxe[name]}.webp" width="${size}" height="${size}" alt="" aria-hidden="true">`;
-  const p={
-home:`<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10"/><path d="M10 20v-6h4v6"/>`,
-transactions:`<path d="M6 5h12M6 10h12M6 15h8M6 20h10"/><circle cx="3" cy="5" r="1"/><circle cx="3" cy="10" r="1"/><circle cx="3" cy="15" r="1"/><circle cx="3" cy="20" r="1"/>`,
-fixed:`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>`,
-cards:`<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 9h18M7 15h5"/>`,
-profile:`<circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.3-6.5 7.5-6.5s6.7 2.3 7.5 6.5"/>`,
-settings:`<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.1M12 19.1v2.1M2.8 12h2.1M19.1 12h2.1M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/><path d="M8.3 4.3 9 2.5h6l.7 1.8 1.7.7 1.8-.8 2.6 2.6-.8 1.8.7 1.7 1.8.7v3.7l-1.8.7-.7 1.7.8 1.8-2.6 2.6-1.8-.8-1.7.7-.7 1.8H9l-.7-1.8-1.7-.7-1.8.8-2.6-2.6.8-1.8-.7-1.7-1.8-.7V11l1.8-.7L3 8.6l-.8-1.8 2.6-2.6 1.8.8z"/>`,
-income:`<path d="M12 20V5m-5 5 5-5 5 5M5 20h14"/>`,
-expense:`<path d="M12 4v15m-5-5 5 5 5-5M5 4h14"/>`,
-report:`<path d="M5 20V10M10 20V5M15 20v-8M20 20V8M3 20h19"/>`,
-pluscard:`<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M12 13v5M9.5 15.5h5"/>`,
-bell:`<path d="M6 17h12l-1.5-2.5V10a4.5 4.5 0 0 0-9 0v4.5zM10 20h4"/>`,
-lock:`<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/>`,
-palette:`<path d="M12 3a9 9 0 0 0 0 18h2a2 2 0 0 0 0-4h-1a1.5 1.5 0 0 1 0-3h2a6 6 0 0 0-3-11Z"/><circle cx="7.5" cy="9" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7.5" r="1"/>`,
-backup:`<path d="M6 16a4 4 0 0 1 .5-8A6 6 0 0 1 18 9a3.5 3.5 0 0 1 0 7M12 11v9m-3.5-5 3.5-4 3.5 4"/>`,
-info:`<circle cx="12" cy="12" r="9"/><path d="M12 10v6"/><circle cx="12" cy="7" r=".8"/>`,
-trash:`<path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/>`,
-globe:`<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>`
-  };
-  return `<svg class="premiumSvg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${p[name]||p.home}</svg>`;
+  const map={home:'home',transactions:'transactions',fixed:'fixed',cards:'cards',profile:'profile',settings:'settings',income:'income',expense:'expense',report:'report',pluscard:'newrecord',bell:'bell',lock:'security',palette:'light',backup:'backup',info:'info',trash:'trash',globe:'globe'};
+  const file=map[name]||'home';
+  return `<img class="premiumAsset" src="icons/premium-v5/${file}.png" width="${size}" height="${size}" alt="" aria-hidden="true">`;
 }
 function normalizeV19(st){
   st.cardPayments=Array.isArray(st.cardPayments)?st.cardPayments:[];
