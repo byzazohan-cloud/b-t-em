@@ -894,3 +894,6 @@ img,svg,canvas{max-width:100%}
   .phone,.lock,.setup{max-width:430px!important;width:430px!important;box-shadow:0 0 0 1px #181818,0 0 70px rgba(0,0,0,.85)!important}
   .nav,.sheet{max-width:430px!important}
 }
+/* HANE V19.4.8 - hareket arama ve otomatik sabit gider sıralama */
+.txSearchBar{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:8px;width:100%}.txSearchBar .btn{margin:0;min-height:46px}.searchResultItem small{white-space:normal;line-height:1.45}.searchResultItem .right>div{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}.tinyEdit.danger{color:#ff6675}
+@media(max-width:390px){.txSearchBar{grid-template-columns:minmax(0,1fr) 74px}.searchResultItem{align-items:flex-start}.searchResultItem .right{min-width:92px}}
