@@ -1,4 +1,4 @@
-# HANE V19.4.8 — DESIGN V6 GERÇEK PREMIUM İKON SETİ
+# HANE V19.4.8 — DESIGN V7 GERÇEK PREMIUM İKON SETİ
 
 - Kaynak: son sağlam V3/gerçek envanter kodu.
 - 23 gerçek harcama kategorisi için tekil premium SVG varlığı.

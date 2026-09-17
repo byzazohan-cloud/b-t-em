@@ -32,7 +32,7 @@ function categoryIconSvg(cat,size=22){
   const key=String(cat||'Diğer').toLocaleLowerCase('tr-TR').replaceAll('ı','i').replaceAll('ğ','g').replaceAll('ü','u').replaceAll('ş','s').replaceAll('ö','o').replaceAll('ç','c').replace(/\s+/g,'-');
   const known=new Set(['kira','aidat','market','manav','firin','harclik','yemek','restoran','giyim','akaryakit','ulasim','saglik','egitim','ev','temizlik','eglence','faturalar','internet','elektrik','su','dogalgaz','cep-telefonu','diger']);
   const file=known.has(key)?key:'diger';
-  return `<img class="hanePremiumAsset catAsset" src="icons/premium/cat-${file}.svg" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  return `<img class="hanePremiumAsset catAsset" src="icons/premium/cat-${file}.svg?v=7" width="${size}" height="${size}" alt="" aria-hidden="true">`;
 }
 function catIcon(cat){return categoryIconSvg(cat,22)}
 function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]||'#d8ad4f'}
@@ -51,7 +51,7 @@ function haneFullLogo(cls=''){
 function premiumIcon(name,size=26){
   const known=new Set(['home','transactions','fixed','cards','profile','settings','income','expense','report','pluscard','bell','lock','palette','backup','info','trash','globe']);
   const file=known.has(name)?name:'home';
-  return `<img class="hanePremiumAsset systemAsset" src="icons/premium/sys-${file}.svg" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  return `<img class="hanePremiumAsset systemAsset" src="icons/premium/sys-${file}.svg?v=7" width="${size}" height="${size}" alt="" aria-hidden="true">`;
 }
 function normalizeV19(st){
   st.cardPayments=Array.isArray(st.cardPayments)?st.cardPayments:[];
