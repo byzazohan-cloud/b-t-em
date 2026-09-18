@@ -1015,3 +1015,12 @@ button:active,[data-action]:active,[data-tab]:active,.item:active{background-col
 .monthNavigator button{min-height:38px;border-radius:12px;border:1px solid rgba(216,173,79,.22);background:rgba(216,173,79,.08);color:inherit;font-weight:800;font-size:20px}
 .monthNavigator b{text-align:center;font-size:13px;letter-spacing:.45px}.monthNavigator .monthToday{padding:0 10px;font-size:10px;color:var(--gold2)}
 @media(max-width:390px){.monthNavigator{grid-template-columns:40px 1fr 40px}.monthNavigator .monthToday{grid-column:1/-1;min-height:32px}}
+
+/* G2.4 - Aynı gündeki yol ücretlerini tek satırda toplar */
+.roadFeeGroup{border-color:rgba(77,214,199,.22)!important;background:linear-gradient(135deg,rgba(77,214,199,.07),rgba(216,173,79,.035))!important}
+.roadFeeGroup .tapDetailHint{color:var(--gold2)}
+.roadFeeGroupDetail{padding-bottom:8px}
+.roadFeeGroupHero{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:16px;border:1px solid rgba(216,173,79,.24);border-radius:18px;background:linear-gradient(135deg,rgba(216,173,79,.10),rgba(77,214,199,.06));margin-bottom:10px}
+.roadFeeGroupHero h2{margin:4px 0;font-size:20px}.roadFeeGroupHero small,.roadFeeGroupHero span{opacity:.66;font-size:11px}.roadFeeGroupHero strong{font-size:20px;color:var(--red);white-space:nowrap}
+.roadFeeMiniGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.roadFeeMiniGrid>div{padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025)}.roadFeeMiniGrid small{display:block;opacity:.6;font-size:10px}.roadFeeMiniGrid b{display:block;margin-top:5px}
+.roadFeeDetailItem{cursor:pointer}
