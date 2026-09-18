@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": false,
-  "message": "HANE 19.4.8 Grup 2.1 iPhone PWA zorunlu yenileme düzeltmesi.",
+  "message": "HANE 19.4.8 Grup 3: Kart/Nakit özetleri ve aylık kart ekstresi.",
   "updateUrl": "",
-  "build": "20260918-G2-1-PHONE-CACHE-FIX2",
-  "version": "19.4.8-g2-1-phone-cache-fix2-20260918"
+  "build": "20260918-G3-CARD-CASH-STATEMENT",
+  "version": "19.4.8-g3-card-cash-statement-20260918"
 }
