@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": false,
-  "message": "HANE 19.4.8 Grup 1 finansal çekirdek güncellemesi.",
+  "message": "HANE 19.4.8 Grup 2 aylık sistem ve tarih mantığı güncellemesi.",
   "updateUrl": "",
-  "build": "20260918-G1-FINANCE-CORE",
-  "version": "19.4.8-g1-finance-core-20260918"
+  "build": "20260918-G2-MONTH-DATE-CORE",
+  "version": "19.4.8-g2-month-date-core-20260918"
 }

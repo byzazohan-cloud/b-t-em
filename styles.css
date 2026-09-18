@@ -1009,3 +1009,9 @@ button:active,[data-action]:active,[data-tab]:active,.item:active{background-col
 .nav.v1947CleanNav button.active{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .reportSeg button.active,.cardPayTypeSeg button.active{color:var(--gold2)!important;text-shadow:0 0 12px rgba(216,173,79,.18)}
 @media(max-width:390px){.catGem{width:35px;height:35px}.premiumIco .catGem{width:37px;height:37px}.catGem .catSvg{width:20px;height:20px}}
+
+/* Group 2 - month/date core */
+.monthNavigator{display:grid;grid-template-columns:44px 1fr 44px auto;gap:8px;align-items:center;margin:4px 0 12px;padding:10px;border:1px solid rgba(216,173,79,.22);border-radius:18px;background:rgba(255,255,255,.025)}
+.monthNavigator button{min-height:38px;border-radius:12px;border:1px solid rgba(216,173,79,.22);background:rgba(216,173,79,.08);color:inherit;font-weight:800;font-size:20px}
+.monthNavigator b{text-align:center;font-size:13px;letter-spacing:.45px}.monthNavigator .monthToday{padding:0 10px;font-size:10px;color:var(--gold2)}
+@media(max-width:390px){.monthNavigator{grid-template-columns:40px 1fr 40px}.monthNavigator .monthToday{grid-column:1/-1;min-height:32px}}
