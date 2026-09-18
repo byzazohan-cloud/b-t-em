@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 Clean Final: 28 maddelik ana güncelleme planı tamamlandı; Son Hareketler eklendi, yerel tarih kaydı düzeltildi, sabit gider ödeme detayları tek kayıt kaynağına bağlandı ve kullanılmayan eski kod/dosyalar temizlendi.",
+  "message": "HANE 19.4.8 Card Integrated: Finans ekranı premium dikey kart tasarımına entegre edildi, KARTLAR / ESNEK HESAP sekmeleri eşitlendi, kart görünümü lüks stile güncellendi; işleyiş korunmuştur.",
   "updateUrl": "",
-  "build": "20260918-CLEAN-FINAL",
-  "version": "19.4.8-BRAND_SIGNATURE_1-20260918"
+  "build": "20260918-CARD-INTEGRATED",
+  "version": "19.4.8-CARD-INTEGRATED-20260918"
 }
