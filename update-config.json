@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": false,
-  "message": "HANE güncellemesi hazır. Uygulama yeni sürümü otomatik olarak alacaktır.",
+  "message": "HANE 19.4.8 Grup 1 finansal çekirdek güncellemesi.",
   "updateUrl": "",
-  "build": "20260917-RPT-final-fixed-category-ui",
-  "version": "19.4.8-final-fixed-category-ui-20260917"
+  "build": "20260918-G1-FINANCE-CORE",
+  "version": "19.4.8-g1-finance-core-20260918"
 }
