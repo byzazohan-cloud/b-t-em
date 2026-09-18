@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": false,
-  "message": "HANE 19.4.8 Grup 2 aylık sistem ve tarih mantığı güncellemesi.",
+  "message": "HANE 19.4.8 Grup 2.1 iPhone PWA zorunlu yenileme düzeltmesi.",
   "updateUrl": "",
-  "build": "20260918-G2-MONTH-DATE-CORE",
-  "version": "19.4.8-g2-month-date-core-20260918"
+  "build": "20260918-G2-1-PHONE-CACHE-FIX2",
+  "version": "19.4.8-g2-1-phone-cache-fix2-20260918"
 }

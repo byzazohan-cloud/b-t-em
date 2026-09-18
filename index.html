@@ -12,10 +12,26 @@
 <meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
 <meta name="color-scheme" content="dark light">
 <meta name="application-name" content="HANE">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+(function(){
+  const BUILD='19.4.8.20260918-phonefix2';
+  const KEY='hane_app_shell_build';
+  try {
+    if (localStorage.getItem(KEY) !== BUILD) {
+      localStorage.setItem(KEY, BUILD);
+      if ('caches' in window) caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)))).catch(()=>{});
+      if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.update().catch(()=>{})))).catch(()=>{});
+    }
+  } catch(e) {}
+})();
+</script>
 
-<link rel="manifest" href="./manifest.json?v=19.4.8.20260917-RPT-livesearch1">
+<link rel="manifest" href="./manifest.json?v=19.4.8.20260918-phonefix2">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
-<link rel="stylesheet" href="./styles.css?v=19.4.8.20260918-g2monthfix1">
+<link rel="stylesheet" href="./styles.css?v=19.4.8.20260918-phonefix2">
 <title>HANE</title>
 </head>
 <body>
@@ -23,11 +39,11 @@
 <input id="profileInput" type="file" accept="image/*" hidden>
 <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 <input id="restoreInput" type="file" hidden>
-<script defer src="./app-v19.js?v=19.4.8.20260918-g2monthfix1"></script>
+<script defer src="./app-v19.js?v=19.4.8.20260918-phonefix2"></script>
 
 <script>
 (function(){
-  const BUILD = '19.4.8.20260918-g2monthfix1';
+  const BUILD = '19.4.8.20260918-phonefix2';
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', async () => {
     try {
