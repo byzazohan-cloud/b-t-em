@@ -1,9 +1,9 @@
 {
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
-  "force": false,
-  "message": "HANE 19.4.8 Grup 3: Kart/Nakit özetleri ve aylık kart ekstresi.",
+  "force": true,
+  "message": "HANE 19.4.8 Clean Final: 28 maddelik ana güncelleme planı tamamlandı; Son Hareketler eklendi, yerel tarih kaydı düzeltildi, sabit gider ödeme detayları tek kayıt kaynağına bağlandı ve kullanılmayan eski kod/dosyalar temizlendi.",
   "updateUrl": "",
-  "build": "20260918-G3-CARD-CASH-STATEMENT",
-  "version": "19.4.8-g3-card-cash-statement-20260918"
+  "build": "20260918-CLEAN-FINAL",
+  "version": "19.4.8-clean-final-20260918"
 }

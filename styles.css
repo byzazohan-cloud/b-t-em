@@ -601,7 +601,7 @@ a,button,.setting,.item,.section span{
 .quick button{font-size:9px!important;font-weight:850!important;color:#fff!important}
 .settingIco{width:42px;height:42px;border-radius:13px;display:grid!important;place-items:center!important;color:var(--gold2);border:1px solid rgba(216,173,79,.38);background:radial-gradient(circle at 30% 20%,rgba(244,215,134,.12),transparent 46%),linear-gradient(145deg,#15120b,#080808)}
 .settingIco.dangerIco{color:var(--red);border-color:rgba(255,70,88,.35)}.setting{min-height:58px!important}.setting>span:nth-child(2){font-size:10px!important;font-weight:800!important;color:#fff}.premiumTopIcon{color:var(--gold2)!important}
-/* V19.1 locked patch — premium gider categories + payment source + report movements */
+/* Premium gider kategorileri, ödeme kaynağı ve rapor hareketleri */
 .premiumCatGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:7px}.premiumCatBtn{min-height:78px;border:1px solid #292929;border-radius:14px;background:linear-gradient(150deg,#0e0f11,#070707);color:#ddd;padding:8px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}.premiumCatBtn b{font-size:8px;line-height:1.1;text-align:center}.premiumCatBtn.active{border-color:var(--cat,#d8ad4f);box-shadow:inset 0 0 0 1px rgba(216,173,79,.18),0 0 16px rgba(216,173,79,.08);color:#fff}.catGem{--cat:#d8ad4f;width:39px;height:39px;border-radius:12px;display:grid;place-items:center;color:var(--cat);border:1px solid color-mix(in srgb,var(--cat) 58%,transparent);background:radial-gradient(circle at 30% 22%,color-mix(in srgb,var(--cat) 24%,transparent),transparent 48%),linear-gradient(145deg,#171717,#080808);box-shadow:inset 0 0 12px color-mix(in srgb,var(--cat) 8%,transparent)}.catGem span{font-size:19px;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--cat) 35%,transparent))}.hiddenCatSelect{display:none!important}.paySourceSeg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.paySourceSeg button{height:44px;border-radius:12px;border:1px solid #303030;background:#090a0b;color:#aaa;font-weight:900;font-size:10px}.paySourceSeg button.active{border-color:rgba(216,173,79,.65);color:var(--gold2);background:linear-gradient(145deg,#17130a,#080808);box-shadow:0 0 14px rgba(216,173,79,.1)}.fieldHint{display:block;color:#999;font-size:8px;margin-top:5px}.reportMoves .item{grid-template-columns:42px 1fr auto}.reportMoves .premiumIco>.catGem{width:38px;height:38px;border:0;background:transparent}.reportMoveRight{text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end}.reportMoveRight>div{display:flex;gap:5px}.reportMoveRight button{border:1px solid rgba(216,173,79,.4);background:#0b0b0b;color:var(--gold2);border-radius:8px;padding:5px 6px;font-size:7px;font-weight:900}.reportMoveRight button.danger{border-color:rgba(255,70,88,.35);color:var(--red)}
 
 /* V19.1.1 — light/dark mode toggle without changing locked layout */
@@ -1016,7 +1016,7 @@ button:active,[data-action]:active,[data-tab]:active,.item:active{background-col
 .monthNavigator b{text-align:center;font-size:13px;letter-spacing:.45px}.monthNavigator .monthToday{padding:0 10px;font-size:10px;color:var(--gold2)}
 @media(max-width:390px){.monthNavigator{grid-template-columns:40px 1fr 40px}.monthNavigator .monthToday{grid-column:1/-1;min-height:32px}}
 
-/* G2.4 - Aynı gündeki yol ücretlerini tek satırda toplar */
+/* Aynı gündeki yol ücretlerini tek satırda toplar */
 .roadFeeGroup{border-color:rgba(77,214,199,.22)!important;background:linear-gradient(135deg,rgba(77,214,199,.07),rgba(216,173,79,.035))!important}
 .roadFeeGroup .tapDetailHint{color:var(--gold2)}
 .roadFeeGroupDetail{padding-bottom:8px}
@@ -1025,14 +1025,158 @@ button:active,[data-action]:active,[data-tab]:active,.item:active{background-col
 .roadFeeMiniGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.roadFeeMiniGrid>div{padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025)}.roadFeeMiniGrid small{display:block;opacity:.6;font-size:10px}.roadFeeMiniGrid b{display:block;margin-top:5px}
 .roadFeeDetailItem{cursor:pointer}
 
-/* G3 - Kart/Nakit özetleri ve aylık ekstre */
+/* Kart/Nakit özetleri ve aylık ekstre */
 .paySummaryGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 16px}.paySummaryGrid button{min-height:105px;border:1px solid rgba(216,173,79,.34);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(216,173,79,.035));padding:14px;text-align:left;color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}.paySummaryGrid small{display:block;font-size:10px;letter-spacing:.7px;opacity:.7}.paySummaryGrid b{display:block;font-size:20px;margin:8px 0;color:var(--gold2)}.paySummaryGrid span{font-size:10px;opacity:.75}.statementBtn{min-width:88px}.statementHead{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;margin-bottom:10px}.statementHead>div{text-align:center}.statementHead small,.statementHead b{display:block}.statementHead button{height:42px;border-radius:14px;border:1px solid rgba(216,173,79,.35);background:rgba(255,255,255,.04);color:var(--gold2);font-size:25px}.statementHero{border:1px solid rgba(216,173,79,.35);border-radius:20px;padding:18px;background:linear-gradient(145deg,rgba(216,173,79,.08),rgba(255,255,255,.025));margin-bottom:10px}.statementHero small,.statementHero b{display:block}.statementHero h2{margin:8px 0;color:var(--gold2)}.statementTotals{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0 14px}.statementTotals span{padding:10px 8px;border-radius:13px;background:rgba(255,255,255,.04);font-size:9px;text-align:center}.statementTotals b{display:block;font-size:12px;margin-top:4px}.statementItem .right{min-width:95px}
 @media(max-width:520px){.paySummaryGrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.paySummaryGrid button{min-height:96px;padding:11px}.paySummaryGrid b{font-size:17px}.paySummaryGrid small{font-size:9px}.paySummaryGrid span{font-size:9px}.statementTotals{grid-template-columns:1fr 1fr 1fr}.cardActions{flex-wrap:wrap}.statementBtn{flex:1 1 100%}}
 
-/* G3.1 - Kartin tamami ekstreye gider */
+/* Kartın tamamı ekstreyi açar */
 .clickableCredit{cursor:pointer;position:relative}.clickableCredit:after{content:"DOKUN → EKSTRE";position:absolute;right:14px;top:14px;font-size:8px;letter-spacing:.7px;opacity:.55;pointer-events:none}.clickableCredit .cardActions button{position:relative;z-index:2}
-/* G4 Hane Uyesi Sistemi */
+/* Hane üyesi sistemi */
 .memberSummaryList{display:grid;gap:10px;margin:10px 0 18px}.memberSummaryCard{width:100%;display:grid;grid-template-columns:48px 1fr auto 18px;align-items:center;gap:10px;padding:14px;border:1px solid color-mix(in srgb,var(--gold2) 24%,transparent);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));color:inherit;text-align:left}.memberSummaryCard .memberAvatar{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:rgba(216,173,79,.11);border:1px solid rgba(216,173,79,.2)}.memberSummaryText{min-width:0;display:flex;flex-direction:column;gap:4px}.memberSummaryText b{font-size:13px;letter-spacing:.4px}.memberSummaryText small{font-size:10px;opacity:.64;white-space:normal}.memberSummaryCard strong{font-size:13px;color:var(--gold2);white-space:nowrap}.memberSummaryCard em{font-style:normal;font-size:22px;opacity:.6}.memberDetailSummary{display:grid;grid-template-columns:1fr auto;gap:5px 12px;padding:14px 15px;border-radius:16px;margin-bottom:12px;background:rgba(216,173,79,.08);border:1px solid rgba(216,173,79,.18)}.memberDetailSummary small{font-size:10px;opacity:.65}.memberDetailSummary b{font-size:20px;color:var(--gold2);grid-row:1/3;grid-column:2}.memberDetailSummary span{font-size:11px;opacity:.7}.memberRowActions{display:flex;gap:5px;justify-content:flex-end;margin-top:5px}.memberRowActions button{font-size:9px;padding:5px 7px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:inherit}.memberInfoNotice{margin-bottom:12px}
 
-/* G5 - Gider hareketleri ve düzenleme akışı */
+/* Gider hareketleri ve düzenleme akışı */
 .collapsibleExpenseHead{width:100%;border:0;background:transparent;color:inherit;cursor:pointer;text-align:left;margin-top:8px}.collapsibleExpenseHead span{display:flex;align-items:center;gap:6px}.expenseAddFooter{display:flex;justify-content:flex-end;padding:8px 0 4px}.clickableGrand{width:100%;border:0;color:inherit;font:inherit;cursor:pointer}.clickableGrand em{font-style:normal;opacity:.7;font-size:20px}.item,.sum,.fixedCatTotal,.paymentSourceCard{cursor:pointer}.toast{z-index:99999}
+
+/* =========================================================
+   HANE 19.4.8 · CLEAN FINAL — PREMIUM DESIGN / THEME LAYER
+   Kart stilleri temadan bağımsız korunur. Açık/koyu mod için
+   tüm genel yüzey ve metinler son katmanda tutarlı hale gelir.
+   ========================================================= */
+:root{
+  --surface:#090a0c;
+  --surface2:#0d0f12;
+  --surface3:#121419;
+  --border:#2b2d31;
+  --textStrong:#f7f7f7;
+  --textSoft:#a8adb4;
+}
+html.lightMode{
+  --surface:#ffffff;
+  --surface2:#f8f6f1;
+  --surface3:#f0ece4;
+  --border:#d8d2c7;
+  --textStrong:#171717;
+  --textSoft:#6e6961;
+  color-scheme:light;
+}
+html.darkMode{color-scheme:dark}
+
+/* Genel uygulama yüzeyleri */
+html.lightMode body,
+html.lightMode #app,
+html.lightMode .phone,
+html.lightMode .content{background:#f3f1eb!important;color:var(--textStrong)!important}
+html.lightMode .top{background:linear-gradient(180deg,rgba(243,241,235,.99) 72%,rgba(243,241,235,.92) 88%,rgba(243,241,235,.72))!important}
+html.lightMode .nav{background:rgba(255,255,255,.98)!important;border-top-color:#d8d2c7!important}
+html.lightMode .sheet{background:#fbfaf7!important;border-color:#d8d2c7!important;color:#171717!important}
+html.lightMode .modal{background:rgba(20,18,14,.48)!important}
+html.lightMode .close{background:#fff!important;color:#171717!important;border-color:#d8d2c7!important}
+
+/* Genel kart/listeler */
+html.lightMode .card,
+html.lightMode .sum,
+html.lightMode .item,
+html.lightMode .setting,
+html.lightMode .notice,
+html.lightMode .themeCard,
+html.lightMode .detailMini,
+html.lightMode .detailCat,
+html.lightMode .monthAction,
+html.lightMode .memberSummaryCard,
+html.lightMode .paySummaryGrid button,
+html.lightMode .statementHero,
+html.lightMode .statementTotals,
+html.lightMode .collapsibleExpenseHead,
+html.lightMode .calendarDayDetail{
+  background:linear-gradient(180deg,#fff,#f8f6f1)!important;
+  color:#171717!important;
+  border-color:#d8d2c7!important;
+  box-shadow:0 8px 24px rgba(62,51,33,.07)!important;
+}
+html.lightMode .item b,
+html.lightMode .item strong,
+html.lightMode .right b,
+html.lightMode .section b,
+html.lightMode .setting,
+html.lightMode .notice b,
+html.lightMode .detailMini span,
+html.lightMode .detailMini b,
+html.lightMode .detailCatMid b,
+html.lightMode .detailCat strong,
+html.lightMode .statementHero h2,
+html.lightMode .statementHero b,
+html.lightMode .statementTotals b,
+html.lightMode .paySummaryGrid b,
+html.lightMode .memberSummaryText b{color:#171717!important}
+html.lightMode .item small,
+html.lightMode .notice,
+html.lightMode .detailCatMid span,
+html.lightMode .statementHero small,
+html.lightMode .paySummaryGrid small,
+html.lightMode .paySummaryGrid span,
+html.lightMode .memberSummaryText small,
+html.lightMode .fieldHint,
+html.lightMode .tapDetailHint{color:#6e6961!important}
+
+/* Formlar */
+html.lightMode .field label{color:#55514b!important}
+html.lightMode .field input,
+html.lightMode .field select,
+html.lightMode .field textarea{
+  background:#fff!important;color:#171717!important;border-color:#d2cbc0!important;
+  box-shadow:none!important;
+}
+html.lightMode .field input:focus,
+html.lightMode .field select:focus,
+html.lightMode .field textarea:focus{border-color:var(--gold2)!important;box-shadow:0 0 0 2px rgba(184,135,37,.10)!important}
+html.lightMode .paySourceSeg,
+html.lightMode .seg{background:#eeeae2!important;border-color:#d3ccc0!important}
+html.lightMode .paySourceSeg button,
+html.lightMode .seg button{background:transparent!important;color:#5d5952!important}
+html.lightMode .paySourceSeg button.active,
+html.lightMode .seg button.active{background:linear-gradient(145deg,#f2d17d,#be8f34)!important;color:#15120b!important}
+html.lightMode .btn:not(.gold){background:#fff!important;color:#171717!important;border-color:#d2cbc0!important}
+
+/* Premium kategori ikonları — iki temada da mücevher görünümü */
+.catGem,.premiumIco{
+  position:relative;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--cat,#d8ad4f) 22%,#171717),#070707 72%)!important;
+  border:1px solid color-mix(in srgb,var(--cat,#d8ad4f) 62%,transparent)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 7px 18px rgba(0,0,0,.18)!important;
+}
+.catGem .catSvg,.premiumIco .catSvg{stroke:var(--cat,#d8ad4f)!important;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--cat,#d8ad4f) 48%,transparent))}
+html.lightMode .catGem,
+html.lightMode .premiumIco{background:linear-gradient(145deg,#fff,#eee9df)!important;box-shadow:inset 0 1px 0 #fff,0 6px 15px rgba(80,63,32,.10)!important}
+html.lightMode .catGem .catSvg,
+html.lightMode .premiumIco .catSvg{stroke:var(--cat,#b88725)!important}
+
+/* Navigasyon ve hızlı işlemler */
+html.lightMode .quick button{background:linear-gradient(180deg,#fff,#f7f4ed)!important;color:#171717!important;border-color:#d8d2c7!important;box-shadow:0 7px 18px rgba(62,51,33,.06)}
+html.lightMode .ib,html.lightMode .back{background:#fff!important;color:#a9771f!important;border-color:#d8d2c7!important}
+html.lightMode .nav button{color:#74716b!important}
+html.lightMode .nav .active{color:#a9771f!important}
+
+/* Kredi kartları: tasarım ve renkler tema değişiminden ASLA etkilenmez */
+.credit{isolation:isolate;border:1px solid rgba(255,255,255,.10)!important;box-shadow:0 18px 38px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08)!important}
+.credit:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(118deg,rgba(255,255,255,.10),transparent 28%,transparent 66%,rgba(255,255,255,.04));opacity:.72}
+.credit.blackgold{border-color:rgba(213,173,85,.54)!important;box-shadow:0 18px 38px rgba(0,0,0,.38),inset 0 1px 0 rgba(242,209,125,.16)!important}
+.credit:not(.silver),.credit:not(.silver) small,.credit:not(.silver) b,.credit:not(.silver) .digits{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.28)}
+.credit.silver,.credit.silver small,.credit.silver b,.credit.silver .digits{color:#171717!important;text-shadow:none}
+.credit .cardActions .btn{backdrop-filter:blur(7px);background:rgba(0,0,0,.28)!important;border-color:rgba(255,255,255,.16)!important;color:#fff!important}
+.credit.silver .cardActions .btn{background:rgba(255,255,255,.38)!important;color:#111!important;border-color:rgba(0,0,0,.14)!important}
+
+/* Tema anahtarı ve bildiriler */
+html.lightMode .toast{background:#fff!important;color:#171717!important;border-color:#d0c8ba!important;box-shadow:0 12px 28px rgba(52,43,27,.18)!important}
+html.lightMode .profile .ava,html.lightMode .ava{box-shadow:0 0 0 2px rgba(184,135,37,.08)!important}
+
+/* Küçük ekranlarda ikon ve metin taşmasını engelle */
+.premiumSvg,.catSvg{stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.ico,.premiumIco,.detailCatIcon{flex:0 0 auto;overflow:hidden}
+@media(max-width:360px){
+  .item{grid-template-columns:38px minmax(0,1fr) auto!important;gap:8px!important}
+  .item b{font-size:12px!important}.item small{font-size:9px!important}
+  .premiumIco,.ico{width:38px!important;height:38px!important}
+}
+
+/* Clean Final · Son hareketler */
+.sectionLinkBtn{border:0;background:transparent;color:var(--gold2);font:inherit;font-size:10px;font-weight:800;letter-spacing:.45px;padding:4px 0;cursor:pointer}.recentHomeList{margin-bottom:14px}.recentHomeItem{min-height:64px}

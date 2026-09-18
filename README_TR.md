@@ -1,32 +1,16 @@
-# HANE 19.4.8 — Grup 3: Kart / Nakit / Ekstre
+HANE PREMIUM V19.4.8 — CLEAN FINAL
 
-Bu paket G2.5 üzerine Grup 3 güncellemesini ekler. Mevcut veriler korunur.
+Bu paket FINAL AUDIT sürümünün temizlenmiş ve tamamlanmış devamıdır.
 
-Eklenenler:
-- Giderler ekranında seçili ay için Toplam Nakit Harcama ve Toplam Kredi Kartı Harcama özetleri.
-- Özet kartlarına dokununca toplamı oluşturan gerçek gider hareketleri açılır.
-- Her kartta EKSTRE butonu.
-- Ekstrede aylar arasında ileri/geri gezinme.
-- Harcamalar, sabit gider kart ödemeleri, kart ödemeleri ve kalan güncel borç birlikte gösterilir.
-- Ekstre hareketlerinden doğrudan düzenleme/silme akışına geçilir.
-- Kart adı ödeme yönteminde açıkça gösterilir.
-- Kart borcu ayrı bir kopya kayıt üzerinden değil mevcut merkezi yeniden hesaplama mantığı üzerinden korunur.
-- Geçmiş ay sabit gider kart ödemesi ekstre içinden düzenlenirken tam ilgili ödeme kaydı açılır.
+Tamamlanan ana noktalar:
+- 28 maddelik HANE güncelleme planındaki finans, ay/tarih, kart/ekstre, hane üyesi, hareket, form güvenliği, takvim ve tema sistemi korunur.
+- Ana ekrana seçili ayın en yeni 12 kaydını gösteren tıklanabilir SON HAREKETLER bölümü eklendi.
+- Türkiye saatinde gece yarısı tarihinin önceki güne kayabilmesine yol açan UTC tarih üretimi yerel tarih üretimiyle değiştirildi.
+- Rapor/özel tarih aralığındaki sabit gider kategori detayları tam ödeme kaydını açar.
+- Artık kullanılmayan eski ayrı sabit-gider form/kaydetme akışı ve kullanılmayan render yardımcısı kaldırıldı.
+- İşlevsiz Bildirimler ayar satırı kaldırıldı.
+- Referansı olmayan eski logo/icon dosyaları temizlendi.
+- Mevcut kullanıcı verileri, şifreli localStorage anahtarları ve veri şeması korunur; veri sıfırlaması yapılmaz.
+- PWA/cache kimliği Clean Final olarak yenilendi.
 
-Finansal temel kural: HANE, evin gerçekte ne kadar para harcadığını gösterir.
-
-
-G3.1
-- Kredi kartinin tamami tiklanabilir; karta dokununca dogrudan aylik ekstre acilir.
-- Kart icindeki Harcama/Odeme/Ekstre/Duzenle butonlari kendi islevlerini korur.
-- Giderler ekranindaki Toplam Nakit Harcama ve Toplam Kredi Karti Harcama kartlari telefonda da yan yana kalir.
-
-
-## G4 - Hane Üyesi Sistemi
-- Gider ve sabit gider formlarına isteğe bağlı Hane Üyesi seçimi eklendi.
-- Doğrudan kredi kartı harcamalarında da Hane Üyesi seçilebilir.
-- Üye seçilmeyen kayıtlar Hane Geneli / Atanmamış altında tutulur.
-- Hane Üyeleri ekranında seçili aya göre kişi toplamı, nakit/kart kırılımı ve hareket sayısı gösterilir.
-- Üyeye dokununca hareketleri açılır; kayıtlar Düzenle/Sil yapılabilir.
-- Üye silinirse bağlı kayıtlar silinmez, Atanmamış durumuna geçer.
-- Mevcut veriler korunur.
+Build: 20260918-CLEAN-FINAL
