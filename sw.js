@@ -1,5 +1,5 @@
 /* HANE PWA update worker - network first for app shell */
-const CACHE_NAME = 'hane-v19-4-8-BRAND_SIGNATURE_1-20260918';
+const CACHE_NAME = 'hane-v19-4-8-PREMIUM_VERTICAL_CARDS-20260918';
 const APP_SHELL = [
   './', './index.html', './styles.css', './app-v19.js', './manifest.json',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
