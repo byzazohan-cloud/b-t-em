@@ -1,9 +1,0 @@
-{
-  "latestVersion": "19.4.8",
-  "minimumVersion": "19.4.8",
-  "force": true,
-  "message": "HANE 19.4.8 test düzeltmesi: OCR bağımlılıkları sabitlendi, iade hareketleri ayrı gösterime alındı ve eski finans CSS çakışmaları azaltıldı.",
-  "updateUrl": "",
-  "build": "20260919-STATEMENT-TEST-FIXED",
-  "version": "19.4.8-STATEMENT-TEST-FIXED-20260919"
-}
