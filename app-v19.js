@@ -1006,20 +1006,45 @@ function statementPreview(cardId,rows){
   <div class="statementImportList">${usable.length?usable.map((r,i)=>`<div class="statementImportRow"><input type="checkbox" data-stmt-check="${i}" checked><div class="stmtEditGrid"><input type="date" data-stmt-date="${i}" value="${esc(r.date)}"><input type="text" data-stmt-title="${i}" value="${esc(r.title)}" maxlength="100"><input type="number" step="0.01" data-stmt-amount="${i}" value="${Number(r.amount).toFixed(2)}" ${r.payment?'readonly':''}><select data-stmt-category="${i}" ${r.payment?'disabled':''}>${r.payment?`<option value="Kart Ödemesi" selected>Kart Ödemesi</option>`:C.map(cat=>`<option value="${esc(cat)}" ${cat===r.category?'selected':''}>${esc(cat)}</option>`).join('')}</select></div><small class="stmtRowType">${r.payment?'KART ÖDEMESİ':r.refund?'İADE':r.installmentCount?`TAKSİT ${r.installmentNo||'?'} / ${r.installmentCount}${r.installmentTotal?` · TOPLAM ${money(r.installmentTotal)}`:''}`:'HARCAMA'}</small></div>`).join(''):'<div class="notice">EKLENECEK YENİ HAREKET BULUNMADI.</div>'}</div>${usable.length?'<button class="btn gold" style="width:100%;margin-top:12px" data-action="statementImportConfirm">SEÇİLENLERİ EKLE</button>':''}`
 }
 
+const HANE_OCR_SCRIPT='./__hane_engine__/tesseract/tesseract.min.js';
+const HANE_OCR_WORKER='./__hane_engine__/tesseract/worker.min.js';
+const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
+const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
+const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
+const HANE_CDN_OCR_SCRIPT='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+const HANE_CDN_OCR_WORKER='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js';
+const HANE_CDN_OCR_CORE='https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1';
+const HANE_CDN_PDF_MODULE='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
+const HANE_CDN_PDF_WORKER='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false;
-async function loadTesseract(){if(window.Tesseract)return window.Tesseract;await new Promise((res,rej)=>{const old=document.querySelector('script[data-hane-ocr="1"]');if(old){old.addEventListener('load',res,{once:true});old.addEventListener('error',()=>rej(new Error('OCR motoru hazırlanamadı. İnternet bağlantısını kontrol edip tekrar deneyin; kişisel ekstre bu aşamada henüz seçilmez.')),{once:true});return}const sc=document.createElement('script');sc.dataset.haneOcr='1';sc.src=HANE_OCR_SCRIPT;sc.crossOrigin='anonymous';sc.referrerPolicy='no-referrer';sc.onload=res;sc.onerror=()=>rej(new Error('OCR motoru hazırlanamadı. İnternet bağlantısını kontrol edip tekrar deneyin; kişisel ekstre bu aşamada henüz seçilmez.'));document.head.appendChild(sc)});return window.Tesseract}
-async function getStatementOcrWorker(label='OCR'){statementOcrLabel=label;if(statementOcrWorker)return statementOcrWorker;const T=await loadTesseract(),langPath=new URL('./vendor/tesseract/lang',location.href).href.replace(/\/$/,'');statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:HANE_OCR_WORKER,langPath,corePath:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});return statementOcrWorker}
+async function loadTesseract(preferCdn=false){
+  if(window.Tesseract)return window.Tesseract;
+  const src=preferCdn?HANE_CDN_OCR_SCRIPT:HANE_OCR_SCRIPT;
+  await new Promise((res,rej)=>{
+    const old=document.querySelector('script[data-hane-ocr="1"]');
+    if(old)old.remove();
+    const sc=document.createElement('script');sc.dataset.haneOcr='1';sc.src=src;sc.crossOrigin='anonymous';sc.referrerPolicy='no-referrer';
+    sc.onload=res;sc.onerror=()=>rej(new Error('OCR motoru yüklenemedi. İnternet bağlantısını kontrol edip tekrar deneyin.'));
+    document.head.appendChild(sc)
+  });
+  return window.Tesseract
+}
+async function getStatementOcrWorker(label='OCR',preferCdn=false){
+  statementOcrLabel=label;if(statementOcrWorker)return statementOcrWorker;
+  const T=await loadTesseract(preferCdn),langPath=new URL('./vendor/tesseract/lang',location.href).href.replace(/\/$/,'');
+  statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:preferCdn?HANE_CDN_OCR_WORKER:HANE_OCR_WORKER,langPath,corePath:preferCdn?HANE_CDN_OCR_CORE:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});
+  return statementOcrWorker
+}
 async function releaseStatementOcrWorker(){if(statementOcrWorker){try{await statementOcrWorker.terminate()}catch{}statementOcrWorker=null}}
 
-async function getStatementPdfRuntime(){
+async function getStatementPdfRuntime(preferCdn=false){
   if(statementPdfjs)return statementPdfjs;
   try{
-    const pdfjs=await import(HANE_PDF_MODULE);
-    pdfjs.GlobalWorkerOptions.workerSrc=HANE_PDF_WORKER;
-    // Worker is deliberately initialized before the user selects any bank document.
+    const pdfjs=await import(preferCdn?HANE_CDN_PDF_MODULE:HANE_PDF_MODULE);
+    pdfjs.GlobalWorkerOptions.workerSrc=preferCdn?HANE_CDN_PDF_WORKER:HANE_PDF_WORKER;
     try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}
     statementPdfjs=pdfjs;return pdfjs;
-  }catch{throw new Error('PDF motoru hazırlanamadı. İnternet bağlantısını kontrol edip tekrar deneyin; kişisel ekstre bu aşamada henüz seçilmez.')}
+  }catch{throw new Error('PDF motoru yüklenemedi. İnternet bağlantısını kontrol edip tekrar deneyin.')}
 }
 async function requestVerifiedStatementEngines(){
   if(!navigator.serviceWorker?.controller)throw new Error('Güvenli okuma motoru henüz etkin değil. Sayfayı bir kez yenileyin.');
@@ -1032,17 +1057,18 @@ async function requestVerifiedStatementEngines(){
 }
 async function prepareStatementPrivacyRuntime(){
   if(statementPrivacyPrepared)return true;
-  if(!('serviceWorker' in navigator))throw new Error('Güvenli ekstre okuma bu tarayıcıda desteklenmiyor.');
-  if(!navigator.serviceWorker.controller){
-    await Promise.race([
-      navigator.serviceWorker.ready.catch(()=>null),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Güvenli okuma motoru hazırlanamadı. HANE’yi internet açıkken kapatıp yeniden açın.')),8000))
-    ]);
+  let localReady=false;
+  try{
+    if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
+      await requestVerifiedStatementEngines();
+      await Promise.all([getStatementPdfRuntime(false),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR',false)]);
+      localReady=true;
+    }
+  }catch(e){console.warn('HANE local OCR/PDF cache unavailable, using pinned engine fallback:',e)}
+  if(!localReady){
+    await releaseStatementOcrWorker();statementPdfjs=null;statementPdfWorker=null;
+    await Promise.all([getStatementPdfRuntime(true),getStatementOcrWorker('OCR MOTORU HAZIRLANIYOR',true)]);
   }
-  if(!navigator.serviceWorker.controller)throw new Error('Güvenli okuma motoru henüz etkin değil. HANE’yi bir kez kapatıp yeniden açın.');
-  // Engine packages are completed and SHA-512 verified BEFORE any personal statement file is selected.
-  await requestVerifiedStatementEngines();
-  await Promise.all([getStatementPdfRuntime(),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR')]);
   statementPrivacyPrepared=true;
   return true;
 }

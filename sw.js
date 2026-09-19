@@ -7,7 +7,18 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME = 'hane-v19-4-8-local-data-only-12-engine-recovery';
+const CACHE_NAME = 'hane-v19-4-8-local-data-only-13-engine-fallback';
+const PINNED_ENGINE_URLS=new Set([
+  'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+  'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core.wasm.js',
+  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-simd.wasm.js',
+  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-lstm.wasm.js',
+  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-simd-lstm.wasm.js',
+  'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs',
+  'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs'
+]);
+
 const APP_SHELL=[
   './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
@@ -177,7 +188,7 @@ self.addEventListener('fetch',event=>{
   const sameOrigin=url.origin===SCOPE.origin;
 
   // Runtime firewall: absolutely no cross-origin network and no state-changing HTTP methods.
-  if(!sameOrigin){event.respondWith(blocked());return}
+  if(!sameOrigin){if(req.method==='GET'&&PINNED_ENGINE_URLS.has(url.href)){event.respondWith(fetch(new Request(req,{credentials:'omit',referrerPolicy:'no-referrer',cache:'no-store'})));return}event.respondWith(blocked());return}
   if(req.method!=='GET'){event.respondWith(blocked(405,'HANE runtime network writes are disabled'));return}
 
   // Only exact HANE resources are addressable. Query strings cannot create an exfiltration channel.

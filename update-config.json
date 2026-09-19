@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: Ekstre PDF/OCR motorları eksikse dosya seçilmeden önce güvenli olarak yeniden hazırlanır ve SHA-512 doğrulanır.",
+  "message": "HANE 19.4.8: OCR/PDF motor hazırlama hatası düzeltildi. Yerel güvenli motor cache kullanılır; gerekirse ekstre seçilmeden önce sabit sürümlü motorlar güvenli yedek kaynaktan yüklenir.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-12-ENGINE-RECOVERY",
-  "version": "19.4.8-LOCAL-DATA-ONLY-12-ENGINE-RECOVERY"
+  "build": "20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK",
+  "version": "19.4.8-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK"
 }

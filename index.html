@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; script-src-attr 'none'; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; script-src-attr 'none'; worker-src 'self' blob: https://cdn.jsdelivr.net; child-src 'self' blob:; connect-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
@@ -17,9 +17,9 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="manifest" href="./manifest.json?v=19.4.8.20260919-LOCAL-DATA-ONLY-12-ENGINE-RECOVERY">
+<link rel="manifest" href="./manifest.json?v=19.4.8.20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
-<link rel="stylesheet" href="./styles.css?v=19.4.8.20260919-LOCAL-DATA-ONLY-12-ENGINE-RECOVERY">
+<link rel="stylesheet" href="./styles.css?v=19.4.8.20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK">
 <title>HANE</title>
 </head>
 <body>
@@ -28,7 +28,7 @@
 <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 <input id="restoreInput" type="file" hidden>
 <input id="statementImportInput" type="file" accept="image/*,application/pdf,.pdf" hidden>
-<script defer src="./bootstrap-security.js?v=19.4.8.20260919-LOCAL-DATA-ONLY-12-ENGINE-RECOVERY"></script>
-<script defer src="./app-v19.js?v=19.4.8.20260919-LOCAL-DATA-ONLY-12-ENGINE-RECOVERY"></script>
+<script defer src="./bootstrap-security.js?v=19.4.8.20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK"></script>
+<script defer src="./app-v19.js?v=19.4.8.20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK"></script>
 </body>
 </html>
