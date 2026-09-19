@@ -1,3 +1,9 @@
-# HANE 19.4.8 — LOCAL DATA ONLY V25 HARDENED PARSER
+# HANE 19.4.8 — LOCAL DATA ONLY V29 FORCE UPDATE ISOLATED
 
-Bu sürüm V24 üzerindeki ekstre okuyucuyu güçlendirir. Kişisel ekstre cihazda işlenir. PDF/OCR motorları yalnız doğrulanmış yerel cache üzerinden çalışır. Ekstre uzlaştırması gerçek aynı gün aynı tutarlı işlemleri körlemesine silmez; otomatik tekrar azaltımı yalnız banka harcama toplamına tek ve güvenli bir açıklama varsa uygulanır.
+Bu sürüm V28 üzerine hazırlanmıştır.
+
+- Normal Service Worker güncellemesi yalnız HANE scope'una uygulanır.
+- Zorunlu güncelleme de yalnız HANE scope'undaki Service Worker kaydını kaldırır.
+- Cache temizliği yalnız `hane-*` cache'leriyle sınırlıdır.
+- Ekstre motoru build handshake ve single-flight hazırlama korunur.
+- Kişisel ekstre/veri tarayıcı dışına gönderilmez.

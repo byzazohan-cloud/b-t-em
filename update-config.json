@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: Ekstre okuyucu güçlendirildi; güvenli mükerrer uzlaştırma, OCR/PDF puanlama ve yalnız doğrulanmış yerel motor kullanımı.",
+  "message": "HANE 19.4.8: Zorunlu güncelleme Service Worker izolasyonu tamamlandı.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-25-HARDENED-PARSER",
-  "version": "19.4.8-LOCAL_DATA_ONLY_25_HARDENED_PARSER"
+  "build": "20260919-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED",
+  "version": "19.4.8-LOCAL_DATA_ONLY_29_FORCE_UPDATE_ISOLATED"
 }

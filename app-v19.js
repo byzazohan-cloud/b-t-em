@@ -1203,7 +1203,9 @@ const HANE_OCR_WORKER='./__hane_engine__/tesseract/worker.min.js';
 const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
-let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false;
+let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null;
+const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED';
+const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 async function loadTesseract(){
   if(window.Tesseract)return window.Tesseract;
   const src=HANE_OCR_SCRIPT;
@@ -1233,30 +1235,71 @@ async function getStatementPdfRuntime(){
     statementPdfjs=pdfjs;return pdfjs;
   }catch{throw new Error('PDF motoru yüklenemedi. İnternet bağlantısını kontrol edip tekrar deneyin.')}
 }
+async function pingStatementWorker(worker){
+  if(!worker)return false;
+  return await new Promise(resolve=>{
+    const channel=new MessageChannel();let done=false;
+    const finish=v=>{if(done)return;done=true;clearTimeout(timer);resolve(v)};
+    const timer=setTimeout(()=>finish(false),1500);
+    channel.port1.onmessage=e=>{const d=e.data||{};finish(d.ok===true&&d.build===HANE_SW_BUILD)};
+    try{worker.postMessage({type:'PING'},[channel.port2])}catch(_){finish(false)}
+  });
+}
+async function ensureStatementServiceWorkerController(){
+  if(!('serviceWorker' in navigator))throw new Error('Güvenli PDF/OCR motoru için Service Worker desteği gerekiyor.');
+  if(await pingStatementWorker(navigator.serviceWorker.controller))return navigator.serviceWorker.controller;
+
+  // Always use the exact build URL used by bootstrap. This prevents two registrations
+  // with different script URLs from racing on the same scope.
+  let reg;
+  try{
+    reg=await navigator.serviceWorker.register(HANE_SW_URL,{updateViaCache:'none'});
+    try{await reg.update()}catch{}
+    if(reg.waiting)try{reg.waiting.postMessage({type:'SKIP_WAITING'})}catch{}
+    await navigator.serviceWorker.ready;
+  }catch(e){
+    throw new Error('Güvenli okuma servisi başlatılamadı. İnternet bağlantısını kontrol edin.');
+  }
+
+  // Do not accept an old controller. Wait until the exact expected HANE build answers.
+  const deadline=Date.now()+25000;
+  while(Date.now()<deadline){
+    const c=navigator.serviceWorker.controller;
+    if(await pingStatementWorker(c))return c;
+    if(reg.waiting)try{reg.waiting.postMessage({type:'SKIP_WAITING'})}catch{}
+    await new Promise(r=>setTimeout(r,250));
+  }
+  throw new Error('HANE güvenli okuma servisi doğru sürüme geçemedi. Sayfayı bir kez yenileyip tekrar deneyin.');
+}
 async function requestVerifiedStatementEngines(){
-  if(!navigator.serviceWorker?.controller)throw new Error('Güvenli okuma motoru henüz etkin değil. Sayfayı bir kez yenileyin.');
+  const controller=await ensureStatementServiceWorkerController();
   await new Promise((resolve,reject)=>{
     const channel=new MessageChannel();let done=false;
-    const timer=setTimeout(()=>{if(done)return;done=true;reject(new Error('PDF/OCR motorları hazırlanırken zaman aşımı oldu. İnternet bağlantısını kontrol edip tekrar deneyin.'))},45000);
-    channel.port1.onmessage=e=>{if(done)return;done=true;clearTimeout(timer);const d=e.data||{};d.ok?resolve(true):reject(new Error('PDF/OCR motorları güvenli şekilde hazırlanamadı. '+(d.error||'İnternet bağlantısını kontrol edip tekrar deneyin.')))};
-    navigator.serviceWorker.controller.postMessage({type:'PREPARE_ENGINES'},[channel.port2]);
+    const timer=setTimeout(()=>{if(done)return;done=true;reject(new Error('PDF/OCR motorları hazırlanırken zaman aşımı oldu. İnternet bağlantısını kontrol edip tekrar deneyin.'))},120000);
+    channel.port1.onmessage=e=>{if(done)return;done=true;clearTimeout(timer);const d=e.data||{};if(d.ok===true&&d.build===HANE_SW_BUILD)resolve(true);else if(d.ok===true)reject(new Error('PDF/OCR motoru yanlış HANE sürümünden yanıt verdi. Sayfayı yenileyip tekrar deneyin.'));else reject(new Error('PDF/OCR motorları güvenli şekilde hazırlanamadı. '+(d.error||'İnternet bağlantısını kontrol edip tekrar deneyin.')))};
+    controller.postMessage({type:'PREPARE_ENGINES'},[channel.port2]);
   });
 }
 async function prepareStatementPrivacyRuntime(){
   if(statementPrivacyPrepared)return true;
-  if(!('serviceWorker' in navigator))throw new Error('Güvenli PDF/OCR motoru için Service Worker desteği gerekiyor.');
-  if(!navigator.serviceWorker?.controller)throw new Error('Güvenli PDF/OCR motoru henüz etkin değil. HANE’yi internet açıkken bir kez yenileyin.');
-  try{
-    await requestVerifiedStatementEngines();
-    await Promise.all([getStatementPdfRuntime(),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR')]);
-  }catch(e){
-    await releaseStatementOcrWorker();statementPdfjs=null;statementPdfWorker=null;
-    throw new Error('Güvenli PDF/OCR motorları doğrulanamadı. Kişisel ekstre için doğrulanmamış ağ motoru kullanılmadı. İnternet açıkken HANE’yi yenileyip tekrar deneyin.');
-  }
-  statementPrivacyPrepared=true;
-  return true;
+  if(statementPrivacyPreparePromise)return statementPrivacyPreparePromise;
+  statementPrivacyPreparePromise=(async()=>{
+    try{
+      await ensureStatementServiceWorkerController();
+      await requestVerifiedStatementEngines();
+      await Promise.all([getStatementPdfRuntime(),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR')]);
+      statementPrivacyPrepared=true;
+      return true;
+    }catch(e){
+      await releaseStatementOcrWorker();statementPdfjs=null;statementPdfWorker=null;
+      const detail=String(e&&e.message||'').trim();
+      throw new Error('Güvenli PDF/OCR motorları hazırlanamadı.'+(detail?' '+detail:'')+' Kişisel ekstre dışarı gönderilmedi.');
+    }finally{
+      statementPrivacyPreparePromise=null;
+    }
+  })();
+  return statementPrivacyPreparePromise;
 }
-
 const MAX_STATEMENT_FILE_BYTES=20*1024*1024;
 async function statementImageForOcr(file,maxSide=2400){
   if(typeof createImageBitmap!=='function')return file;

@@ -1,13 +1,15 @@
-/* HANE PWA - LOCAL DATA ONLY 25 hardened statement parser worker
+/* HANE PWA - LOCAL DATA ONLY 29 force-update isolated service worker
    SECURITY MODEL
    1) Personal HANE data/documents are never uploaded by this worker.
-   2) OCR/PDF engine packages are fetched only during SW install using fixed npm tarball URLs,
+   2) OCR/PDF engine packages are fetched only on explicit PREPARE_ENGINES using fixed npm tarball URLs,
       credentials omitted and no referrer.
    3) Each package tarball is verified with pinned SHA-512 integrity BEFORE any executable
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-25-HARDENED-PARSER';
+const SW_BUILD = '19.4.8.20260919-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED';
+const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED';
+const HANE_CACHE_PREFIX = 'hane-';
 
 
 const APP_SHELL=[
@@ -137,9 +139,9 @@ self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
     try{
-      // The app shell must always be complete; engine preparation may retry later.
+      // Activate quickly. Verified OCR/PDF engines are prepared on demand BEFORE file selection.
+      // Do not delay Service Worker activation with multi-megabyte engine downloads.
       await cache.addAll(APP_SHELL);
-      try{await ensureVerifiedEngines()}catch(err){console.warn('HANE engine prewarm deferred:',err)}
       await self.skipWaiting();
     }catch(err){
       await caches.delete(CACHE_NAME);
@@ -150,22 +152,28 @@ self.addEventListener('install',event=>{
 
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
-    // Activation only occurs after a complete shell + verified engine install.
+    // Activation only occurs after a complete HANE app shell install. Engines are verified on demand before statement selection.
     const current=await caches.open(CACHE_NAME);
     for(const rel of APP_SHELL){if(!(await current.match(rel)))throw new Error('HANE shell validation failed: '+rel)}
     const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)));
+    // Cache isolation: never delete caches owned by RUTIN, ZAZO TYCOON or another PWA on the same origin.
+    await Promise.all(keys.filter(k=>k!==CACHE_NAME&&k.startsWith(HANE_CACHE_PREFIX)).map(k=>caches.delete(k)));
     await self.clients.claim();
   })());
 });
 
 self.addEventListener('message',event=>{
+  if(event.data&&event.data.type==='PING'){
+    const port=event.ports&&event.ports[0];
+    port&&port.postMessage({ok:true,build:SW_BUILD});
+    return;
+  }
   if(event.data&&event.data.type==='SKIP_WAITING'){self.skipWaiting();return}
   if(event.data&&event.data.type==='PREPARE_ENGINES'){
     const port=event.ports&&event.ports[0];
     event.waitUntil((async()=>{
-      try{await ensureVerifiedEngines();port&&port.postMessage({ok:true})}
-      catch(err){port&&port.postMessage({ok:false,error:String(err&&err.message||err)})}
+      try{await ensureVerifiedEngines();port&&port.postMessage({ok:true,build:SW_BUILD})}
+      catch(err){port&&port.postMessage({ok:false,build:SW_BUILD,error:String(err&&err.message||err)})}
     })());
   }
 });
