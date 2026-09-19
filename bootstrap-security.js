@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-14-ENGINE-FALLBACK';
+  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-16-DEDUPE-FIX';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {
@@ -20,11 +20,10 @@
           if (worker.state === 'installed' && navigator.serviceWorker.controller) worker.postMessage({type:'SKIP_WAITING'});
         });
       });
-      let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (refreshing) return;
-        refreshing = true;
-        location.reload();
+        // Yeni worker devreye girince açık oturumu bozma.
+        // Yeni sürüm bir sonraki manuel yenilemede doğal olarak kullanılacak.
+        try{ sessionStorage.setItem('hane_update_ready','1'); }catch(e){}
       });
     } catch (e) { console.warn('HANE update worker:', e); }
   });

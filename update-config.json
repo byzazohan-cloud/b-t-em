@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 V14: ekstre son işlem satırı footer metnine karışmadan okunur; aynı dönem yeniden içe aktarılırken eski içe aktarımlar tarih aralığına göre temizlenir.",
+  "message": "HANE 19.4.8 V15: Service Worker güncellemesi açık oturumu artık otomatik yenilemez; PIN sonrası tekrar kilit ekranına atma düzeltildi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-14-LASTROW-DEDUPE-FIX",
-  "version": "19.4.8-LOCAL-DATA-ONLY-14-20260919"
+  "build": "20260919-LOCAL-DATA-ONLY-16-DEDUPE-FIX",
+  "version": "19.4.8-LOCAL-DATA-ONLY-16-DEDUPE-FIX"
 }
