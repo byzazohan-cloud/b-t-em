@@ -978,9 +978,31 @@ function parseStatementText(text,cardId){
     const blockText=block.lines.join(' ').replace(/\s+/g,' ').trim();if(!blockText||bad.test(blockText))continue;
     const di=stmtPickTransactionDate(blockText,anchor,datePref);if(!di)continue;
     const noDates=stmtStripDates(blockText),amounts=stmtAmountCandidates(noDates);if(!amounts.length)continue;
-    const tl=amounts.filter(a=>['TL','TRY','₺'].includes(a.currency)),pool=tl.length?tl:amounts;
-    pool.sort((a,b)=>a.score-b.score||a.index-b.index);const pick=pool.at(-1),rawAmount=pick.value;if(!Number.isFinite(rawAmount)||rawAmount===0)continue;
     const payment=stmtPaymentLike(blockText);
+    // Banka PDF'lerinde işlem satırının sonunda USD/Bankkart Lira/puan gibi ek sütunlar bulunabilir.
+    // Normal işlemlerde gerçek TL işlem tutarı açıklamadan sonraki İLK parasal değerdir.
+    // Taksit satırında ise "X TL işlemin 1/2 taksidi Y TL" yapısında gider Y, toplam alışveriş X'tir.
+    const upperNoDates=noDates.toLocaleUpperCase('tr-TR');
+    const taksitPos=Math.max(upperNoDates.indexOf('TAKSİDİ'),upperNoDates.indexOf('TAKSIDI'),upperNoDates.indexOf('TAKSİT'),upperNoDates.indexOf('TAKSIT'));
+    let pick=null;
+    if(taksitPos>=0){
+      // Taksit açıklamasındaki toplam alışveriş tutarını (örn. 3.750 TL işlemin 1/2 taksidi)
+      // gerçek dönem taksitinden ayır. PDF metin katmanı sütunları farklı sırada verebildiği için
+      // yalnızca "taksidi" kelimesinden sonraki değere güvenme; "işlemin" önündeki toplamı dışla.
+      const islemPos=Math.max(upperNoDates.indexOf('İŞLEMİN'),upperNoDates.indexOf('ISLEMIN'));
+      const beforeIslem=islemPos>=0?amounts.filter(a=>a.index<islemPos).sort((a,b)=>a.index-b.index):[];
+      const totalCandidate=beforeIslem.length?beforeIslem.at(-1):null;
+      const installmentCandidates=amounts.filter(a=>!totalCandidate||a.index!==totalCandidate.index).sort((a,b)=>a.index-b.index);
+      if(installmentCandidates.length)pick=installmentCandidates[0];
+      if(!pick){const after=amounts.filter(a=>a.index>taksitPos).sort((a,b)=>a.index-b.index);if(after.length)pick=after[0]}
+    }
+    if(!pick){
+      const explicitTl=amounts.filter(a=>['TL','TRY','₺'].includes(a.currency)).sort((a,b)=>a.index-b.index);
+      // Explicit TL işaretli tek bir tutar varsa onu kullan. Birden fazlaysa ilk sütun işlem tutarıdır.
+      // Para birimi işareti yoksa da banka satırındaki ilk parasal sütunu esas al; sağdaki ödül/USD sütununu alma.
+      pick=(explicitTl.length?explicitTl:amounts.slice().sort((a,b)=>a.index-b.index))[0];
+    }
+    const rawAmount=pick?.value;if(!Number.isFinite(rawAmount)||rawAmount===0)continue;
     const refund=!payment&&(/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b|\bALACAK\b/i.test(blockText)||rawAmount<0);
     const amount=payment?Math.abs(rawAmount):(refund?-Math.abs(rawAmount):Math.abs(rawAmount));
     let title=noDates;

@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "Ekstre önizlemesi tarihe göre kronolojik sıralanır; aynı tarihte işlemler bankadaki fiziksel satır sırasını korur. Cache/build sürümleri eşitlendi.",
+  "message": "HANE 19.4.8: Ekstre tutar sütunu ve taksit tutarı seçimi düzeltildi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-21-DUPLICATE-FLOW",
-  "version": "19.4.8-LOCAL-DATA-ONLY-21-DUPLICATE-FLOW"
+  "build": "20260919-LOCAL-DATA-ONLY-22-AMOUNT-FIX",
+  "version": "19.4.8-LOCAL_DATA_ONLY_22_AMOUNT_FIX"
 }
