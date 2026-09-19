@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 V15: Service Worker güncellemesi açık oturumu artık otomatik yenilemez; PIN sonrası tekrar kilit ekranına atma düzeltildi.",
+  "message": "Ekstre parserı aynı gün aynı işyeri ve aynı tutarlı gerçek tekrarları korur; yalnızca aynı fiziksel parser bloğu tekilleştirilir.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-16-DEDUPE-FIX",
-  "version": "19.4.8-LOCAL-DATA-ONLY-16-DEDUPE-FIX"
+  "build": "20260919-LOCAL-DATA-ONLY-18-REPEAT-SAFE",
+  "version": "19.4.8-LOCAL_DATA_ONLY_18_REPEAT_SAFE-20260919"
 }

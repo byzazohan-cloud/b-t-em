@@ -917,13 +917,12 @@ function stmtLogicalBlocks(text,anchor){
   hits.sort((a,b)=>a.index-b.index||b.end-a.end);
   const uniq=[];for(const h of hits){const last=uniq.at(-1);if(last&&h.index<last.end)continue;uniq.push(h)}
   const blocks=[];let cur=null;
-  const flush=()=>{if(cur){const body=cur.parts.join(' ').replace(/\s+/g,' ').trim();if(body){const rawKey=body.toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();blocks.push({date:cur.date,lines:[body],dateCount:cur.dateCount,rawKey})}cur=null}};
+  const flush=()=>{if(cur){const body=cur.parts.join(' ').replace(/\s+/g,' ').trim();if(body){const rawKey=body.toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();blocks.push({date:cur.date,lines:[body],dateCount:cur.dateCount,rawKey,sourceStart:cur.sourceStart,sourceEnd:cur.sourceEnd})}cur=null}};
   for(let i=0;i<uniq.length;i++){
-    const h=uniq[i],next=uniq[i+1],tail=stmtTransactionTailOnly(src.slice(h.end,next?next.index:src.length).replace(/\s+/g,' ').trim());
-    if(!cur)cur={date:h.date,parts:[h.raw],dateCount:1};else{cur.parts.push(h.raw);cur.dateCount++}
+    const h=uniq[i],next=uniq[i+1],sliceEnd=next?next.index:src.length,tail=stmtTransactionTailOnly(src.slice(h.end,sliceEnd).replace(/\s+/g,' ').trim());
+    if(!cur)cur={date:h.date,parts:[h.raw],dateCount:1,sourceStart:h.index,sourceEnd:sliceEnd};else{cur.parts.push(h.raw);cur.dateCount++;cur.sourceEnd=sliceEnd}
     if(tail)cur.parts.push(tail);
-    // A transaction ends as soon as the text between this date and the next date contains money.
-    // If not, the next date is treated as a posting/value date of the same transaction.
+    // Her fiziksel satırın kaynak konumunu koru. Aynı gün/işyeri/tutar tekrarı gerçek bir işlem olabilir.
     if(stmtAmountCandidates(stmtStripDates(tail)).length)flush();
     else if(cur.dateCount>=3)flush();
   }
@@ -968,11 +967,13 @@ function parseStatementText(text,cardId){
     const instKey=`${inst.installmentNo||0}/${inst.installmentCount||0}/${Number(inst.installmentTotal||0).toFixed(2)}`;
     const semanticKey=`${baseFp}|${kind}|${instKey}`;
     const rawKey=String(block.rawKey||blockText).toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();
-    // Aynı fiziksel ekstre satırı PDF/OCR parçalanması nedeniyle iki kez oluşursa tek kayıt bırak.
-    // Gerçek iki ayrı aynı-tutar işlem, farklı ham blok metni/taksit bilgisi taşıyorsa korunur.
-    if(out.some(x=>x.semanticKey===semanticKey&&x.rawKey===rawKey))continue;
+    const sourceStart=Number.isFinite(block.sourceStart)?block.sourceStart:null,sourceEnd=Number.isFinite(block.sourceEnd)?block.sourceEnd:null;
+    // Yalnızca aynı fiziksel kaynak bloğu iki kez üretilmişse tekilleştir.
+    // Aynı gün + aynı işyeri + aynı tutar gerçek hayatta birden fazla kez gerçekleşebilir (özellikle toplu taşıma).
+    const physicalKey=sourceStart!=null?`${sourceStart}:${sourceEnd||sourceStart}|${semanticKey}`:null;
+    if(physicalKey&&out.some(x=>x.physicalKey===physicalKey))continue;
     const occ=(seen[semanticKey]=(seen[semanticKey]||0)+1);
-    out.push({date:di.date,title,amount,category:payment?'Kart Ödemesi':stmtCategory(title),baseFp,semanticKey,rawKey,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund,payment,kind,...inst})
+    out.push({date:di.date,title,amount,category:payment?'Kart Ödemesi':stmtCategory(title),baseFp,semanticKey,rawKey,physicalKey,sourceStart,sourceEnd,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund,payment,kind,...inst})
   }
   return out
 }
@@ -1126,9 +1127,10 @@ async function confirmStatementImport(){
   const checks=[...document.querySelectorAll('[data-stmt-check]')],selected=[];let skipped=0;
   for(const el of checks){if(!el.checked)continue;const i=+el.dataset.stmtCheck,r=statementImportRows[i];if(!r)continue;const date=document.querySelector(`[data-stmt-date="${i}"]`)?.value||r.date,title=stmtCleanTitle(document.querySelector(`[data-stmt-title="${i}"]`)?.value||r.title),amount=Number(document.querySelector(`[data-stmt-amount="${i}"]`)?.value),categoryRaw=document.querySelector(`[data-stmt-category="${i}"]`)?.value||r.category,category=r.payment?'Kart Ödemesi':C.includes(categoryRaw)?categoryRaw:'Diğer';if(!stmtValidIsoDate(date)||!title||!Number.isFinite(amount)||amount===0){skipped++;continue}selected.push({...r,date,title,amount:Math.abs(amount),category})}
   if(!selected.length)throw new Error('Eklenecek geçerli hareket seçilmedi.');
-  // Önizlemede aynı ekstre satırı iki kez görünmüşse kaydetmeden önce de tekilleştir.
+  // Kayıt öncesi yalnızca aynı fiziksel parser bloğunun tekrarını kaldır.
+  // Semantik olarak aynı olan gerçek tekrarları (örn. aynı gün 3 x 45,50 TL toplu taşıma) koru.
   const uniqueSelected=[];const selectedSeen=new Set();
-  for(const r of selected){const signedKey=r.payment?-Math.abs(r.amount):(r.refund?-Math.abs(r.amount):Math.abs(r.amount)),k=[r.payment?'P':r.refund?'R':'S',r.date,stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR'),Number(signedKey).toFixed(2),r.installmentNo||0,r.installmentCount||0,Number(r.installmentTotal||0).toFixed(2),String(r.rawKey||'')].join('|');if(selectedSeen.has(k)){skipped++;continue}selectedSeen.add(k);uniqueSelected.push(r)}
+  for(const r of selected){const k=r.physicalKey||null;if(k&&selectedSeen.has(k)){skipped++;continue}if(k)selectedSeen.add(k);uniqueSelected.push(r)}
   selected.length=0;selected.push(...uniqueSelected);
   state.statementCategoryRules=state.statementCategoryRules&&typeof state.statementCategoryRules==='object'?state.statementCategoryRules:{};for(const r of selected.filter(x=>!x.payment)){const k=stmtMerchantKey(r.title),auto=stmtCategoryBase(r.title);if(k&&r.category&&r.category!==auto)state.statementCategoryRules[k]=r.category}
   const month=statementImportMonthForRows(c,selected),period=statementPeriodRange(c,month),preserveBalance=+c.balance||0;

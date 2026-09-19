@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-16-DEDUPE-FIX';
+const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-18-CACHE-SELF-REPAIR';
 const PINNED_ENGINE_URLS=new Set([
   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
@@ -201,15 +201,31 @@ self.addEventListener('fetch',event=>{
 
   if(!isVirtual&&!appRel&&!isRootNav){event.respondWith(blocked(404,'Not an allowed HANE resource'));return}
 
-  // Runtime is CACHE ONLY. No controlled request ever falls through to fetch().
+  // Runtime is local-first. Missing fixed HANE shell files may self-repair from the SAME ORIGIN only.
+  // No user data, query string, request body, credentials or referrer are sent during repair.
   event.respondWith((async()=>{
     const cache=await caches.open(CACHE_NAME);
     if(isVirtual){
-      const hit=await cache.match(virtualUrl);
-      return hit||blocked(503,'Verified HANE engine is unavailable. Reopen HANE online to complete a secure update.');
+      let hit=await cache.match(virtualUrl);
+      if(hit)return hit;
+      try{
+        await ensureVerifiedEngines();
+        hit=await cache.match(virtualUrl);
+        if(hit)return hit;
+      }catch(_){ }
+      return blocked(503,'Verified HANE engine is unavailable. Keep internet on and try Ekstre Okut again.');
     }
     const canonical=isRootNav?'./index.html':appRel;
-    const hit=await cache.match(canonical);
-    return hit||blocked(503,'HANE application cache is incomplete. Reopen HANE online to complete a secure update.');
+    let hit=await cache.match(canonical);
+    if(hit)return hit;
+    try{
+      const cleanUrl=new URL(String(canonical).replace(/^\.\//,''),SCOPE).href;
+      const fresh=await fetch(new Request(cleanUrl,{method:'GET',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'}));
+      if(fresh&&fresh.ok){
+        await cache.put(canonical,fresh.clone());
+        return fresh;
+      }
+    }catch(_){ }
+    return blocked(503,'HANE application cache could not be repaired. Reload once while online.');
   })());
 });
