@@ -4,6 +4,6 @@
   "force": true,
   "message": "HANE 19.4.8: Ekstre tutar sütunu ve taksit tutarı seçimi düzeltildi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-22-AMOUNT-FIX",
-  "version": "19.4.8-LOCAL_DATA_ONLY_22_AMOUNT_FIX"
+  "build": "20260919-LOCAL-DATA-ONLY-23-STATEMENT-RECONCILE",
+  "version": "19.4.8-LOCAL_DATA_ONLY_23_STATEMENT_RECONCILE"
 }

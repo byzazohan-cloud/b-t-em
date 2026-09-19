@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-22-AMOUNT-FIX';
+  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-23-STATEMENT-RECONCILE';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

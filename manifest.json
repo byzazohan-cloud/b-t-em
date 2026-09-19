@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=LOCAL_DATA_ONLY_22_AMOUNT_FIX",
+  "start_url": "./?v=LOCAL_DATA_ONLY_23_STATEMENT_RECONCILE",
   "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
@@ -34,5 +34,5 @@
     "productivity",
     "utilities"
   ],
-  "version": "19.4.8-LOCAL_DATA_ONLY_22_AMOUNT_FIX"
+  "version": "19.4.8-LOCAL_DATA_ONLY_23_STATEMENT_RECONCILE"
 }

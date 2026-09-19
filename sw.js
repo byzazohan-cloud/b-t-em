@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-22-AMOUNT-FIX';
+const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-23-STATEMENT-RECONCILE';
 const PINNED_ENGINE_URLS=new Set([
   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',

@@ -68,7 +68,7 @@ function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]
 function catPremiumIcon(cat){return `<span class="catGem" style="--cat:${catColor(cat)}">${categoryIconSvg(cat,22)}</span>`}
 function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id===x.cardId);return c?`KART · ${esc(c.bank)} ${esc(c.name)}`:'KART'}return 'NAKİT'}
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>{const x=d instanceof Date?d:new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')},ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',maximumFractionDigits:0}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',minimumFractionDigits:2,maximumFractionDigits:2}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
 function haneLogo(size=54,cls=''){
   const n=Math.max(28,Number(size)||54);
@@ -1052,6 +1052,54 @@ function parseStatementSummary(text){
   return{previousBalance,spendingTotal,feesTotal,paymentsTotal,periodDebt}
 }
 
+
+function stmtReconcileRowsToBankSpending(rows,meta){
+  const list=[...(rows||[])];
+  const target=Number(meta?.spendingTotal);
+  if(!Number.isFinite(target)||target<0)return{rows:list,removed:0,amount:0};
+  const spendIdx=[];let parsed=0,hasRefund=false;
+  list.forEach((r,i)=>{if(r?.kind==='refund'){hasRefund=true;return}if(r?.kind==='spend'){const a=Math.abs(+r.amount||0);if(a>0){parsed+=a;spendIdx.push(i)}}});
+  // İadeli ekstrelerde banka özetinin iadeyi nasıl mahsuplaştırdığı bankadan bankaya değişebilir.
+  // Bu yüzden otomatik satır azaltma yalnızca iadesiz ekstrelerde yapılır.
+  if(hasRefund)return{rows:list,removed:0,amount:0};
+  const diff=Math.round((parsed-target)*100);
+  if(diff<=1)return{rows:list,removed:0,amount:0};
+  const groups=new Map();
+  for(const i of spendIdx){const r=list[i],cents=Math.round(Math.abs(+r.amount||0)*100);if(cents<=0)continue;const k=r.semanticKey||`${r.date}|${stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR')}|${cents}`;if(!groups.has(k))groups.set(k,{k,cents,idx:[]});groups.get(k).idx.push(i)}
+  // Yalnızca tekrar eden aynı işlem kümelerini aday yap. En az bir gerçek işlem mutlaka korunur.
+  const cand=[...groups.values()].filter(g=>g.idx.length>=2&&g.cents<=diff).map(g=>({...g,max:g.idx.length-1}));
+  if(!cand.length)return{rows:list,removed:0,amount:0};
+  // Kuruş bazında sınırlı DP: banka harcama toplamına TAM oturan tekrar azaltımı varsa uygula.
+  // Birden fazla çözüm varsa en az satır silen çözümü seç; eşitlikte yüksek tekrar sayılı kümeyi tercih et.
+  let dp=new Map([[0,[]]]);
+  for(let gi=0;gi<cand.length;gi++){
+    const g=cand[gi],next=new Map(dp);
+    for(const [sum,choices] of dp){
+      for(let n=1;n<=g.max;n++){
+        const ns=sum+g.cents*n;if(ns>diff)break;
+        const nc=[...choices,[gi,n]];
+        const old=next.get(ns);
+        const score=x=>x.reduce((a,[j,k])=>a+k,0);
+        if(!old||score(nc)<score(old))next.set(ns,nc)
+      }
+    }
+    dp=next;
+  }
+  const solution=dp.get(diff);if(!solution?.length)return{rows:list,removed:0,amount:0};
+  const drop=new Set();
+  for(const [gi,n] of solution){
+    const g=cand[gi];
+    // Kaynak akışında daha sonra gelen kopyaları kaldır; ilk gerçek satırlar korunur.
+    const sorted=[...g.idx].sort((a,b)=>(Number.isFinite(list[a]?.sourceStart)?list[a].sourceStart:a)-(Number.isFinite(list[b]?.sourceStart)?list[b].sourceStart:b));
+    for(const i of sorted.slice(-n))drop.add(i)
+  }
+  if(!drop.size)return{rows:list,removed:0,amount:0};
+  const out=list.filter((_,i)=>!drop.has(i));
+  const after=out.filter(r=>r.kind==='spend').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
+  if(Math.abs(after-target)>.011)return{rows:list,removed:0,amount:0};
+  return{rows:out,removed:drop.size,amount:diff/100}
+}
+
 function statementImportMonthForRows(card,rows){
   const ds=rows.map(r=>r.date).filter(stmtValidIsoDate).sort();if(!ds.length)return state.selectedMonth;
   return statementMonthFor(card,ds.at(-1))
@@ -1072,7 +1120,7 @@ function statementPreview(cardId,rows){
   const prev=Number.isFinite(statementImportMeta.previousBalance)?statementImportMeta.previousBalance:'';
   const fees=Number.isFinite(statementImportMeta.feesTotal)?statementImportMeta.feesTotal:0;
   const pays=Number.isFinite(statementImportMeta.paymentsTotal)?statementImportMeta.paymentsTotal:paymentRows.reduce((a,r)=>a+r.amount,0);
-  return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br><b>${rows.length} hareket bulundu</b> · ${spendRows.length} harcama · ${paymentRows.length} ödeme · ${refundRows.length} iade${skipped?` · ${skipped} mükerrer atlandı`:''}.<br><small>Taksitli alışverişlerde yalnızca bu ekstreye yansıyan taksit tutarı gider olarak eklenir.</small></div>
+  return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br><b>${rows.length} hareket bulundu</b> · ${spendRows.length} harcama · ${paymentRows.length} ödeme · ${refundRows.length} iade${skipped?` · ${skipped} mükerrer atlandı`:''}.<br>${statementImportMeta.autoDuplicateRemoved?`<small><b>${statementImportMeta.autoDuplicateRemoved} yinelenen satır</b> banka harcama toplamıyla karşılaştırılarak çıkarıldı (${money(statementImportMeta.autoDuplicateAmount||0)}).</small><br>`:''}<small>Taksitli alışverişlerde yalnızca bu ekstreye yansıyan taksit tutarı gider olarak eklenir.</small></div>
   <div class="statementReconcileBox statementBankEquation">
     <b>BANKA EKSTRE ÖZETİ</b>
     <div class="stmtEquationGrid"><label>Devreden Bakiye<input id="stmtSummaryPrevious" type="number" step="0.01" value="${prev!==''?Number(prev).toFixed(2):''}" placeholder="0,00"></label><label>Harcamalar<input id="stmtSummarySpend" type="number" step="0.01" value="${Number(autoSpend||0).toFixed(2)}"></label><label>Faiz / Ücret<input id="stmtSummaryFees" type="number" step="0.01" value="${Number(fees||0).toFixed(2)}"></label><label>Ödemeler<input id="stmtSummaryPayments" type="number" step="0.01" value="${pays!==''?Number(pays).toFixed(2):''}" placeholder="0,00"></label><label>Dönem Borcu<input id="stmtSummaryDebt" type="number" step="0.01" value="${debt!==''?Number(debt).toFixed(2):''}" placeholder="0,00"></label></div>
@@ -1326,7 +1374,7 @@ function bootHane(){
       statementImportInput.addEventListener('change',async e=>{
         const input=e.currentTarget,f=input.files&&input.files[0];if(!f||!statementImportCardId)return;
         open('EKSTRE OKUNUYOR',`<div class="notice"><b id="statementImportProgress">DOSYA HAZIRLANIYOR...</b><br>Ekstre dosyası cihazdan dışarı gönderilmez. OCR/PDF motorları dosya seçilmeden önce hazırlanmıştır; okuma cihazında yapılır. Yalnızca tarih, açıklama, tutar ve kategori HANE’ye kaydedilir.</div>`,{cardId:statementImportCardId});
-        try{const text=await readStatementFile(f);statementImportMeta=parseStatementSummary(text);const rows=parseStatementText(text,statementImportCardId);open('EKSTRE ÖNİZLEME',statementPreview(statementImportCardId,rows),{cardId:statementImportCardId})}catch(err){console.error(err);open('EKSTRE OKUNAMADI',`<div class="notice">${esc(err.message||'Dosya okunamadı.')}</div>`,{cardId:statementImportCardId})}finally{input.value=''}
+        try{const text=await readStatementFile(f);statementImportMeta=parseStatementSummary(text);const parsedRows=parseStatementText(text,statementImportCardId),reconciled=stmtReconcileRowsToBankSpending(parsedRows,statementImportMeta);statementImportMeta.autoDuplicateRemoved=reconciled.removed||0;statementImportMeta.autoDuplicateAmount=reconciled.amount||0;open('EKSTRE ÖNİZLEME',statementPreview(statementImportCardId,reconciled.rows),{cardId:statementImportCardId})}catch(err){console.error(err);open('EKSTRE OKUNAMADI',`<div class="notice">${esc(err.message||'Dosya okunamadı.')}</div>`,{cardId:statementImportCardId})}finally{input.value=''}
       });
     }
 
