@@ -1,9 +1,10 @@
-# HANE 19.4.8 — LOCAL DATA ONLY V29 FORCE UPDATE ISOLATED
+# HANE V19.4.8 – Verified Fallback V31
 
-Bu sürüm V28 üzerine hazırlanmıştır.
+Bu sürüm V30 üzerine güvenlik ve kararlılık iyileştirmesi olarak hazırlanmıştır.
 
-- Normal Service Worker güncellemesi yalnız HANE scope'una uygulanır.
-- Zorunlu güncelleme de yalnız HANE scope'undaki Service Worker kaydını kaldırır.
-- Cache temizliği yalnız `hane-*` cache'leriyle sınırlıdır.
-- Ekstre motoru build handshake ve single-flight hazırlama korunur.
-- Kişisel ekstre/veri tarayıcı dışına gönderilmez.
+- Doğrudan doğrulanmamış CDN kodu çalıştırma kaldırıldı.
+- Service Worker motor hazırlığı başarısız olursa uygulama, yalnız sabit npm paketlerini indirir.
+- İndirilen paketlerin SHA-512 özeti sabit beklenen değerle eşleşmeden hiçbir motor dosyası çalıştırılmaz.
+- Doğrulanan dosyalar HANE cache'ine yazılır ve aynı-origin sanal motor yollarından çalıştırılır.
+- Ekstre seçilmeden önce motor hazırlığı tamamlanır; kişisel ekstre, PIN veya HANE verisi dışarı gönderilmez.
+- Runtime dış ağ erişimi yalnız üç sabit npm paket arşiviyle sınırlıdır.

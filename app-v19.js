@@ -1203,104 +1203,61 @@ const HANE_OCR_WORKER='./__hane_engine__/tesseract/worker.min.js';
 const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
-let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null;
-const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED';
+let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
+const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-31-VERIFIED-FALLBACK';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-31-VERIFIED-FALLBACK';
+const HANE_ENGINE_PACKAGES=[
+  {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
+  {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
+  {url:'https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-4.10.38.tgz',integrity:'sha512-/Y3fcFrXEAsMjJXeL9J8+ZG9U01LbuWaYypvDW2ycW1jL269L3js3DVBjDJ0Up9Np1uqDXsDrRihHANhZOlwdQ==',files:{'package/build/pdf.min.mjs':'__hane_engine__/pdf/pdf.min.mjs','package/build/pdf.worker.min.mjs':'__hane_engine__/pdf/pdf.worker.min.mjs'}}
+];
+function haneB64(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(s)}
+async function haneVerifySha512(buffer,integrity){const [alg,want]=String(integrity).split('-',2);if(alg!=='sha512'||!want)throw new Error('Motor bütünlük bilgisi geçersiz.');const got=haneB64(new Uint8Array(await crypto.subtle.digest('SHA-512',buffer)));if(got!==want)throw new Error('Motor paketi SHA-512 doğrulamasını geçemedi.');}
+function haneTarStr(u8,start,len){const p=u8.subarray(start,start+len);let e=p.indexOf(0);if(e<0)e=p.length;return new TextDecoder().decode(p.subarray(0,e)).trim()}
+function haneOct(s){const x=String(s||'').replace(/\0/g,'').trim();return x?parseInt(x,8)||0:0}
+async function haneGunzip(buffer){if(typeof DecompressionStream!=='function')throw new Error('Bu tarayıcı güvenli motor paketini açmayı desteklemiyor.');const st=new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip'));return new Uint8Array(await new Response(st).arrayBuffer())}
+function haneExtractTar(tar,needed){const found=new Map();for(let off=0;off+512<=tar.length;){const name=haneTarStr(tar,off,100),prefix=haneTarStr(tar,off+345,155);if(!name)break;const full=prefix?`${prefix}/${name}`:name,size=haneOct(haneTarStr(tar,off+124,12)),type=String.fromCharCode(tar[off+156]||48),ds=off+512,de=ds+size;if((type==='0'||type==='\0')&&needed.has(full))found.set(full,tar.slice(ds,de));off=ds+Math.ceil(size/512)*512}return found}
+function haneEngineMime(path){if(path.endsWith('.wasm'))return'application/wasm';if(path.endsWith('.mjs')||path.endsWith('.js'))return'text/javascript; charset=utf-8';return'application/octet-stream'}
+async function installVerifiedEnginesInPage(){
+  const cache=await caches.open(HANE_ENGINE_CACHE);
+  for(const pkg of HANE_ENGINE_PACKAGES){
+    const res=await fetch(pkg.url,{method:'GET',mode:'cors',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'});if(!res.ok)throw new Error('Doğrulanmış motor paketi indirilemedi.');
+    const archive=await res.arrayBuffer();await haneVerifySha512(archive,pkg.integrity);const tar=await haneGunzip(archive),need=new Set(Object.keys(pkg.files)),found=haneExtractTar(tar,need);if(found.size!==need.size)throw new Error('Doğrulanmış motor paketinde gerekli dosya eksik.');
+    for(const [src,dst] of Object.entries(pkg.files)){const url=new URL(dst,location.href).href;await cache.put(url,new Response(found.get(src),{status:200,headers:{'Content-Type':haneEngineMime(dst),'Cache-Control':'public, max-age=31536000, immutable','X-HANE-Verified':'sha512-package-page'}}))}
+  }
+  return true
+}
 async function loadTesseract(){
   if(window.Tesseract)return window.Tesseract;
-  const src=HANE_OCR_SCRIPT;
-  await new Promise((res,rej)=>{
-    const old=document.querySelector('script[data-hane-ocr="1"]');
-    if(old)old.remove();
-    const sc=document.createElement('script');sc.dataset.haneOcr='1';sc.src=src;sc.crossOrigin='anonymous';sc.referrerPolicy='no-referrer';
-    sc.onload=res;sc.onerror=()=>rej(new Error('OCR motoru yüklenemedi. İnternet bağlantısını kontrol edip tekrar deneyin.'));
-    document.head.appendChild(sc)
-  });
+  await new Promise((res,rej)=>{const old=document.querySelector('script[data-hane-ocr="1"]');if(old)old.remove();const sc=document.createElement('script');sc.dataset.haneOcr='1';sc.src=HANE_OCR_SCRIPT;sc.onload=res;sc.onerror=()=>rej(new Error('OCR motoru yüklenemedi.'));document.head.appendChild(sc)});
   return window.Tesseract
 }
 async function getStatementOcrWorker(label='OCR'){
   statementOcrLabel=label;if(statementOcrWorker)return statementOcrWorker;
   const T=await loadTesseract(),langPath=new URL('./vendor/tesseract/lang',location.href).href.replace(/\/$/,'');
-  statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:HANE_OCR_WORKER,langPath,corePath:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});
-  return statementOcrWorker
+  statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:HANE_OCR_WORKER,langPath,corePath:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});return statementOcrWorker
 }
 async function releaseStatementOcrWorker(){if(statementOcrWorker){try{await statementOcrWorker.terminate()}catch{}statementOcrWorker=null}}
-
-async function getStatementPdfRuntime(){
-  if(statementPdfjs)return statementPdfjs;
-  try{
-    const pdfjs=await import(HANE_PDF_MODULE);
-    pdfjs.GlobalWorkerOptions.workerSrc=HANE_PDF_WORKER;
-    try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}
-    statementPdfjs=pdfjs;return pdfjs;
-  }catch{throw new Error('PDF motoru yüklenemedi. İnternet bağlantısını kontrol edip tekrar deneyin.')}
-}
-async function pingStatementWorker(worker){
-  if(!worker)return false;
-  return await new Promise(resolve=>{
-    const channel=new MessageChannel();let done=false;
-    const finish=v=>{if(done)return;done=true;clearTimeout(timer);resolve(v)};
-    const timer=setTimeout(()=>finish(false),1500);
-    channel.port1.onmessage=e=>{const d=e.data||{};finish(d.ok===true&&d.build===HANE_SW_BUILD)};
-    try{worker.postMessage({type:'PING'},[channel.port2])}catch(_){finish(false)}
-  });
-}
+async function getStatementPdfRuntime(){if(statementPdfjs)return statementPdfjs;try{const pdfjs=await import(HANE_PDF_MODULE);pdfjs.GlobalWorkerOptions.workerSrc=HANE_PDF_WORKER;try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}statementPdfjs=pdfjs;return pdfjs}catch{throw new Error('PDF motoru yüklenemedi.')}}
+async function pingStatementWorker(worker){if(!worker)return false;return await new Promise(resolve=>{const channel=new MessageChannel();let done=false;const finish=v=>{if(done)return;done=true;clearTimeout(timer);resolve(v)},timer=setTimeout(()=>finish(false),1500);channel.port1.onmessage=e=>{const d=e.data||{};finish(d.ok===true&&d.build===HANE_SW_BUILD)};try{worker.postMessage({type:'PING'},[channel.port2])}catch{finish(false)}})}
 async function ensureStatementServiceWorkerController(){
-  if(!('serviceWorker' in navigator))throw new Error('Güvenli PDF/OCR motoru için Service Worker desteği gerekiyor.');
-  if(await pingStatementWorker(navigator.serviceWorker.controller))return navigator.serviceWorker.controller;
-
-  // Always use the exact build URL used by bootstrap. This prevents two registrations
-  // with different script URLs from racing on the same scope.
-  let reg;
-  try{
-    reg=await navigator.serviceWorker.register(HANE_SW_URL,{updateViaCache:'none'});
-    try{await reg.update()}catch{}
-    if(reg.waiting)try{reg.waiting.postMessage({type:'SKIP_WAITING'})}catch{}
-    await navigator.serviceWorker.ready;
-  }catch(e){
-    throw new Error('Güvenli okuma servisi başlatılamadı. İnternet bağlantısını kontrol edin.');
-  }
-
-  // Do not accept an old controller. Wait until the exact expected HANE build answers.
-  const deadline=Date.now()+25000;
-  while(Date.now()<deadline){
-    const c=navigator.serviceWorker.controller;
-    if(await pingStatementWorker(c))return c;
-    if(reg.waiting)try{reg.waiting.postMessage({type:'SKIP_WAITING'})}catch{}
-    await new Promise(r=>setTimeout(r,250));
-  }
-  throw new Error('HANE güvenli okuma servisi doğru sürüme geçemedi. Sayfayı bir kez yenileyip tekrar deneyin.');
+  if(!('serviceWorker'in navigator))throw new Error('Güvenli yerel okuma bu tarayıcıda desteklenmiyor.');
+  let reg=await navigator.serviceWorker.register(HANE_SW_URL,{scope:'./',updateViaCache:'none'});try{await reg.update()}catch{}
+  const deadline=Date.now()+20000;while(Date.now()<deadline){const ctl=navigator.serviceWorker.controller;if(ctl&&await pingStatementWorker(ctl))return ctl;const target=reg.waiting||reg.installing||reg.active;if(target&&await pingStatementWorker(target)){if(target.state==='installed')try{target.postMessage({type:'SKIP_WAITING'})}catch{};if(navigator.serviceWorker.controller&&await pingStatementWorker(navigator.serviceWorker.controller))return navigator.serviceWorker.controller}await new Promise(r=>setTimeout(r,250));reg=await navigator.serviceWorker.getRegistration('./')||reg}
+  throw new Error('HANE güvenli okuma servisi doğru sürüme geçemedi. Sayfayı bir kez yenileyip tekrar deneyin.')
 }
-async function requestVerifiedStatementEngines(){
-  const controller=await ensureStatementServiceWorkerController();
-  await new Promise((resolve,reject)=>{
-    const channel=new MessageChannel();let done=false;
-    const timer=setTimeout(()=>{if(done)return;done=true;reject(new Error('PDF/OCR motorları hazırlanırken zaman aşımı oldu. İnternet bağlantısını kontrol edip tekrar deneyin.'))},120000);
-    channel.port1.onmessage=e=>{if(done)return;done=true;clearTimeout(timer);const d=e.data||{};if(d.ok===true&&d.build===HANE_SW_BUILD)resolve(true);else if(d.ok===true)reject(new Error('PDF/OCR motoru yanlış HANE sürümünden yanıt verdi. Sayfayı yenileyip tekrar deneyin.'));else reject(new Error('PDF/OCR motorları güvenli şekilde hazırlanamadı. '+(d.error||'İnternet bağlantısını kontrol edip tekrar deneyin.')))};
-    controller.postMessage({type:'PREPARE_ENGINES'},[channel.port2]);
-  });
-}
+async function requestVerifiedEnginePreparation(controller){return await new Promise((resolve,reject)=>{const channel=new MessageChannel();let done=false;const finish=(ok,v)=>{if(done)return;done=true;clearTimeout(timer);ok?resolve(v):reject(v)},timer=setTimeout(()=>finish(false,new Error('Güvenli PDF/OCR motorları hazırlanırken zaman aşımı oluştu.')),120000);channel.port1.onmessage=e=>{const d=e.data||{};if(d.build!==HANE_SW_BUILD)return finish(false,new Error('Ekstre motoru farklı HANE sürümünden yanıt verdi.'));d.ok?finish(true,true):finish(false,new Error(d.error||'Güvenli motor hazırlanamadı.'))};try{controller.postMessage({type:'PREPARE_ENGINES'},[channel.port2])}catch(e){finish(false,e)}})}
 async function prepareStatementPrivacyRuntime(){
-  if(statementPrivacyPrepared)return true;
-  if(statementPrivacyPreparePromise)return statementPrivacyPreparePromise;
+  if(statementPrivacyPrepared)return true;if(statementPrivacyPreparePromise)return statementPrivacyPreparePromise;
   statementPrivacyPreparePromise=(async()=>{
-    try{
-      await ensureStatementServiceWorkerController();
-      await requestVerifiedStatementEngines();
-      await Promise.all([getStatementPdfRuntime(),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR')]);
-      statementPrivacyPrepared=true;
-      return true;
-    }catch(e){
-      await releaseStatementOcrWorker();statementPdfjs=null;statementPdfWorker=null;
-      const detail=String(e&&e.message||'').trim();
-      throw new Error('Güvenli PDF/OCR motorları hazırlanamadı.'+(detail?' '+detail:'')+' Kişisel ekstre dışarı gönderilmedi.');
-    }finally{
-      statementPrivacyPreparePromise=null;
-    }
-  })();
-  return statementPrivacyPreparePromise;
+    let swErr=null;
+    try{const ctl=await ensureStatementServiceWorkerController();await requestVerifiedEnginePreparation(ctl);statementEngineMode='verified-sw'}catch(e){swErr=e;await installVerifiedEnginesInPage();await ensureStatementServiceWorkerController();statementEngineMode='verified-page-fallback'}
+    await releaseStatementOcrWorker();statementPdfjs=null;statementPdfWorker=null;
+    try{await getStatementPdfRuntime();await getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR');await releaseStatementOcrWorker();statementPrivacyPrepared=true;return true}catch(e){const a=String(swErr&&swErr.message||'').trim(),b=String(e&&e.message||'').trim();throw new Error(`Güvenli PDF/OCR motorları hazırlanamadı.${a?' '+a:''}${b?' '+b:''}`)}
+  })().finally(()=>{if(!statementPrivacyPrepared)statementPrivacyPreparePromise=null});return statementPrivacyPreparePromise
 }
-const MAX_STATEMENT_FILE_BYTES=20*1024*1024;
+
 async function statementImageForOcr(file,maxSide=2400){
   if(typeof createImageBitmap!=='function')return file;
   const bmp=await createImageBitmap(file);try{const scale=Math.min(1,maxSide/Math.max(bmp.width,bmp.height));if(scale===1)return file;const c=document.createElement('canvas');c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));c.getContext('2d',{alpha:false}).drawImage(bmp,0,0,c.width,c.height);return c}finally{bmp.close?.()}

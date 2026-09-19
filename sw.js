@@ -1,4 +1,4 @@
-/* HANE PWA - LOCAL DATA ONLY 29 force-update isolated service worker
+/* HANE PWA - LOCAL DATA ONLY 31 verified fallback service worker
    SECURITY MODEL
    1) Personal HANE data/documents are never uploaded by this worker.
    2) OCR/PDF engine packages are fetched only on explicit PREPARE_ENGINES using fixed npm tarball URLs,
@@ -7,8 +7,8 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260919-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED';
-const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-29-FORCE-UPDATE-ISOLATED';
+const SW_BUILD = '19.4.8.20260919-LOCAL-DATA-ONLY-31-VERIFIED-FALLBACK';
+const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-31-VERIFIED-FALLBACK';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
@@ -186,8 +186,19 @@ self.addEventListener('fetch',event=>{
   const req=event.request,url=new URL(req.url);
   const sameOrigin=url.origin===SCOPE.origin;
 
-  // Runtime firewall: kişisel ekstre okunurken hiçbir cross-origin istek çalıştırılmaz.
-  // Motor paketleri yalnız PREPARE_ENGINES sırasında sabit npm paketlerinden SHA-512 doğrulanarak cache'e alınır.
+  // Verified fallback may download only the three fixed npm package archives BEFORE file selection.
+  // The page verifies each archive against a pinned SHA-512 before caching/executing any engine file.
+  const pinnedPackage=url.origin==='https://registry.npmjs.org' && (
+    url.pathname==='/tesseract.js/-/tesseract.js-5.1.1.tgz' ||
+    url.pathname==='/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz' ||
+    url.pathname==='/pdfjs-dist/-/pdfjs-dist-4.10.38.tgz'
+  );
+  if(!sameOrigin&&pinnedPackage&&req.method==='GET'){
+    event.respondWith(fetch(new Request(url.href,{method:'GET',mode:'cors',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'})));
+    return;
+  }
+
+  // Runtime firewall: all other cross-origin requests remain blocked.
   if(!sameOrigin){event.respondWith(blocked());return}
   if(req.method!=='GET'){event.respondWith(blocked(405,'HANE runtime network writes are disabled'));return}
 

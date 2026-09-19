@@ -1,5 +1,5 @@
-# HANE V29 Temizlik Raporu
+# V31 Temizlik Özeti
 
-- Eski V25/V27/V28 açıklama ve build referansları temizlendi.
-- Service Worker üst açıklaması V29 ile eşitlendi.
-- Zorunlu güncellemede origin-geneli unregister kaldırıldı.
+- V30 doğrulanmamış CDN fallback yolu kaldırıldı.
+- Eski build referansları V31 ile eşlendi.
+- CSP dış script/worker çalıştırmayı tekrar kapatacak şekilde daraltıldı.
