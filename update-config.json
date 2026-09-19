@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 V38: kayıt kuyruğu, PIN değişimi ve yedekten geri yükleme için özel depolama kilidi eklendi; eski oturum kayıtlarının yeni şifreli verinin üstüne yazması engellendi.",
+  "message": "HANE 19.4.8 V41: parola ekranında profil önizleme düzeltildi; kart ekstre işlem butonları sola hizalandı, sadeleştirildi ve ikonları kaldırıldı.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-38-SAFE-STORAGE-LOCK",
-  "version": "19.4.8-LOCAL_DATA_ONLY_38_SAFE_STORAGE_LOCK"
+  "build": "20260920-LOCAL-DATA-ONLY-41-LOCK-PREVIEW-CARD-BTN",
+  "version": "19.4.8-LOCAL_DATA_ONLY_41_LOCK_PREVIEW_CARD_BTN"
 }
