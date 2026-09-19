@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: Ekstre tutar sütunu ve taksit tutarı seçimi düzeltildi.",
+  "message": "HANE 19.4.8: Ekstre özeti doğrulama, yinelenen toplu taşıma ve kart ödeme ayrımı düzeltildi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-23-STATEMENT-RECONCILE",
-  "version": "19.4.8-LOCAL_DATA_ONLY_23_STATEMENT_RECONCILE"
+  "build": "20260919-LOCAL-DATA-ONLY-24-SUMMARY-AUDIT",
+  "version": "19.4.8-LOCAL_DATA_ONLY_24_SUMMARY_AUDIT"
 }
