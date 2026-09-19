@@ -1,4 +1,4 @@
-# V35 Audit
+# V36 Audit
 
 - Kritik runtime hata: `MAX_STATEMENT_FILE_BYTES` artık tanımlı.
 - Dosya seçimi sonrası `readStatementFile()` boyut kontrolünden geçebilir.

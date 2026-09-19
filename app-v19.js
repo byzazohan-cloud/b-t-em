@@ -19,7 +19,7 @@
 
 'use strict';
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
-const META='HANE_LOCKED_META_V1',DATA='HANE_LOCKED_DATA_V1';
+const META='HANE_LOCKED_META_V1',DATA='HANE_LOCKED_DATA_V1',STORAGE_TXN='HANE_STORAGE_TXN_V1';
 const enc=new TextEncoder(),dec=new TextDecoder();let state=null,key=null,current='home',modal=null,pin='',timer=null,setupPhoto='',themeDraft=null,reportPeriod='month',reportCustomStart='',reportCustomEnd='',txFilter='all',financeTab='cards',navHistory=[],calendarMonth='',calendarDay='',txSearch='',txDate='',txCategory='',txPay='',txMin='',txMax='',txMember='',cardStatementMonth='',statementImportCardId='',statementImportRows=[],statementImportMeta={},statementImportBusy=false;
 let browserNavReady=false;
 let normalExpensesOpen=true,fixedExpensesOpen=true,returnScrollTop=null;
@@ -201,7 +201,7 @@ function syncDerivedCardTransactions(){
 function recalculateFinanceCore(){
   if(!state)return;
   syncDerivedCardTransactions();
-  (state.cards||[]).forEach(c=>{if(!Number.isFinite(+c.openingBalance))c.openingBalance=+c.balance||0;const anchored=!!c.balanceAnchorDate&&Number.isFinite(+c.balanceAnchorAmount),base=anchored?(+c.balanceAnchorAmount||0):(+c.openingBalance||0);c.balance=Math.max(0,base+cardDerivedNet(c.id))})
+  (state.cards||[]).forEach(c=>{if(!Number.isFinite(+c.openingBalance))c.openingBalance=+c.balance||0;const anchored=!!c.balanceAnchorDate&&Number.isFinite(+c.balanceAnchorAmount),base=anchored?(+c.balanceAnchorAmount||0):(+c.openingBalance||0);c.balance=base+cardDerivedNet(c.id)})
 }
 function goTo(next,{replace=false,fromPop=false}={}){if(!next||next===current)return;if(!fromPop)navHistory.push(current);current=next;modal=null;if(browserNavReady&&!fromPop){const st={haneView:next};replace?history.replaceState(st,''):history.pushState(st,'')}render()}
 function goBack(){if(current==='theme')themeDraft=null;const prev=navHistory.pop()||'home';current=prev;modal=null;if(browserNavReady)history.replaceState({haneView:current},'');render()}
@@ -230,12 +230,60 @@ async function derive(p,salt){const m=await crypto.subtle.importKey('raw',enc.en
 async function encrypt(st,k){const iv=crypto.getRandomValues(new Uint8Array(12)),data=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,enc.encode(JSON.stringify(st)));return{iv:b64(iv),data:b64(data)}}
 async function decrypt(box,k){const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64(box.iv)},k,ub64(box.data));return JSON.parse(dec.decode(p))}
 function meta(){try{return JSON.parse(localStorage.getItem(META)||'null')}catch{return null}}
+let saveQueue=Promise.resolve();
+let storageExclusive=false,storageExclusiveMode='',storageExclusiveWaiters=[];
+function cloneStateSnapshot(v){try{return structuredClone(v)}catch{return JSON.parse(JSON.stringify(v))}}
+function waitForStorageAvailable(){
+  if(!storageExclusive)return Promise.resolve();
+  return new Promise((resolve,reject)=>storageExclusiveWaiters.push({resolve,reject}));
+}
+async function beginStorageExclusive(mode='maintenance'){
+  while(storageExclusive)await waitForStorageAvailable();
+  storageExclusive=true;storageExclusiveMode=mode;
+  try{await saveQueue}catch{}
+}
+function endStorageExclusive(){
+  storageExclusive=false;storageExclusiveMode='';
+  const waiters=storageExclusiveWaiters.splice(0);
+  waiters.forEach(w=>w.resolve());
+}
+function abortStorageExclusiveWaiters(message){
+  const waiters=storageExclusiveWaiters.splice(0);
+  waiters.forEach(w=>w.reject(new Error(message||'Depolama işlemi nedeniyle kayıt iptal edildi.')));
+}
 async function save(){
+  await waitForStorageAvailable();
   if(!state)throw new Error('Uygulama verisi hazır değil');
   recalculateFinanceCore();
   if(!key)throw new Error('Şifreleme anahtarı hazır değil. Uygulamayı kilitleyip PIN ile tekrar girin.');
-  const box=await encrypt(state,key);
-  try{localStorage.setItem(DATA,JSON.stringify(box))}catch(e){throw new Error('Cihaz depolamasına kayıt yapılamadı')}
+  const snapshot=cloneStateSnapshot(state),saveKey=key;
+  const write=async()=>{const box=await encrypt(snapshot,saveKey);try{localStorage.setItem(DATA,JSON.stringify(box))}catch(e){throw new Error('Cihaz depolamasına kayıt yapılamadı')}};
+  const task=saveQueue.then(write,write);
+  saveQueue=task.catch(()=>{});
+  return task;
+}
+function recoverStorageTransaction(){
+  let tx=null;try{tx=JSON.parse(localStorage.getItem(STORAGE_TXN)||'null')}catch{}
+  if(!tx)return;
+  try{
+    if(tx.oldData==null)localStorage.removeItem(DATA);else localStorage.setItem(DATA,tx.oldData);
+    if(tx.oldMeta==null)localStorage.removeItem(META);else localStorage.setItem(META,tx.oldMeta);
+  }finally{try{localStorage.removeItem(STORAGE_TXN)}catch{}}
+}
+function commitEncryptedPair(nextMeta,nextData){
+  const oldMeta=localStorage.getItem(META),oldData=localStorage.getItem(DATA);
+  const tx=JSON.stringify({oldMeta,oldData,startedAt:new Date().toISOString()});
+  try{
+    localStorage.setItem(STORAGE_TXN,tx);
+    localStorage.setItem(DATA,nextData);
+    localStorage.setItem(META,nextMeta);
+    localStorage.removeItem(STORAGE_TXN);
+  }catch(e){
+    try{if(oldData==null)localStorage.removeItem(DATA);else localStorage.setItem(DATA,oldData)}catch{}
+    try{if(oldMeta==null)localStorage.removeItem(META);else localStorage.setItem(META,oldMeta)}catch{}
+    try{localStorage.removeItem(STORAGE_TXN)}catch{}
+    throw new Error('Güvenli kayıt tamamlanamadı; önceki veriler korundu.');
+  }
 }
 async function setup(p,st){const salt=crypto.getRandomValues(new Uint8Array(16)),k=await derive(p,salt),box=await encrypt(st,k);localStorage.setItem(DATA,JSON.stringify(box));localStorage.setItem(META,JSON.stringify({salt:b64(salt)}));key=k;state=normalizeV19(st)}
 async function unlock(p){const m=meta();if(!m)return false;try{
@@ -1204,9 +1252,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-35-READ-FIX';
+const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-38-SAFE-STORAGE-LOCK';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-35-READ-FIX';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-38-SAFE-STORAGE-LOCK';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1232,17 +1280,17 @@ async function installVerifiedEnginesInPage(packages=HANE_ENGINE_PACKAGES){
 }
 async function haneEnginePackageReady(pkg){const cache=await caches.open(HANE_ENGINE_CACHE);for(const dst of Object.values(pkg.files)){if(!(await cache.match(new URL(dst,location.href).href)))return false}return true}
 async function ensurePdfEngineReady(){
-  // Controller-first: an old HANE worker may block the pinned npm package request.
-  // Verify/activate this exact build BEFORE any engine download or cache write.
-  await ensureStatementServiceWorkerController();
+  // PDF okuma Service Worker controller'a bagli degildir.
+  // Paket sabit npm surumunden indirilir, SHA-512 dogrulanir ve CacheStorage'a yazilir.
+  // Sayfa daha sonra dogrulanmis byte'lari dogrudan cache'den Blob olarak calistirir.
   const pkg=HANE_ENGINE_PACKAGES[2];
   if(!(await haneEnginePackageReady(pkg)))await installVerifiedEnginesInPage([pkg]);
   statementPdfjs=null;statementPdfWorker=null;
   return true
 }
 async function ensureOcrEngineReady(){
-  // Controller-first for the same reason: only the current build may govern engine preparation.
-  await ensureStatementServiceWorkerController();
+  // OCR da PDF gibi Service Worker controller'a bagli degildir.
+  // Sabit surum paketleri sayfa tarafinda SHA-512 dogrulanip CacheStorage'a yazilir.
   const pkgs=[HANE_ENGINE_PACKAGES[0],HANE_ENGINE_PACKAGES[1]];
   for(const pkg of pkgs)if(!(await haneEnginePackageReady(pkg))){await installVerifiedEnginesInPage(pkgs);break}
   return true
@@ -1259,7 +1307,22 @@ async function getStatementOcrWorker(label='OCR'){
   statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:HANE_OCR_WORKER,langPath,corePath:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});return statementOcrWorker
 }
 async function releaseStatementOcrWorker(){if(statementOcrWorker){try{await statementOcrWorker.terminate()}catch{}statementOcrWorker=null}}
-async function getStatementPdfRuntime(){if(statementPdfjs)return statementPdfjs;try{const pdfjs=await import(HANE_PDF_MODULE);pdfjs.GlobalWorkerOptions.workerSrc=HANE_PDF_WORKER;try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}statementPdfjs=pdfjs;return pdfjs}catch{throw new Error('PDF motoru yüklenemedi.')}}
+let statementPdfBlobUrls=[];
+async function haneCachedEngineBlobUrl(rel,mime='application/octet-stream'){
+  const cache=await caches.open(HANE_ENGINE_CACHE),href=new URL(rel,location.href).href,res=await cache.match(href);
+  if(!res)throw new Error('Dogrulanmis PDF motoru cache icinde bulunamadi.');
+  const buf=await res.arrayBuffer(),url=URL.createObjectURL(new Blob([buf],{type:mime}));statementPdfBlobUrls.push(url);return url
+}
+async function getStatementPdfRuntime(){
+  if(statementPdfjs)return statementPdfjs;
+  await ensurePdfEngineReady();
+  try{
+    const moduleUrl=await haneCachedEngineBlobUrl('__hane_engine__/pdf/pdf.min.mjs','text/javascript'),workerUrl=await haneCachedEngineBlobUrl('__hane_engine__/pdf/pdf.worker.min.mjs','text/javascript');
+    const pdfjs=await import(moduleUrl);pdfjs.GlobalWorkerOptions.workerSrc=workerUrl;
+    try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}
+    statementPdfjs=pdfjs;return pdfjs
+  }catch(e){console.error('HANE PDF runtime:',e);throw new Error('PDF motoru yüklenemedi.')}
+}
 async function pingStatementWorker(worker){if(!worker)return false;return await new Promise(resolve=>{const channel=new MessageChannel();let done=false;const finish=v=>{if(done)return;done=true;clearTimeout(timer);resolve(v)},timer=setTimeout(()=>finish(false),1500);channel.port1.onmessage=e=>{const d=e.data||{};finish(d.ok===true&&d.build===HANE_SW_BUILD)};try{worker.postMessage({type:'PING'},[channel.port2])}catch{finish(false)}})}
 async function ensureStatementServiceWorkerController(){
   if(!('serviceWorker'in navigator))throw new Error('Güvenli yerel okuma bu tarayıcıda desteklenmiyor.');
@@ -1299,7 +1362,7 @@ async function prepareStatementPrivacyRuntime(){
   if(statementPrivacyPrepared)return true;if(statementPrivacyPreparePromise)return statementPrivacyPreparePromise;
   // Lazy-engine mode: only make sure the exact HANE worker controls the page here.
   // PDF/OCR packages are prepared later, only for the selected file type.
-  statementPrivacyPreparePromise=(async()=>{await ensureStatementServiceWorkerController();statementEngineMode='lazy-verified';statementPrivacyPrepared=true;return true})().finally(()=>{if(!statementPrivacyPrepared)statementPrivacyPreparePromise=null});
+  statementPrivacyPreparePromise=(async()=>{statementEngineMode='lazy-verified';statementPrivacyPrepared=true;return true})().finally(()=>{if(!statementPrivacyPrepared)statementPrivacyPreparePromise=null});
   return statementPrivacyPreparePromise
 }
 
@@ -1399,7 +1462,7 @@ async function confirmStatementImport(){
   state.statementImports=Array.isArray(state.statementImports)?state.statementImports:[];state.statementImports=state.statementImports.filter(x=>!(x.cardId===c.id&&x.month===month));state.statementImports.push({id:id(),cardId:c.id,month,start:period.start,end:period.end,previousBalance,spendingTotal,feesTotal:feesTotal||0,paymentsTotal,periodDebt,rowCount:added,paymentRowCount:payAdded,importedAt:iso()});
   const reconciledRemoved=reconcileImportedStatementMultiplicity(c,period,selected);if(reconciledRemoved)skipped+=reconciledRemoved
   recalculateFinanceCore();const syncDebt=document.getElementById('stmtSyncDebt')?.checked&&periodDebt!=null;
-  if(syncDebt){c.balanceAnchorDate=period.end;c.balanceAnchorAmount=periodDebt;c.balance=Math.max(0,periodDebt+cardDerivedNet(c.id))}else{const derivedNow=cardDerivedNet(c.id);if(c.balanceAnchorDate&&Number.isFinite(+c.balanceAnchorAmount))c.balanceAnchorAmount=preserveBalance-derivedNow;else c.openingBalance=preserveBalance-derivedNow;c.balance=preserveBalance;}
+  if(syncDebt){c.balanceAnchorDate=period.end;c.balanceAnchorAmount=periodDebt;c.balance=periodDebt+cardDerivedNet(c.id)}else{const derivedNow=cardDerivedNet(c.id);if(c.balanceAnchorDate&&Number.isFinite(+c.balanceAnchorAmount))c.balanceAnchorAmount=preserveBalance-derivedNow;else c.openingBalance=preserveBalance-derivedNow;c.balance=preserveBalance;}
   await save();modal=null;render();showToast(`${added} HARCAMA · ${payAdded} ÖDEME EKLENDİ${skipped?` · ${skipped} ATLANDI`:''}`)
 
   } finally { statementImportBusy=false }
@@ -1455,9 +1518,42 @@ function closeCrop(){document.getElementById('cropOverlay')?.remove();cropState=
 function bindCrop(){const cv=$('#cropCanvas'),z=$('#cropZoom');drawCrop();z.oninput=e=>{cropState.zoom=+e.target.value;clampCrop();drawCrop()};const pos=e=>{const r=cv.getBoundingClientRect(),p=e.touches?.[0]||e;return{x:(p.clientX-r.left)*320/r.width,y:(p.clientY-r.top)*320/r.height}};const down=e=>{e.preventDefault();const p=pos(e);cropState.drag=true;cropState.sx=p.x;cropState.sy=p.y;cropState.bx=cropState.x;cropState.by=cropState.y};const move=e=>{if(!cropState.drag)return;e.preventDefault();const p=pos(e);cropState.x=cropState.bx+p.x-cropState.sx;cropState.y=cropState.by+p.y-cropState.sy;clampCrop();drawCrop()};const up=()=>cropState.drag=false;cv.addEventListener('pointerdown',down);cv.addEventListener('pointermove',move);cv.addEventListener('pointerup',up);cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',move,{passive:false});cv.addEventListener('touchend',up,{passive:true});$('#cropClose').onclick=closeCrop;$('#cropCancel').onclick=closeCrop;$('#cropUse').onclick=async()=>{const g=cropGeom(),tmp=document.createElement('canvas');tmp.width=320;tmp.height=320;tmp.getContext('2d').drawImage(cropState.img,(320-g.w)/2+cropState.x,(320-g.h)/2+cropState.y,g.w,g.h);const out=document.createElement('canvas');out.width=512;out.height=512;out.getContext('2d').drawImage(tmp,32,32,256,256,0,0,512,512);const data=out.toDataURL('image/jpeg',.88),setup=cropState.setup;closeCrop();if(setup){setupPhoto=data;return}state.profile.photo=data;await save();render();showToast('PROFİL FOTOĞRAFI KAYDEDİLDİ')}}
 function readImg(f,cb,max=420){const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height,s=Math.min(1,max/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',.78))};img.src=r.result};r.readAsDataURL(f)}
 
-async function backupNow(){const m=meta()||{},p={format:'HANE-LOCKED-BACKUP',meta:{salt:m.salt},data:JSON.parse(localStorage.getItem(DATA)),date:new Date().toISOString()},b=new Blob([JSON.stringify(p)],{type:'application/octet-stream'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='HANE-'+iso()+'.hane';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+async function backupNow(){
+  await beginStorageExclusive('backup');
+  try{
+    const m=meta()||{},stored=localStorage.getItem(DATA);
+    if(!m.salt||!stored)throw new Error('Yedeklenecek şifreli veri bulunamadı.');
+    const p={format:'HANE-LOCKED-BACKUP',meta:{salt:m.salt},data:JSON.parse(stored),date:new Date().toISOString()},b=new Blob([JSON.stringify(p)],{type:'application/octet-stream'}),u=URL.createObjectURL(b),a=document.createElement('a');
+    a.href=u;a.download='HANE-'+iso()+'.hane';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+  }catch(err){
+    console.error('HANE backup error',err);
+    alert('YEDEK OLUŞTURULAMADI: '+(err.message||err));
+  }finally{
+    endStorageExclusive();
+  }
+}
 
-async function changePin(){const o=prompt('Mevcut PIN');if(!o||!(await unlock(o))){alert('PIN yanlış');return}const n=prompt('Yeni 4 haneli PIN');if(!/^\d{4}$/.test(n||'')){alert('PIN 4 haneli olmalı');return}const salt=crypto.getRandomValues(new Uint8Array(16)),k=await derive(n,salt),box=await encrypt(state,k);localStorage.setItem(DATA,JSON.stringify(box));localStorage.setItem(META,JSON.stringify({salt:b64(salt)}));key=k;alert('PIN değiştirildi')}
+async function changePin(){
+  const o=prompt('Mevcut PIN');
+  if(!o)return;
+  const n=prompt('Yeni 4 haneli PIN');
+  if(!/^\d{4}$/.test(n||'')){alert('PIN 4 haneli olmalı');return}
+  await beginStorageExclusive('pin-change');
+  try{
+    // Önce bekleyen kayıtlar diske tamamlanır, sonra mevcut PIN en güncel veri üzerinde doğrulanır.
+    if(!(await unlock(o))){alert('PIN yanlış');return}
+    recalculateFinanceCore();
+    const salt=crypto.getRandomValues(new Uint8Array(16)),k=await derive(n,salt),snapshot=cloneStateSnapshot(state),box=await encrypt(snapshot,k),nextData=JSON.stringify(box),nextMeta=JSON.stringify({salt:b64(salt)});
+    commitEncryptedPair(nextMeta,nextData);
+    key=k;
+    alert('PIN değiştirildi');
+  }catch(err){
+    console.error('HANE PIN change error',err);
+    alert('PIN DEĞİŞTİRİLEMEDİ: '+(err.message||err));
+  }finally{
+    endStorageExclusive();
+  }
+}
 function schedule(){clearTimeout(timer);if(state)timer=setTimeout(lock,Math.max(1,+state.settings.lockMinutes||15)*60000)}function lock(){state=null;key=null;pin='';renderLock()}
 function renderSetup(){$('#app').innerHTML=`<div class="setup premiumSetup"><div class="setupOfficialLogo">${haneFullLogo("setupBrandLogo")}</div><p class="setupBrandLine">DAHA DÜZENLİ BİR YAŞAM</p><form class="form" id="setupForm" style="width:100%"><button type="button" class="btn" id="photoBtn">PROFİL RESMİNİ DEĞİŞTİR</button>${input('name','İsim','')}${input('pin','4 Haneli PIN','','password','inputmode="numeric" maxlength="4"')}${input('pin2','PIN Tekrar','','password','inputmode="numeric" maxlength="4"')}<button class="btn gold">HANE’yi Kur</button></form><div class="notice" style="margin-top:12px;width:100%">İlk kurulumda tüm tutarlar ₺0 başlar.</div></div>`;$('#photoBtn').onclick=()=>$('#profileInput').click();$('#setupForm').onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries());if(!/^\d{4}$/.test(d.pin)||d.pin!==d.pin2){alert('PIN 4 haneli ve aynı olmalı');return}const st=def();st.profile.name=upper(d.name||'HANE');st.profile.photo=setupPhoto;await setup(d.pin,st);render();schedule()}}
 function renderLock(){if(!meta()){renderSetup();return}pin='';$('#app').innerHTML=`<div class="lock haneSignatureLock"><div class="signatureLeft"><div class="signatureLogo">${haneFullLogo("signatureMainLogo")}</div><div class="signaturePortrait"><div class="portraitFallback">H</div></div><div class="pinPrompt">PIN’ini gir</div><div class="pinDots signatureDots">${[0,1,2,3].map(i=>`<i data-dot="${i}"></i>`).join('')}</div><div class="keypad signatureKeypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-key="${n}">${n}</button>`).join('')}<button type="button" class="blankKey signatureBlank" disabled></button><button type="button" data-key="0">0</button><button type="button" class="del" data-key="del">⌫</button></div><div class="signatureFooter"><span></span><b>DAHA DÜZENLİ BİR YAŞAM</b><span></span></div></div><aside class="signatureQuote"><div class="quoteBlock"><strong>Düzen<br>evde<br>başlar</strong><i></i><b>Huzur<br>planla büyür</b><i></i><b>Bugününü<br>yönet</b><i></i><b>Yarınına<br>güven kat</b></div><div class="quoteBrandMini">${haneLogo(54,'quoteMiniLogo')}</div></aside></div>`;$$('[data-key]').forEach(b=>b.onclick=()=>pinKey(b.dataset.key));installPinKeyboard()}
@@ -1471,6 +1567,7 @@ function render(){captureModalFormDraft();if(state)initBrowserNav();applyTheme()
 
 function bootHane(){
   try{
+    recoverStorageTransaction();
     const profileInput=document.getElementById('profileInput');
     const receiptInput=document.getElementById('receiptInput');
     const restoreInput=document.getElementById('restoreInput');
@@ -1521,12 +1618,21 @@ function bootHane(){
             if(!testState||typeof testState!=='object'||!Array.isArray(testState.expenses)||!Array.isArray(testState.incomes))throw new Error('YEDEK VERİ YAPISI GEÇERSİZ');
             normalizeV19(testState);
           }catch{throw new Error('YEDEK PIN YANLIŞ VEYA DOSYA BOZUK')}
-          // Existing phone data is untouched until the encrypted backup is successfully authenticated and decrypted.
-          localStorage.setItem(META,JSON.stringify({salt:p.meta.salt}));
-          localStorage.setItem(DATA,JSON.stringify(p.data));
-          input.value='';
-          alert('YEDEK DOĞRULANDI VE GERİ YÜKLENDİ. HANE YENİDEN AÇILACAK.');
-          location.reload();
+          // Yedek doğrulanmadan mevcut veri değişmez. Önce bekleyen tüm kayıtlar bitirilir,
+          // sonra geri yükleme özel kilit altında tek işlem olarak yazılır.
+          await beginStorageExclusive('restore');
+          try{
+            commitEncryptedPair(JSON.stringify({salt:p.meta.salt}),JSON.stringify(p.data));
+            input.value='';
+            alert('YEDEK DOĞRULANDI VE GERİ YÜKLENDİ. HANE YENİDEN AÇILACAK.');
+            // Başarılı restore sonrasında eski oturumun hiçbir save() işlemi yeni yedeğin üstüne yazamaz.
+            abortStorageExclusiveWaiters('Yedek geri yüklendi; uygulama yeniden açılıyor.');
+            location.reload();
+            return;
+          }catch(restoreWriteErr){
+            endStorageExclusive();
+            throw restoreWriteErr;
+          }
         }catch(err){
           console.error('HANE restore error',err);
           input.value='';

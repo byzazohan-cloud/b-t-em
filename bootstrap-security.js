@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-35-READ-FIX';
+  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-38-SAFE-STORAGE-LOCK';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

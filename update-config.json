@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: Ekstre dosyası seçildikten sonra okumayı durduran eksik dosya boyutu sabiti düzeltildi; mevcut güvenli PDF/OCR ve ekstre uzlaştırma sistemi korundu.",
+  "message": "HANE 19.4.8 V38: kayıt kuyruğu, PIN değişimi ve yedekten geri yükleme için özel depolama kilidi eklendi; eski oturum kayıtlarının yeni şifreli verinin üstüne yazması engellendi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-35-READ-FIX",
-  "version": "19.4.8-LOCAL_DATA_ONLY_35_READ_FIX"
+  "build": "20260919-LOCAL-DATA-ONLY-38-SAFE-STORAGE-LOCK",
+  "version": "19.4.8-LOCAL_DATA_ONLY_38_SAFE_STORAGE_LOCK"
 }
