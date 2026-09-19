@@ -1357,3 +1357,24 @@ html.lightMode .profile .ava,html.lightMode .ava{box-shadow:0 0 0 2px rgba(184,1
 .statementCardActions .btn{min-height:38px!important;padding:8px 16px!important;font-size:8px!important;letter-spacing:.06em!important;line-height:1.15!important;border-radius:13px!important;justify-content:center!important}
 .statementCardActions .btn:last-child{grid-column:1/-1}
 @media(max-width:390px){.statementCardActions{margin-left:-2px;width:calc(100% + 2px);gap:8px}.statementCardActions .btn{min-height:36px!important;padding:7px 14px!important;font-size:7.5px!important}}
+
+
+/* HANE 19.4.8 V42 — iPhone lock screen fit */
+.haneUltraLock{grid-template-columns:18px minmax(0,1fr) 96px 18px!important;gap:7px!important;padding:calc(var(--safeT) + 4px) 5px calc(var(--safeB) + 4px)!important}
+.ultraTopBrand{width:58px!important;height:58px!important;margin:0 0 5px!important}
+.ultraPortraitWrap{width:min(100%,225px)!important;aspect-ratio:1/.95!important}
+.ultraWelcome{font-size:25px!important;line-height:1.05!important;margin-top:9px!important;letter-spacing:.10em!important}
+.ultraSub{font-size:9px!important;line-height:1.25!important;letter-spacing:.14em!important;margin-top:5px!important}
+.ultraName{font-size:9px!important;letter-spacing:.16em!important;margin-top:7px!important}
+.ultraDots{margin:10px 0 10px!important;gap:15px!important}
+.ultraDots i{width:13px!important;height:13px!important}
+.ultraKeypad{width:min(100%,235px)!important;gap:6px!important}
+.ultraKeypad button{height:49px!important;font-size:22px!important;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px)!important}
+.ultraKeypad .del,.ultraKeypad .bioKey{font-size:18px!important}
+.ultraFooter{padding-top:5px!important}.ultraFooter b{font-size:5.5px!important}
+.ultraQuote{padding:63px 5px 8px 9px!important}
+.quoteCardMini{margin-bottom:8px!important}.quoteCardMini img{width:45px!important;height:45px!important}
+.quoteColumn strong{font-size:16px!important;line-height:1.04!important;letter-spacing:.025em!important}.quoteColumn b{font-size:12px!important;line-height:1.08!important}.quoteColumn i{width:30px!important;height:1.5px!important;margin:8px 0!important}
+.ultraLeftRails:before,.ultraLeftRails:after,.ultraRightRails:before,.ultraRightRails:after{width:15px!important;height:165px!important}
+.ultraLeftRails:before,.ultraRightRails:before{top:70px!important}.ultraLeftRails:after,.ultraRightRails:after{bottom:70px!important}
+@media(max-height:750px){.haneUltraLock{grid-template-columns:14px minmax(0,1fr) 84px 14px!important;gap:5px!important}.ultraTopBrand{width:48px!important;height:48px!important}.ultraPortraitWrap{width:min(100%,190px)!important}.ultraWelcome{font-size:21px!important;margin-top:6px!important}.ultraSub,.ultraName{font-size:8px!important}.ultraDots{margin:7px 0!important}.ultraKeypad{width:min(100%,210px)!important;gap:5px!important}.ultraKeypad button{height:43px!important;font-size:19px!important}.ultraQuote{padding-top:50px!important}.quoteColumn strong{font-size:14px!important}.quoteColumn b{font-size:10.5px!important}}

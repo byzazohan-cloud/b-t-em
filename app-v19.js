@@ -72,10 +72,10 @@ const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberForm
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
 function haneLogo(size=54,cls=''){
   const n=Math.max(28,Number(size)||54);
-  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand3" width="${n}" alt="HANE">`;
+  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand4" width="${n}" alt="HANE">`;
 }
 function haneFullLogo(cls=''){
-  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand3" alt="HANE">`;
+  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand4" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
   const p={
@@ -298,7 +298,7 @@ async function unlock(p){const m=meta();if(!m)return false;try{
   st.flexTransactions=Array.isArray(st.flexTransactions)?st.flexTransactions:[];
   st.installments=Array.isArray(st.installments)?st.installments:[];
   st.cardTransactions=Array.isArray(st.cardTransactions)?st.cardTransactions:[];
-  key=k;state=normalizeV19(st);localStorage.setItem(META,JSON.stringify({salt:m.salt}));state.selectedMonth=ym(new Date());calendarMonth=state.selectedMonth;calendarDay='';applyTheme();return true
+  key=k;state=normalizeV19(st);setLockPreviewSnapshot(state.profile||{});localStorage.setItem(META,JSON.stringify({salt:m.salt}));state.selectedMonth=ym(new Date());calendarMonth=state.selectedMonth;calendarDay='';applyTheme();return true
 }catch{return false}}
 function def(){return{version:19,selectedMonth:ym(new Date()),profile:{name:'',photo:'',motto:'Disiplin, özgürlüğün kapısını açar.'},settings:{lockMinutes:15,leadDays:3,notifications:false,darkMode:true},theme:{bg:'#000000',accent:'#d8ad4f',income:'#248ef5',expense:'#ff4658',remain:'#16d77d'},incomes:[],expenses:[],cards:[],accounts:[],flexAccounts:[],customCategories:[],categoryMeta:{},cardTransactions:[],cardPayments:[],statementImports:[],statementCategoryRules:{},fixedPayments:[],flexTransactions:[],installments:[],members:[{id:'me',name:'BEN',icon:'👤'}],homeLayout:['summary','quick','quote','chart','month','recommended','monthly'],homeHidden:[]}}
 function applyTheme(){if(!state)return;const t=state.theme||{},dark=state.settings?.darkMode!==false;document.documentElement.classList.toggle('lightMode',!dark);document.documentElement.classList.toggle('darkMode',dark);document.documentElement.style.setProperty('--bg',dark?(t.bg||'#000'):'#f3f1eb');document.documentElement.style.setProperty('--gold',t.accent||'#d8ad4f');document.documentElement.style.setProperty('--gold2',t.accent||'#f0cd77');document.documentElement.style.setProperty('--gi',t.income||'#248ef5');document.documentElement.style.setProperty('--ge',t.expense||'#ff4658');document.documentElement.style.setProperty('--gr',t.remain||'#16d77d')}
@@ -1271,7 +1271,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-41-LOCK-PREVIEW-CARD-BTN';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-42-LOCK-FIT-PHOTO';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-38-SAFE-STORAGE-LOCK';
 const HANE_ENGINE_PACKAGES=[
