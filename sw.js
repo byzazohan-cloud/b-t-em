@@ -1,4 +1,4 @@
-/* HANE PWA - LOCAL DATA ONLY 33 verified fallback service worker
+/* HANE PWA - LOCAL DATA ONLY 34 controller-first verified lazy-engine service worker
    SECURITY MODEL
    1) Personal HANE data/documents are never uploaded by this worker.
    2) OCR/PDF engine packages are fetched only on explicit PREPARE_ENGINES using fixed npm tarball URLs,
@@ -7,8 +7,8 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260919-LOCAL-DATA-ONLY-33-CONTROLLER-READY';
-const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-33-CONTROLLER-READY';
+const SW_BUILD = '19.4.8.20260919-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST';
+const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST';
 const HANE_CACHE_PREFIX = 'hane-';
 
 

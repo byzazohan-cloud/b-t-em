@@ -4,6 +4,6 @@
   "force": true,
   "message": "HANE 19.4.8: Lazy ekstre motoru, doğru Service Worker controller doğrulamasıyla hızlandırıldı ve ilk açılış hatası giderildi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-33-CONTROLLER-READY",
-  "version": "19.4.8-LOCAL_DATA_ONLY_33_CONTROLLER_READY"
+  "build": "20260919-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST",
+  "version": "19.4.8-LOCAL_DATA_ONLY_34_CONTROLLER_FIRST"
 }

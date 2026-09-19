@@ -1204,9 +1204,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-33-CONTROLLER-READY';
+const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-33-CONTROLLER-READY';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1232,19 +1232,19 @@ async function installVerifiedEnginesInPage(packages=HANE_ENGINE_PACKAGES){
 }
 async function haneEnginePackageReady(pkg){const cache=await caches.open(HANE_ENGINE_CACHE);for(const dst of Object.values(pkg.files)){if(!(await cache.match(new URL(dst,location.href).href)))return false}return true}
 async function ensurePdfEngineReady(){
+  // Controller-first: an old HANE worker may block the pinned npm package request.
+  // Verify/activate this exact build BEFORE any engine download or cache write.
+  await ensureStatementServiceWorkerController();
   const pkg=HANE_ENGINE_PACKAGES[2];
   if(!(await haneEnginePackageReady(pkg)))await installVerifiedEnginesInPage([pkg]);
-  // Virtual engine URLs are served by HANE's verified Service Worker cache.
-  // Make sure the current page is actually controlled by this exact build before importing.
-  await ensureStatementServiceWorkerController();
   statementPdfjs=null;statementPdfWorker=null;
   return true
 }
 async function ensureOcrEngineReady(){
+  // Controller-first for the same reason: only the current build may govern engine preparation.
+  await ensureStatementServiceWorkerController();
   const pkgs=[HANE_ENGINE_PACKAGES[0],HANE_ENGINE_PACKAGES[1]];
   for(const pkg of pkgs)if(!(await haneEnginePackageReady(pkg))){await installVerifiedEnginesInPage(pkgs);break}
-  // Tesseract script/worker/core paths are virtual cache URLs; require the exact HANE controller first.
-  await ensureStatementServiceWorkerController();
   return true
 }
 async function loadTesseract(){
