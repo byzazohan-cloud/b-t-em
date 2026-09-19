@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 Local Data Only 7: ekstre içe aktarmada aynı dönemin eski kayıtlarını değiştirme, banka harcama toplamı ve dönem borcu mutabakatı, geçmiş ekstrelerin kart borcunu ikinci kez şişirmesini önleme ve ekstre fark uyarısı eklendi.",
+  "message": "HANE 19.4.8 V10: Toplu Taşıma kategorisi Ulaşım ile birleştirildi; eski kayıtlar ve öğrenilmiş ekstre kuralları otomatik olarak Ulaşım kategorisine taşınır. Yol ücreti, toplu taşıma, bilet ve taksi işlemleri Ulaşım altında toplanır.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-7-RECONCILE",
-  "version": "19.4.8-LOCAL-DATA-ONLY-7"
+  "build": "20260919-LOCAL-DATA-ONLY-10-TRANSPORT-MERGE",
+  "version": "19.4.8-LOCAL-DATA-ONLY-10-TRANSPORT-MERGE"
 }

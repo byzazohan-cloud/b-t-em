@@ -1319,3 +1319,16 @@ html.lightMode .profile .ava,html.lightMode .ava{box-shadow:0 0 0 2px rgba(184,1
 .statementBankSummary>div{min-width:0;padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(0,0,0,.18)}
 .statementBankSummary small{display:block;color:var(--muted);font-size:8px;letter-spacing:.08em}.statementBankSummary b{display:block;margin-top:7px;font-size:16px}
 .statementBankSummary p{grid-column:1/-1;margin:2px 0 0;padding:9px 10px;border-radius:12px;background:rgba(0,0,0,.18);font-size:10px;line-height:1.4;color:var(--muted)}
+
+/* HANE V19.4.8 — PC / desktop scroll fix
+   Desktop PWA/browser must scroll with mouse wheel/trackpad even when standalone mode is detected. */
+@media (min-width:431px) and (pointer:fine){
+  html,body{height:auto!important;min-height:100%!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+  body{position:static!important;inset:auto!important;display:flex!important;align-items:flex-start!important}
+  #app{height:auto!important;min-height:100vh!important;overflow:visible!important;display:flex!important}
+  .phone{height:auto!important;min-height:100vh!important;overflow-y:visible!important;overscroll-behavior-y:auto!important}
+  .is-standalone body{position:static!important;inset:auto!important;overflow-y:auto!important}
+  .is-standalone #app{height:auto!important;min-height:100vh!important;overflow:visible!important}
+  .is-standalone .phone{height:auto!important;min-height:100vh!important;overflow-y:visible!important}
+  .content{overflow:visible!important}
+}

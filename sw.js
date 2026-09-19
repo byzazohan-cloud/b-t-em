@@ -1,4 +1,4 @@
-/* HANE PWA - LOCAL DATA ONLY 5 privacy worker
+/* HANE PWA - LOCAL DATA ONLY 10 transport merge privacy worker
    SECURITY MODEL
    1) Personal HANE data/documents are never uploaded by this worker.
    2) OCR/PDF engine packages are fetched only during SW install using fixed npm tarball URLs,
@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME='hane-v19-4-8-LOCAL-DATA-ONLY-7-20260919';
+const CACHE_NAME='hane-v19-4-8-LOCAL-DATA-ONLY-10-TRANSPORT-MERGE-20260919';
 const APP_SHELL=[
   './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
