@@ -1,23 +1,11 @@
-# HANE 19.4.8 — Local Data Only 4 Audit
+# HANE LOCAL DATA ONLY 5 - EKSTRE PARSER DENETİMİ
 
-## İlk taramada bulunan ve düzeltilenler
-- Alt klasörde yayınlandığında OCR/PDF sanal motor yollarının Service Worker tarafından eşleşmemesi düzeltildi.
-- Ekstre motoru hazırlanamadığında sonsuza kadar bekleme riski kaldırıldı; kontrollü zaman aşımı eklendi.
-- Ekstre dosyaları için tür ve 20 MB boyut kontrolü eklendi.
-- Çok büyük fotoğraflar OCR öncesi cihaz içinde küçültülerek bellek riski azaltıldı.
-- Ekstre önizlemesinden kaydedilecek tarihler tekrar doğrulanıyor; geçersiz tarih kaydı engellendi.
-- Türkçe binlik ayırıcıyla yazılmış 1.250 TL gibi tutarların 1,25 TL okunması düzeltildi.
-- Modal başlıklarında kullanıcı kaynaklı metin HTML olarak yorumlanmıyor.
-- OCR/PDF npm paketleri sabit SHA-512 bütünlük değerleriyle doğrulanmaya devam ediyor.
-
-## Son tarama
-- JavaScript sözdizimi: geçti.
-- manifest.json / update-config.json: geçti.
-- data-action -> action handler eşleşmesi: geçti.
-- Form -> submit handler eşleşmesi: geçti.
-- Tekrarlanan fonksiyon tanımı: bulunmadı.
-- Uygulama çalışma kodunda harici ağ URL/fetch/XHR/WebSocket/sendBeacon: bulunmadı.
-- Service Worker runtime: cache-only; cross-origin ve yazma metodları bloklu.
-- ZIP bütünlük testi: geçti.
-
-Not: OCR/PDF motor paketlerinin ilk güvenli kurulumu internet gerektirir; kişisel ekstre seçilmeden önce yapılır. Ekstre dosyası uygulama tarafından dışarı yüklenmez.
+- Çok satırlı PDF/OCR ekstreleri için işlem blokları yeniden yazıldı.
+- Tarih, işyeri ve tutar farklı satırlarda olsa bile tek işlem olarak birleştirilir.
+- Aynı işlemde iki tarih (işlem/provizyon) desteklenir; ilk tarih işlem tarihi olarak korunur.
+- Döviz tutarı + TL karşılığı birlikteyse TL tutarı tercih edilir.
+- İade/iptal ve sondan eksi işaretli tutarlar korunur.
+- PDF text katmanı çok sayıda tarih içerip az işlem çıkarırsa otomatik OCR karşılaştırması yapılır; daha çok gerçek işlem bulan sonuç kullanılır.
+- 70 işlemlik çok satırlı ve tek satıra düzleşmiş sentetik testlerde 70/70 işlem bulundu.
+- 35 adet çift tarihli işlem testinde 35/35 bulundu.
+- JS/JSON kontrolleri, duplicate function kontrolü ve outbound runtime API kontrolü geçti.

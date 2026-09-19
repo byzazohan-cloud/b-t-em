@@ -718,16 +718,99 @@ function rememberModalForm(){if(modal)captureModalFormDraft()}
 function open(t,b,d={}){modal={title:t,body:b,...d};render()}
 
 function stmtCleanTitle(v){return String(v||'').replace(/\s+/g,' ').replace(/[|]/g,' ').trim().slice(0,100)}
-function stmtMoney(v){let x=String(v||'').trim().replace(/TL|TRY|₺/gi,'').replace(/\s/g,'');let neg=false;if(/^\(.*\)$/.test(x)){neg=true;x=x.slice(1,-1)}if(/-$/.test(x)){neg=true;x=x.slice(0,-1)}if(/^-/.test(x)){neg=true;x=x.slice(1)}x=x.replace(/[^0-9,.]/g,'');if(!x)return NaN;if(x.includes(',')&&x.includes('.'))x=x.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(?:\.\d{3})+$/.test(x))x=x.replace(/\./g,'');else if(/^\d{1,3}(?:,\d{3})+$/.test(x))x=x.replace(/,/g,'');else if(x.includes(','))x=x.replace(',','.');const n=Number(x);return Number.isFinite(n)?(neg?-Math.abs(n):n):NaN}
+function stmtMoney(v){
+  let x=String(v||'').trim().replace(/TL|TRY|₺|USD|EUR|GBP/gi,'').replace(/\s/g,'');
+  let neg=false;if(/^\(.*\)$/.test(x)){neg=true;x=x.slice(1,-1)}if(/-$/.test(x)){neg=true;x=x.slice(0,-1)}if(/^-/.test(x)){neg=true;x=x.slice(1)}x=x.replace(/^\+/,'').replace(/\+$/,'');
+  x=x.replace(/[^0-9,.]/g,'');if(!x)return NaN;
+  const lc=x.lastIndexOf(','),ld=x.lastIndexOf('.');
+  if(lc>=0&&ld>=0){
+    if(lc>ld)x=x.replace(/\./g,'').replace(',','.');
+    else x=x.replace(/,/g,'');
+  }else if(lc>=0){
+    const parts=x.split(',');
+    if(parts.length>2){const last=parts.pop();x=last.length===2?parts.join('')+'.'+last:parts.join('')+last}
+    else if(parts[1]?.length===2)x=parts[0]+'.'+parts[1];
+    else if(parts[1]?.length===3)x=parts.join('');
+    else x=parts.join('.');
+  }else if(ld>=0){
+    const parts=x.split('.');
+    if(parts.length>2){const last=parts.pop();x=last.length===2?parts.join('')+'.'+last:parts.join('')+last}
+    else if(parts[1]?.length===2)x=parts[0]+'.'+parts[1];
+    else if(parts[1]?.length===3)x=parts.join('');
+  }
+  const n=Number(x);return Number.isFinite(n)?(neg?-Math.abs(n):n):NaN
+}
 const STMT_MONTHS={OCAK:1,OCA:1,ŞUBAT:2,ŞUB:2,MART:3,MAR:3,NİSAN:4,NİS:4,MAYIS:5,MAY:5,HAZİRAN:6,HAZ:6,TEMMUZ:7,TEM:7,AĞUSTOS:8,AĞU:8,EYLÜL:9,EYL:9,EKİM:10,EKİ:10,KASIM:11,KAS:11,ARALIK:12,ARA:12};
+const STMT_DATE_NUM_RE=/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/gi;
+const STMT_DATE_TXT_RE=/\b\d{1,2}\s+(?:OCAK|OCA|ŞUBAT|ŞUB|MART|MAR|NİSAN|NİS|MAYIS|MAY|HAZİRAN|HAZ|TEMMUZ|TEM|AĞUSTOS|AĞU|EYLÜL|EYL|EKİM|EKİ|KASIM|KAS|ARALIK|ARA)(?:\s+(?:20\d{2}|\d{2}))?\b/gi;
 function stmtValidDate(y,m,d){const x=new Date(y,m-1,d,12,0,0);return x.getFullYear()===y&&x.getMonth()===m-1&&x.getDate()===d}
 function stmtValidIsoDate(v){const m=String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return !!m&&stmtValidDate(+m[1],+m[2],+m[3])}
 function stmtAnchorInfo(text){const found=[],raw=String(text||''),up=raw.toLocaleUpperCase('tr-TR');for(const m of raw.matchAll(/\b(\d{1,2})[.\/-](\d{1,2})[.\/-](20\d{2}|\d{2})\b/g)){let y=+m[3];if(y<100)y+=2000;const mo=+m[2],d=+m[1];if(stmtValidDate(y,mo,d))found.push({y,mo,d})}for(const m of up.matchAll(/\b(\d{1,2})\s+(OCAK|OCA|ŞUBAT|ŞUB|MART|MAR|NİSAN|NİS|MAYIS|MAY|HAZİRAN|HAZ|TEMMUZ|TEM|AĞUSTOS|AĞU|EYLÜL|EYL|EKİM|EKİ|KASIM|KAS|ARALIK|ARA)\s+(20\d{2}|\d{2})\b/g)){let y=+m[3];if(y<100)y+=2000;const mo=STMT_MONTHS[m[2]],d=+m[1];if(stmtValidDate(y,mo,d))found.push({y,mo,d})}if(found.length){found.sort((a,b)=>new Date(b.y,b.mo-1,b.d)-new Date(a.y,a.mo-1,a.d));return found[0]}const fallback=cardStatementMonth||state?.selectedMonth||ym(new Date()),[y,mo]=fallback.split('-').map(Number);return{y:y||new Date().getFullYear(),mo:mo||new Date().getMonth()+1,d:1}}
 function stmtDateInfo(v,anchor){const raw=String(v||''),up=raw.toLocaleUpperCase('tr-TR'),a=anchor&&typeof anchor==='object'?anchor:{y:Number(anchor)||new Date().getFullYear(),mo:new Date().getMonth()+1};let m=raw.match(/\b(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?\b/);if(m){let explicit=!!m[3],y=explicit?+m[3]:a.y;if(y<100)y+=2000;const d=+m[1],mo=+m[2];if(!explicit){if(a.mo<=2&&mo>=11)y--;else if(a.mo>=11&&mo<=2)y++}if(stmtValidDate(y,mo,d))return{date:`${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`,raw:m[0],month:mo,yearExplicit:explicit}}m=up.match(/\b(\d{1,2})\s+(OCAK|OCA|ŞUBAT|ŞUB|MART|MAR|NİSAN|NİS|MAYIS|MAY|HAZİRAN|HAZ|TEMMUZ|TEM|AĞUSTOS|AĞU|EYLÜL|EYL|EKİM|EKİ|KASIM|KAS|ARALIK|ARA)(?:\s+(\d{2,4}))?\b/);if(m){let explicit=!!m[3],y=explicit?+m[3]:a.y;if(y<100)y+=2000;const d=+m[1],mo=STMT_MONTHS[m[2]];if(!explicit){if(a.mo<=2&&mo>=11)y--;else if(a.mo>=11&&mo<=2)y++}if(stmtValidDate(y,mo,d))return{date:`${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`,raw:m[0],month:mo,yearExplicit:explicit}}return null}
+function stmtStripDates(v){return String(v||'').replace(STMT_DATE_NUM_RE,' ').replace(STMT_DATE_TXT_RE,' ').replace(/\s+/g,' ').trim()}
+function stmtAmountCandidates(v){
+  const s=String(v||''),out=[];
+  const re=/(₺\s*)?([+-]?(?:(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d{2})?|(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{2})?)[+-]?)\s*(TL|TRY|₺|USD|EUR|GBP)?/gi;
+  for(const m of s.matchAll(re)){
+    const token=m[2],currency=(m[3]||((m[1]||'').includes('₺')?'₺':'')).toUpperCase(),value=stmtMoney((m[1]||'')+token+(m[3]||''));
+    if(!Number.isFinite(value)||value===0)continue;
+    const digits=token.replace(/\D/g,'');if(digits.length>10&&!currency)continue;
+    const hasCents=/[.,]\d{2}(?:[-+])?$/.test(token),hasGrouping=/\d[.,\s]\d{3}/.test(token);
+    if(!currency&&!hasCents&&!hasGrouping)continue;
+    if(Math.abs(value)>999999999)continue;
+    let score=(currency==='TL'||currency==='TRY'||currency==='₺'?20:currency?9:0)+(hasCents?7:0)+(hasGrouping?2:0)+(m.index>s.length*.65?2:0);
+    out.push({raw:m[0],token,currency,value,index:m.index,score})
+  }
+  return out
+}
 function stmtCategory(t){t=String(t||'').toLocaleUpperCase('tr-TR');if(/MİGROS|MIGROS|MARKET|BİM|BIM|A101|ŞOK|SOK|CARREFOUR|METRO MARKET/.test(t))return'Market';if(/BENZİN|BENZIN|PETROL|OPET|SHELL|\bBP\b|TOTAL|AYTEMİZ|AYTEMIZ/.test(t))return'Akaryakıt';if(/RESTAUR|YEMEK|GETİR|GETIR|YEMEKSEPETİ|YEMEKSEPETI/.test(t))return'Yemek';if(/CAFE|KAFE|STARBUCKS/.test(t))return'Kafe';if(/ECZANE|HASTANE|MEDİKAL|MEDIKAL|SAĞLIK|SAGLIK/.test(t))return'Sağlık';if(/FIRIN|PASTANE/.test(t))return'Fırın';if(/ELEKTRİK|ELEKTRIK/.test(t))return'Elektrik';if(/DOĞALGAZ|DOGALGAZ/.test(t))return'Doğalgaz';if(/SU FATURA|SU FATURASI/.test(t))return'Su';if(/TURKCELL|VODAFONE|TÜRK TELEKOM|TURK TELEKOM/.test(t))return'Cep Telefonu';if(/FATURA/.test(t))return'Faturalar';if(/TAKSİ|TAKSI|OTOBÜS|OTOBUS|METRO|ULAŞIM|ULASIM/.test(t))return'Ulaşım';return'Diğer'}
 function stmtFingerprint(cardId,date,title,amount){return [cardId,date,stmtCleanTitle(title).toLocaleUpperCase('tr-TR'),Number(amount).toFixed(2)].join('|')}
 function stmtExistingCount(cardId,date,title,amount){const base=stmtFingerprint(cardId,date,title,amount);return (state.expenses||[]).filter(x=>x.importedFromStatement&&x.cardId===cardId&&((x.importBaseFingerprint||String(x.importFingerprint||'').replace(/\|#\d+$/,''))===base||stmtFingerprint(cardId,x.date,x.title,+(x.actualAmount??x.amount)||0)===base)).length}
-function parseStatementText(text,cardId){const anchor=stmtAnchorInfo(text);text=String(text||'').replace(/\r/g,'\n').replace(/\s+(?=(?:\d{1,2}[.\/-]\d{1,2}(?:[.\/-]\d{2,4})?|\d{1,2}\s+(?:OCAK|OCA|ŞUBAT|ŞUB|MART|MAR|NİSAN|NİS|MAYIS|MAY|HAZİRAN|HAZ|TEMMUZ|TEM|AĞUSTOS|AĞU|EYLÜL|EYL|EKİM|EKİ|KASIM|KAS|ARALIK|ARA))\b)/gi,'\n');const bad=/(?:KREDİ\s*KARTI\s*)?BOR[ÇC]U\s*ÖDEME|KART\s*ÖDEMES[İI]|ÖDEME\s*[-–—]?\s*TEŞEKK|DÖNEM\s*BORCU|TOPLAM\s*BORÇ|ASGARİ\s*(?:ÖDEME|TUTAR)|KULLANILABİLİR\s*LİMİT|KART\s*LİMİTİ|DEVİR\s*BAKİYE|SON\s*ÖDEME\s*TARİH|HESAP\s*KESİM\s*TARİH/i;const out=[],seen={};for(const raw of text.split(/\n+/)){const line=raw.replace(/\s+/g,' ').trim();if(!line||bad.test(line))continue;const di=stmtDateInfo(line,anchor);if(!di)continue;let rest=line.replace(di.raw,' ').replace(/\s+/g,' ').trim();const am=[...rest.matchAll(/(?:₺\s*)?(-?\d{1,3}(?:[.\s]\d{3})+(?:,\d{2})?-?|-?\d+(?:[.,]\d{2})-?)\s*(TL|TRY|₺)?/gi)];if(!am.length)continue;const explicit=am.filter(x=>x[2]||/₺/.test(x[0])),pick=(explicit.length?explicit:am).at(-1),rawAmount=stmtMoney(pick[1]);if(!Number.isFinite(rawAmount)||rawAmount===0)continue;const refund=/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b/i.test(line)||rawAmount<0,amount=refund?-Math.abs(rawAmount):Math.abs(rawAmount);let title=rest.replace(pick[0],' ');title=stmtCleanTitle(title.replace(/^[-–—\s]+|[-–—\s]+$/g,''));if(!title)title=refund?'KART İADESİ':'KART HARCAMASI';const baseFp=stmtFingerprint(cardId,di.date,title,amount),occ=(seen[baseFp]=(seen[baseFp]||0)+1);out.push({date:di.date,title,amount,category:stmtCategory(title),baseFp,occurrence:occ,fp:`${baseFp}|#${occ}`,checked:true,refund})}return out}
+function stmtLogicalBlocks(text,anchor){
+  const src=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').replace(/[\u200B-\u200D\uFEFF]/g,' ');
+  const hits=[];
+  const headerBefore=/(?:HESAP\s*KES[İI]M(?:\s*TAR[İI]H[İI]?)?|SON\s*ÖDEME(?:\s*TAR[İI]H[İI]?)?|EKSTRE\s*TAR[İI]H[İI]?|DÖNEM\s*TAR[İI]H[İI]?|ASGAR[İI].{0,12})\s*[:\-]?\s*$/i;
+  const addHits=re=>{for(const m of src.matchAll(re)){const di=stmtDateInfo(m[0],anchor);if(!di)continue;const pre=src.slice(Math.max(0,m.index-70),m.index).replace(/\s+/g,' ');if(headerBefore.test(pre))continue;hits.push({index:m.index,end:m.index+m[0].length,raw:m[0],date:di.date})}};
+  addHits(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/gi);
+  addHits(/\b\d{1,2}\s+(?:OCAK|OCA|ŞUBAT|ŞUB|MART|MAR|NİSAN|NİS|MAYIS|MAY|HAZİRAN|HAZ|TEMMUZ|TEM|AĞUSTOS|AĞU|EYLÜL|EYL|EKİM|EKİ|KASIM|KAS|ARALIK|ARA)(?:\s+(?:20\d{2}|\d{2}))?\b/gi);
+  hits.sort((a,b)=>a.index-b.index||b.end-a.end);
+  const uniq=[];for(const h of hits){const last=uniq.at(-1);if(last&&h.index<last.end)continue;uniq.push(h)}
+  const blocks=[];let cur=null;
+  const flush=()=>{if(cur){const body=cur.parts.join(' ').replace(/\s+/g,' ').trim();if(body)blocks.push({date:cur.date,lines:[body],dateCount:cur.dateCount});cur=null}};
+  for(let i=0;i<uniq.length;i++){
+    const h=uniq[i],next=uniq[i+1],tail=src.slice(h.end,next?next.index:src.length).replace(/\s+/g,' ').trim();
+    if(!cur)cur={date:h.date,parts:[h.raw],dateCount:1};else{cur.parts.push(h.raw);cur.dateCount++}
+    if(tail)cur.parts.push(tail);
+    // A transaction ends as soon as the text between this date and the next date contains money.
+    // If not, the next date is treated as a posting/value date of the same transaction.
+    if(stmtAmountCandidates(stmtStripDates(tail)).length)flush();
+    else if(cur.dateCount>=3)flush();
+  }
+  flush();return blocks
+}
+function parseStatementText(text,cardId){
+  const anchor=stmtAnchorInfo(text),bad=/(?:KREDİ\s*KARTI\s*)?BOR[ÇC]U\s*ÖDEME|KART\s*ÖDEMES[İI]|ÖDEME\s*[-–—]?\s*TEŞEKK|DÖNEM\s*BORCU|TOPLAM\s*BORÇ|TOPLAM\s*HARCAMA|ASGARİ\s*(?:ÖDEME|TUTAR)|KULLANILABİLİR\s*LİMİT|KART\s*LİMİTİ|DEVİR\s*BAKİYE|SON\s*ÖDEME\s*TARİH|HESAP\s*KESİM\s*TARİH/i;
+  const out=[],seen={};
+  for(const block of stmtLogicalBlocks(text,anchor)){
+    const blockText=block.lines.join(' ').replace(/\s+/g,' ').trim();if(!blockText||bad.test(blockText))continue;
+    const di=stmtDateInfo(blockText,anchor);if(!di)continue;
+    const noDates=stmtStripDates(blockText),amounts=stmtAmountCandidates(noDates);if(!amounts.length)continue;
+    const tl=amounts.filter(a=>['TL','TRY','₺'].includes(a.currency)),pool=tl.length?tl:amounts;
+    pool.sort((a,b)=>a.score-b.score||a.index-b.index);const pick=pool.at(-1),rawAmount=pick.value;if(!Number.isFinite(rawAmount)||rawAmount===0)continue;
+    const refund=/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b|\bALACAK\b/i.test(blockText)||rawAmount<0,amount=refund?-Math.abs(rawAmount):Math.abs(rawAmount);
+    let title=noDates;
+    // Remove every credible monetary column, not just the selected amount. This handles FX + TL columns cleanly.
+    [...amounts].sort((a,b)=>b.index-a.index).forEach(a=>{title=title.replace(a.raw,' ')});
+    title=title.replace(/\b(?:İŞLEM|ISLEM|PROVİZYON|PROVIZYON|VALÖR|VALOR)\s*TARİHİ\b/gi,' ')
+      .replace(/\b(?:AÇIKLAMA|ACIKLAMA|İŞYERİ|ISYERI|TUTAR|BORÇ|BORC|ALACAK|PARA\s*BİRİMİ|PARA\s*BIRIMI)\b/gi,' ')
+      .replace(/\b(?:TL|TRY|USD|EUR|GBP|₺)\b/gi,' ')
+      .replace(/^[\s\-–—|:;,]+|[\s\-–—|:;,]+$/g,' ');
+    title=stmtCleanTitle(title);if(!title)title=refund?'KART İADESİ':'KART HARCAMASI';
+    const baseFp=stmtFingerprint(cardId,di.date,title,amount),occ=(seen[baseFp]=(seen[baseFp]||0)+1);
+    out.push({date:di.date,title,amount,category:stmtCategory(title),baseFp,occurrence:occ,fp:`${baseFp}|#${occ}`,checked:true,refund})
+  }
+  return out
+}
 function statementPreview(cardId,rows){const c=state.cards.find(x=>x.id===cardId),usable=rows.filter(r=>r.occurrence>stmtExistingCount(cardId,r.date,r.title,r.amount));statementImportRows=usable;const skipped=rows.length-usable.length;return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br>${rows.length} satır okundu · ${usable.length} yeni işlem bulundu${skipped?` · ${skipped} mükerrer atlandı`:''}.<br><small>Tarih, açıklama, tutar veya kategoriyi eklemeden önce düzeltebilirsin.</small></div><div class="statementImportList">${usable.length?usable.map((r,i)=>`<div class="statementImportRow"><input type="checkbox" data-stmt-check="${i}" checked><div class="stmtEditGrid"><input type="date" data-stmt-date="${i}" value="${esc(r.date)}"><input type="text" data-stmt-title="${i}" value="${esc(r.title)}" maxlength="100"><input type="number" step="0.01" data-stmt-amount="${i}" value="${Number(r.amount).toFixed(2)}"><select data-stmt-category="${i}">${C.map(cat=>`<option value="${esc(cat)}" ${cat===r.category?'selected':''}>${esc(cat)}</option>`).join('')}</select></div></div>`).join(''):'<div class="notice">EKLENECEK YENİ HARCAMA BULUNMADI.</div>'}</div>${usable.length?'<button class="btn gold" style="width:100%;margin-top:12px" data-action="statementImportConfirm">SEÇİLENLERİ EKLE</button>':''}`}
 const HANE_OCR_SCRIPT='./__hane_engine__/tesseract/tesseract.min.js';
 const HANE_OCR_WORKER='./__hane_engine__/tesseract/worker.min.js';
@@ -779,9 +862,13 @@ async function readStatementFile(file){
     const pdfjs=await getStatementPdfRuntime();
     const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let text='',pages=[];
     for(let n=1;n<=Math.min(pdf.numPages,12);n++){const pg=await pdf.getPage(n),ct=await pg.getTextContent();const pt=ct.items.map(i=>i.str+(i.hasEOL?'\n':' ')).join('');pages.push(pg);text+='\n'+pt}
-    if(text.replace(/\s/g,'').length>80)return text;
-    let ocr='';const w=await getStatementOcrWorker('PDF OCR');for(let n=1;n<=pages.length;n++){statementOcrLabel=`PDF SAYFA ${n}/${pages.length}`;const pg=pages[n-1],vp=pg.getViewport({scale:1.6}),canvas=document.createElement('canvas');canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const r=await w.recognize(canvas);ocr+='\n'+(r.data.text||'')}
-    if(ocr.replace(/\s/g,'').length>40)return ocr;throw new Error('PDF içindeki işlem satırları okunamadı.');
+    const textChars=text.replace(/\s/g,'').length,textRows=textChars>40?parseStatementText(text,statementImportCardId).length:0,dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
+    const suspicious=textChars<=80||(dateTokens>=6&&textRows<Math.max(3,Math.floor(dateTokens*.35)));
+    if(!suspicious)return text;
+    // If the PDF text layer is fragmented (many dates but very few transactions), OCR the pages and keep whichever interpretation finds more real rows.
+    let ocr='';const w=await getStatementOcrWorker('PDF OCR');for(let n=1;n<=pages.length;n++){statementOcrLabel=`PDF SAYFA ${n}/${pages.length}`;const pg=pages[n-1],vp=pg.getViewport({scale:1.8}),canvas=document.createElement('canvas');canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const r=await w.recognize(canvas);ocr+='\n'+(r.data.text||'')}
+    const ocrRows=ocr.replace(/\s/g,'').length>40?parseStatementText(ocr,statementImportCardId).length:0;
+    if(ocrRows>textRows)return ocr;if(textRows)return text;if(ocrRows)return ocr;throw new Error('PDF içindeki işlem satırları okunamadı.');
   }
   const w=await getStatementOcrWorker('FOTOĞRAF OKUNUYOR'),source=await statementImageForOcr(file);const r=await w.recognize(source);return r.data.text||''
 }
