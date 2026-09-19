@@ -1,6 +1,6 @@
-# V34 Denetim Özeti
+# V35 Audit
 
-- Controller-first sırası doğrulandı: controller -> gerekli motor -> hash doğrulama -> cache -> runtime.
-- Eski worker altında npm motor isteği başlatılmıyor.
-- Lazy engine davranışı korunuyor.
-- Build/cache/manifest/update-config V34 ile eşlendi.
+- Kritik runtime hata: `MAX_STATEMENT_FILE_BYTES` artık tanımlı.
+- Dosya seçimi sonrası `readStatementFile()` boyut kontrolünden geçebilir.
+- Doğru Service Worker fast-path korunur; yanlış worker için bekleme üst sınırı 5 saniyeye indirildi.
+- Parser ve banka özeti uzlaştırması değiştirilmedi.

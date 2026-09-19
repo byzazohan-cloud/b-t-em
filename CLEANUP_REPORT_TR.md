@@ -1,4 +1,3 @@
-# V34 Temizlik Özeti
+# V35 Cleanup
 
-- V33 build/adlandırma kalıntıları V34 ile güncellendi.
-- Motor hazırlama yorumları gerçek çalışma sırasına göre düzeltildi.
+V34 ekstre okuma yolundaki tanımsız sabit giderildi; gereksiz parser değişikliği yapılmadı.

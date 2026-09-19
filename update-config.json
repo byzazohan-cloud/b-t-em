@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: Lazy ekstre motoru, doğru Service Worker controller doğrulamasıyla hızlandırıldı ve ilk açılış hatası giderildi.",
+  "message": "HANE 19.4.8: Ekstre dosyası seçildikten sonra okumayı durduran eksik dosya boyutu sabiti düzeltildi; mevcut güvenli PDF/OCR ve ekstre uzlaştırma sistemi korundu.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST",
-  "version": "19.4.8-LOCAL_DATA_ONLY_34_CONTROLLER_FIRST"
+  "build": "20260919-LOCAL-DATA-ONLY-35-READ-FIX",
+  "version": "19.4.8-LOCAL_DATA_ONLY_35_READ_FIX"
 }

@@ -1,7 +1,3 @@
-# HANE V19.4.8 – Controller First V34
+# HANE V19.4.8 – V35 READ FIX
 
-- Ekstre motoru için ağ isteği yapılmadan önce sayfanın tam V34 HANE Service Worker tarafından kontrol edildiği doğrulanır.
-- PDF seçilince yalnız PDF motoru; fotoğraf seçilince yalnız OCR motoru hazırlanır.
-- Motor paketleri sabit npm sürümlerinden alınır ve SHA-512 doğrulaması geçmeden cache'e yazılmaz veya çalıştırılmaz.
-- Kişisel ekstre, PIN ve HANE verileri dışarı gönderilmez.
-- Parser ve 66 harcama + 3 ödeme uzlaştırma düzeltmeleri korunur.
+Ekstre dosyası seçildikten sonra `MAX_STATEMENT_FILE_BYTES` tanımsızlığı nedeniyle okumanın başlamamasına yol açan kritik runtime hatası düzeltildi. Mevcut parser, 66 harcama + 3 ödeme uzlaştırması ve güvenli motor yapısı korundu.

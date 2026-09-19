@@ -1204,9 +1204,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST';
+const HANE_SW_BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-35-READ-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-34-CONTROLLER-FIRST';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-35-READ-FIX';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1277,7 +1277,7 @@ async function ensureStatementServiceWorkerController(){
   }
   // Ask for an update only when the current controller is absent/wrong; this keeps normal statement opens fast.
   try{await reg.update()}catch{}
-  const deadline=Date.now()+12000;
+  const deadline=Date.now()+5000;
   while(Date.now()<deadline){
     const ctl=navigator.serviceWorker.controller;
     if(ctl&&await pingStatementWorker(ctl))return ctl;
@@ -1318,6 +1318,7 @@ function stmtInterpretationScore(text,cardId){
   score-=rec.rows.filter(r=>!stmtValidIsoDate(r.date)||!Number.isFinite(+r.amount)||Math.abs(+r.amount)<=0).length*25;
   return{score,rows:rec.rows,meta}
 }
+const MAX_STATEMENT_FILE_BYTES=20*1024*1024;
 async function readStatementFile(file){
   if(!file)throw new Error('Ekstre dosyası seçilmedi.');
   if(file.size>MAX_STATEMENT_FILE_BYTES)throw new Error('Ekstre dosyası 20 MB sınırını aşıyor.');
