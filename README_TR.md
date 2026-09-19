@@ -1,10 +1,8 @@
-# HANE V19.4.8 – Verified Fallback V31
+# HANE V19.4.8 – Controller Ready V33
 
-Bu sürüm V30 üzerine güvenlik ve kararlılık iyileştirmesi olarak hazırlanmıştır.
-
-- Doğrudan doğrulanmamış CDN kodu çalıştırma kaldırıldı.
-- Service Worker motor hazırlığı başarısız olursa uygulama, yalnız sabit npm paketlerini indirir.
-- İndirilen paketlerin SHA-512 özeti sabit beklenen değerle eşleşmeden hiçbir motor dosyası çalıştırılmaz.
-- Doğrulanan dosyalar HANE cache'ine yazılır ve aynı-origin sanal motor yollarından çalıştırılır.
-- Ekstre seçilmeden önce motor hazırlığı tamamlanır; kişisel ekstre, PIN veya HANE verisi dışarı gönderilmez.
-- Runtime dış ağ erişimi yalnız üç sabit npm paket arşiviyle sınırlıdır.
+- Lazy Engine korunur: dosya seçici hemen açılır.
+- PDF seçilirse yalnız PDF motoru, fotoğraf seçilirse yalnız OCR motoru hazırlanır.
+- Motor kullanılmadan önce bu sayfanın tam V33 HANE Service Worker tarafından kontrol edildiği doğrulanır.
+- Doğru worker zaten aktifse ağ güncellemesi yapılmadan hızlı yol kullanılır.
+- Motor paketleri sabit npm sürümlerinden alınır ve SHA-512 doğrulaması geçmeden çalıştırılmaz/cache'e yazılmaz.
+- HANE dışı cache ve Service Worker kayıtlarına dokunulmaz.

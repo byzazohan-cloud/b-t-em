@@ -1,11 +1,7 @@
-# V31 Denetim Özeti
+# V33 Denetim Özeti
 
-- app-v19.js: sözdizimi geçerli.
-- sw.js: sözdizimi geçerli.
-- bootstrap-security.js: sözdizimi geçerli.
-- force-update.js: sözdizimi geçerli.
-- manifest.json / update-config.json: geçerli JSON.
-- Build/cache/manifest referansları V31 ile eşlendi.
-- jsDelivr executable fallback kaldırıldı.
-- Sayfa yedek motor kurulumu sabit npm paketleri + SHA-512 doğrulaması kullanıyor.
-- HANE dışı Service Worker/cache izolasyonu korunuyor.
+- Lazy PDF/OCR motor kullanımından hemen önce V33 controller doğrulaması eklendi.
+- Doğru controller zaten aktifse hızlı yol kullanılır; gereksiz reg.update çağrısı yapılmaz.
+- Yeni worker gerektiğinde clients.claim sonrası controller beklenir; otomatik sayfa yenileme yoktur.
+- Build/cache/manifest/update-config referansları V33 ile eşlendi.
+- Parser ve 66 harcama + 3 ödeme uzlaştırma mantığı korunur.

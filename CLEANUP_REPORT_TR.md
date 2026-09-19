@@ -1,5 +1,5 @@
-# V31 Temizlik Özeti
+# V33 Temizlik Özeti
 
-- V30 doğrulanmamış CDN fallback yolu kaldırıldı.
-- Eski build referansları V31 ile eşlendi.
-- CSP dış script/worker çalıştırmayı tekrar kapatacak şekilde daraltıldı.
+- V31/V32 açıklama kalıntıları temizlendi.
+- Lazy motor akışındaki kullanılmayan tam PDF+OCR ön hazırlama davranışı kaldırıldı.
+- İlk açılışta virtual motor URL'si 404 riskine karşı controller zorunluluğu eklendi.
