@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-10-TRANSPORT-MERGE';
+  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-11-STATEMENT-INTELLIGENCE';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

@@ -1,11 +1,14 @@
-# HANE LOCAL DATA ONLY 5 - EKSTRE PARSER DENETİMİ
+# HANE V11 Ekstre Zekâsı - Audit
 
-- Çok satırlı PDF/OCR ekstreleri için işlem blokları yeniden yazıldı.
-- Tarih, işyeri ve tutar farklı satırlarda olsa bile tek işlem olarak birleştirilir.
-- Aynı işlemde iki tarih (işlem/provizyon) desteklenir; ilk tarih işlem tarihi olarak korunur.
-- Döviz tutarı + TL karşılığı birlikteyse TL tutarı tercih edilir.
-- İade/iptal ve sondan eksi işaretli tutarlar korunur.
-- PDF text katmanı çok sayıda tarih içerip az işlem çıkarırsa otomatik OCR karşılaştırması yapılır; daha çok gerçek işlem bulan sonuç kullanılır.
-- 70 işlemlik çok satırlı ve tek satıra düzleşmiş sentetik testlerde 70/70 işlem bulundu.
-- 35 adet çift tarihli işlem testinde 35/35 bulundu.
-- JS/JSON kontrolleri, duplicate function kontrolü ve outbound runtime API kontrolü geçti.
+- JS sözdizimi: geçti
+- Manifest/update JSON: geçti
+- Ekstre banka özeti: Devreden Bakiye + Harcamalar + Faiz/Ücret - Ödemeler = Dönem Borcu olarak ayrıştırılıyor.
+- Kart ödeme satırları: gider değil cardPayments kaydı olarak işleniyor.
+- Taksitli işlem: yalnız ekstreye yansıyan taksit tutarı gider; taksit no/adet bilgisi saklanıyor.
+- Önceki aydan devir: harcama olarak eklenmiyor.
+- İade: negatif harcama/İADE olarak tutuluyor.
+- Aynı ekstre dönemi tekrar içe aktarıldığında önceki ekstre kayıtları değiştiriliyor.
+- Banka özeti ile HANE bulunan işlem toplamı ayrı ve anlaşılır gösteriliyor.
+- Örnek Bankkart özeti 15.890,61 + 22.004,59 + 0,00 - 15.933,65 = 21.961,55 ayrıştırma testi geçti.
+- Örnek otomatik ödeme satırı kart ödemesi olarak tanındı.
+- ONUR MRKT -> Market; toplu taşıma -> Ulaşım; GİYİM geçen işyeri -> Giyim.

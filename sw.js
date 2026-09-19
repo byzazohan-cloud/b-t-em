@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME='hane-v19-4-8-LOCAL-DATA-ONLY-10-TRANSPORT-MERGE-20260919';
+const CACHE_NAME = 'hane-v19-4-8-local-data-only-11-statement-intelligence';
 const APP_SHELL=[
   './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
