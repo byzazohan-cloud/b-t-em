@@ -1,4 +1,4 @@
-/* HANE PWA - LOCAL DATA ONLY 10 transport merge privacy worker
+/* HANE PWA - LOCAL DATA ONLY 12 engine recovery privacy worker
    SECURITY MODEL
    1) Personal HANE data/documents are never uploaded by this worker.
    2) OCR/PDF engine packages are fetched only during SW install using fixed npm tarball URLs,
@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME = 'hane-v19-4-8-local-data-only-11-statement-intelligence';
+const CACHE_NAME = 'hane-v19-4-8-local-data-only-12-engine-recovery';
 const APP_SHELL=[
   './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
@@ -117,14 +117,27 @@ async function installVerifiedPackage(cache,pkg){
   }
 }
 async function installVerifiedEngines(cache){for(const pkg of PACKAGES)await installVerifiedPackage(cache,pkg)}
+async function enginesReady(cache){
+  for(const href of VIRTUAL_BY_PATH.values())if(!(await cache.match(href)))return false;
+  return true;
+}
+async function ensureVerifiedEngines(){
+  const cache=await caches.open(CACHE_NAME);
+  if(await enginesReady(cache))return true;
+  // Engine packages are fetched here BEFORE the user selects any personal document.
+  // Fixed package URLs + pinned SHA-512 verification; no credentials/referrer/document data.
+  await installVerifiedEngines(cache);
+  if(!(await enginesReady(cache)))throw new Error('Verified engine cache could not be completed');
+  return true;
+}
 
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE_NAME);
     try{
-      const cache=await caches.open(CACHE_NAME);
-      // Do not suppress shell failures. A partial build must never activate.
+      // The app shell must always be complete; engine preparation may retry later.
       await cache.addAll(APP_SHELL);
-      await installVerifiedEngines(cache);
+      try{await ensureVerifiedEngines()}catch(err){console.warn('HANE engine prewarm deferred:',err)}
       await self.skipWaiting();
     }catch(err){
       await caches.delete(CACHE_NAME);
@@ -138,7 +151,6 @@ self.addEventListener('activate',event=>{
     // Activation only occurs after a complete shell + verified engine install.
     const current=await caches.open(CACHE_NAME);
     for(const rel of APP_SHELL){if(!(await current.match(rel)))throw new Error('HANE shell validation failed: '+rel)}
-    for(const [path,href] of VIRTUAL_BY_PATH){if(!(await current.match(href)))throw new Error('HANE engine validation failed: '+path)}
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)));
     await self.clients.claim();
@@ -146,7 +158,14 @@ self.addEventListener('activate',event=>{
 });
 
 self.addEventListener('message',event=>{
-  if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();
+  if(event.data&&event.data.type==='SKIP_WAITING'){self.skipWaiting();return}
+  if(event.data&&event.data.type==='PREPARE_ENGINES'){
+    const port=event.ports&&event.ports[0];
+    event.waitUntil((async()=>{
+      try{await ensureVerifiedEngines();port&&port.postMessage({ok:true})}
+      catch(err){port&&port.postMessage({ok:false,error:String(err&&err.message||err)})}
+    })());
+  }
 });
 
 function blocked(status=403,msg='Blocked by HANE local-data firewall'){

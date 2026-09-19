@@ -1007,7 +1007,7 @@ function statementPreview(cardId,rows){
 }
 
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false;
-async function loadTesseract(){if(window.Tesseract)return window.Tesseract;await new Promise((res,rej)=>{const old=document.querySelector('script[data-hane-ocr="1"]');if(old){old.addEventListener('load',res,{once:true});old.addEventListener('error',()=>rej(new Error('OCR motoru hazır değil. HANE güncellemesini internet açıkken tamamlayıp uygulamayı yeniden açın.')),{once:true});return}const sc=document.createElement('script');sc.dataset.haneOcr='1';sc.src=HANE_OCR_SCRIPT;sc.crossOrigin='anonymous';sc.referrerPolicy='no-referrer';sc.onload=res;sc.onerror=()=>rej(new Error('OCR motoru hazır değil. HANE güncellemesini internet açıkken tamamlayıp uygulamayı yeniden açın.'));document.head.appendChild(sc)});return window.Tesseract}
+async function loadTesseract(){if(window.Tesseract)return window.Tesseract;await new Promise((res,rej)=>{const old=document.querySelector('script[data-hane-ocr="1"]');if(old){old.addEventListener('load',res,{once:true});old.addEventListener('error',()=>rej(new Error('OCR motoru hazırlanamadı. İnternet bağlantısını kontrol edip tekrar deneyin; kişisel ekstre bu aşamada henüz seçilmez.')),{once:true});return}const sc=document.createElement('script');sc.dataset.haneOcr='1';sc.src=HANE_OCR_SCRIPT;sc.crossOrigin='anonymous';sc.referrerPolicy='no-referrer';sc.onload=res;sc.onerror=()=>rej(new Error('OCR motoru hazırlanamadı. İnternet bağlantısını kontrol edip tekrar deneyin; kişisel ekstre bu aşamada henüz seçilmez.'));document.head.appendChild(sc)});return window.Tesseract}
 async function getStatementOcrWorker(label='OCR'){statementOcrLabel=label;if(statementOcrWorker)return statementOcrWorker;const T=await loadTesseract(),langPath=new URL('./vendor/tesseract/lang',location.href).href.replace(/\/$/,'');statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:HANE_OCR_WORKER,langPath,corePath:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});return statementOcrWorker}
 async function releaseStatementOcrWorker(){if(statementOcrWorker){try{await statementOcrWorker.terminate()}catch{}statementOcrWorker=null}}
 
@@ -1019,7 +1019,16 @@ async function getStatementPdfRuntime(){
     // Worker is deliberately initialized before the user selects any bank document.
     try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}
     statementPdfjs=pdfjs;return pdfjs;
-  }catch{throw new Error('PDF motoru güvenli yerel önbellekte hazır değil. HANE güncellemesini internet açıkken tamamlayıp uygulamayı yeniden açın.')}
+  }catch{throw new Error('PDF motoru hazırlanamadı. İnternet bağlantısını kontrol edip tekrar deneyin; kişisel ekstre bu aşamada henüz seçilmez.')}
+}
+async function requestVerifiedStatementEngines(){
+  if(!navigator.serviceWorker?.controller)throw new Error('Güvenli okuma motoru henüz etkin değil. Sayfayı bir kez yenileyin.');
+  await new Promise((resolve,reject)=>{
+    const channel=new MessageChannel();let done=false;
+    const timer=setTimeout(()=>{if(done)return;done=true;reject(new Error('PDF/OCR motorları hazırlanırken zaman aşımı oldu. İnternet bağlantısını kontrol edip tekrar deneyin.'))},45000);
+    channel.port1.onmessage=e=>{if(done)return;done=true;clearTimeout(timer);const d=e.data||{};d.ok?resolve(true):reject(new Error('PDF/OCR motorları güvenli şekilde hazırlanamadı. '+(d.error||'İnternet bağlantısını kontrol edip tekrar deneyin.')))};
+    navigator.serviceWorker.controller.postMessage({type:'PREPARE_ENGINES'},[channel.port2]);
+  });
 }
 async function prepareStatementPrivacyRuntime(){
   if(statementPrivacyPrepared)return true;
@@ -1031,7 +1040,8 @@ async function prepareStatementPrivacyRuntime(){
     ]);
   }
   if(!navigator.serviceWorker.controller)throw new Error('Güvenli okuma motoru henüz etkin değil. HANE’yi bir kez kapatıp yeniden açın.');
-  // Engine code + OCR worker + PDF worker are loaded BEFORE any personal statement file is selected.
+  // Engine packages are completed and SHA-512 verified BEFORE any personal statement file is selected.
+  await requestVerifiedStatementEngines();
   await Promise.all([getStatementPdfRuntime(),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR')]);
   statementPrivacyPrepared=true;
   return true;
