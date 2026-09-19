@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-18-CACHE-SELF-REPAIR';
+  const BUILD='19.4.8.20260919-LOCAL-DATA-ONLY-20-DATE-ORDER';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

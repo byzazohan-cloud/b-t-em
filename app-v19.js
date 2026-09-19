@@ -1011,10 +1011,11 @@ function statementRowsMonthBreakdown(rows){
   return Object.entries(counts).sort().map(([m,n])=>{const [y,mo]=m.split('-').map(Number),label=new Date(y,mo-1,1,12).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR');return`${label}: ${n}`}).join(' • ')
 }
 function statementPreview(cardId,rows){
-  const c=state.cards.find(x=>x.id===cardId),month=statementImportMonthForRows(c,rows),monthBreakdown=statementRowsMonthBreakdown(rows),existingImported=(state.expenses||[]).filter(x=>x.importedFromStatement&&x.cardId===cardId&&((x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)).length;
-  const usable=existingImported?rows:rows.filter(r=>r.payment||r.occurrence>stmtExistingCount(cardId,r.date,r.title,r.amount));statementImportRows=usable;
-  const skipped=existingImported?0:rows.length-usable.length;
-  const spendRows=rows.filter(r=>r.kind==='spend'),refundRows=rows.filter(r=>r.kind==='refund'),paymentRows=rows.filter(r=>r.kind==='payment');
+  const orderedRows=[...(rows||[])].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||((Number.isFinite(a.sourceStart)?a.sourceStart:Number.MAX_SAFE_INTEGER)-(Number.isFinite(b.sourceStart)?b.sourceStart:Number.MAX_SAFE_INTEGER))||((a.occurrence||0)-(b.occurrence||0)));
+  const c=state.cards.find(x=>x.id===cardId),month=statementImportMonthForRows(c,orderedRows),monthBreakdown=statementRowsMonthBreakdown(orderedRows),existingImported=(state.expenses||[]).filter(x=>x.importedFromStatement&&x.cardId===cardId&&((x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)).length;
+  const usable=existingImported?orderedRows:orderedRows.filter(r=>r.payment||r.occurrence>stmtExistingCount(cardId,r.date,r.title,r.amount));statementImportRows=usable;
+  const skipped=existingImported?0:orderedRows.length-usable.length;
+  const spendRows=orderedRows.filter(r=>r.kind==='spend'),refundRows=orderedRows.filter(r=>r.kind==='refund'),paymentRows=orderedRows.filter(r=>r.kind==='payment');
   const autoSpend=Number.isFinite(statementImportMeta.spendingTotal)?statementImportMeta.spendingTotal:spendRows.reduce((a,r)=>a+r.amount,0);
   const debt=Number.isFinite(statementImportMeta.periodDebt)?statementImportMeta.periodDebt:'';
   const prev=Number.isFinite(statementImportMeta.previousBalance)?statementImportMeta.previousBalance:'';

@@ -1,4 +1,4 @@
-/* HANE PWA - LOCAL DATA ONLY 12 engine recovery privacy worker
+/* HANE PWA - LOCAL DATA ONLY 20 date-order privacy worker
    SECURITY MODEL
    1) Personal HANE data/documents are never uploaded by this worker.
    2) OCR/PDF engine packages are fetched only during SW install using fixed npm tarball URLs,
@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-18-CACHE-SELF-REPAIR';
+const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-20-DATE-ORDER';
 const PINNED_ENGINE_URLS=new Set([
   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
