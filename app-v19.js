@@ -20,7 +20,7 @@
 'use strict';
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
 const META='HANE_LOCKED_META_V1',DATA='HANE_LOCKED_DATA_V1';
-const enc=new TextEncoder(),dec=new TextDecoder();let state=null,key=null,current='home',modal=null,pin='',timer=null,setupPhoto='',themeDraft=null,reportPeriod='month',reportCustomStart='',reportCustomEnd='',txFilter='all',financeTab='cards',navHistory=[],calendarMonth='',calendarDay='',txSearch='',txDate='',txCategory='',txPay='',txMin='',txMax='',txMember='',cardStatementMonth='',statementImportCardId='',statementImportRows=[],statementImportMeta={};
+const enc=new TextEncoder(),dec=new TextDecoder();let state=null,key=null,current='home',modal=null,pin='',timer=null,setupPhoto='',themeDraft=null,reportPeriod='month',reportCustomStart='',reportCustomEnd='',txFilter='all',financeTab='cards',navHistory=[],calendarMonth='',calendarDay='',txSearch='',txDate='',txCategory='',txPay='',txMin='',txMax='',txMember='',cardStatementMonth='',statementImportCardId='',statementImportRows=[],statementImportMeta={},statementImportBusy=false;
 let browserNavReady=false;
 let normalExpensesOpen=true,fixedExpensesOpen=true,returnScrollTop=null;
 const Q=['Bugün küçük adımlar, yarın büyük rahatlık getirir.','Disiplin, özgürlüğün kapısını açar.','Küçük birikimler büyük huzur getirir.','Planlı para, güçlü yarınlar demektir.'];
@@ -1122,7 +1122,37 @@ async function readStatementFile(file){
   }
   const w=await getStatementOcrWorker('FOTOĞRAF OKUNUYOR'),source=await statementImageForOcr(file);const r=await w.recognize(source);return r.data.text||''
 }
+function reconcileImportedStatementMultiplicity(card,period,rows){
+  if(!card||!period)return 0;
+  const expected={};
+  for(const r of (rows||[]).filter(x=>!x.payment)){
+    const signed=r.refund?-Math.abs(r.amount):Math.abs(r.amount);
+    const k=stmtFingerprint(card.id,r.date,r.title,signed)+'|'+(r.installmentNo||0)+'/'+(r.installmentCount||0);
+    expected[k]=(expected[k]||0)+1;
+  }
+  const groups={};
+  for(const x of (state.expenses||[])){
+    if(x.recurring||x.source!=='card'||x.cardId!==card.id)continue;
+    if(String(x.date||'')<period.start||String(x.date||'')>period.end)continue;
+    if(!x.importedFromStatement&&!x.statementImportMonth&&!x.importFingerprint&&!x.importBaseFingerprint)continue;
+    const amt=+(x.actualAmount??x.amount)||0;
+    const k=stmtFingerprint(card.id,x.date,x.title,amt)+'|'+(x.installmentNo||0)+'/'+(x.installmentCount||0);
+    (groups[k]||(groups[k]=[])).push(x);
+  }
+  const drop=new Set();
+  for(const [k,arr] of Object.entries(groups)){
+    const keep=Math.max(0,expected[k]||0);
+    if(arr.length<=keep)continue;
+    arr.sort((a,b)=>String(a.id||'').localeCompare(String(b.id||'')));
+    for(const x of arr.slice(keep))drop.add(x.id);
+  }
+  if(drop.size)state.expenses=(state.expenses||[]).filter(x=>!drop.has(x.id));
+  return drop.size
+}
 async function confirmStatementImport(){
+  if(statementImportBusy){showToast('EKSTRE KAYDI DEVAM EDİYOR');return}
+  statementImportBusy=true;
+  try{
   const c=state.cards.find(x=>x.id===statementImportCardId);if(!c)throw new Error('Seçilen kart artık bulunamadı.');
   const checks=[...document.querySelectorAll('[data-stmt-check]')],selected=[];let skipped=0;
   for(const el of checks){if(!el.checked)continue;const i=+el.dataset.stmtCheck,r=statementImportRows[i];if(!r)continue;const date=document.querySelector(`[data-stmt-date="${i}"]`)?.value||r.date,title=stmtCleanTitle(document.querySelector(`[data-stmt-title="${i}"]`)?.value||r.title),amount=Number(document.querySelector(`[data-stmt-amount="${i}"]`)?.value),categoryRaw=document.querySelector(`[data-stmt-category="${i}"]`)?.value||r.category,category=r.payment?'Kart Ödemesi':C.includes(categoryRaw)?categoryRaw:'Diğer';if(!stmtValidIsoDate(date)||!title||!Number.isFinite(amount)||amount===0){skipped++;continue}selected.push({...r,date,title,amount:Math.abs(amount),category})}
@@ -1145,9 +1175,12 @@ async function confirmStatementImport(){
   const previousBalance=num('stmtSummaryPrevious'),spendingInput=num('stmtSummarySpend'),feesTotal=num('stmtSummaryFees'),paymentsInput=num('stmtSummaryPayments'),debtInput=num('stmtSummaryDebt');
   const spendingTotal=spendingInput!=null&&spendingInput>=0?spendingInput:selected.filter(x=>!x.payment&&!x.refund).reduce((a,x)=>a+x.amount,0),paymentsTotal=paymentsInput!=null&&paymentsInput>=0?paymentsInput:selected.filter(x=>x.payment).reduce((a,x)=>a+x.amount,0),periodDebt=debtInput!=null&&debtInput>=0?debtInput:null;
   state.statementImports=Array.isArray(state.statementImports)?state.statementImports:[];state.statementImports=state.statementImports.filter(x=>!(x.cardId===c.id&&x.month===month));state.statementImports.push({id:id(),cardId:c.id,month,start:period.start,end:period.end,previousBalance,spendingTotal,feesTotal:feesTotal||0,paymentsTotal,periodDebt,rowCount:added,paymentRowCount:payAdded,importedAt:iso()});
+  const reconciledRemoved=reconcileImportedStatementMultiplicity(c,period,selected);if(reconciledRemoved)skipped+=reconciledRemoved
   recalculateFinanceCore();const syncDebt=document.getElementById('stmtSyncDebt')?.checked&&periodDebt!=null;
   if(syncDebt){c.balanceAnchorDate=period.end;c.balanceAnchorAmount=periodDebt;c.balance=Math.max(0,periodDebt+cardDerivedNet(c.id))}else{const derivedNow=cardDerivedNet(c.id);if(c.balanceAnchorDate&&Number.isFinite(+c.balanceAnchorAmount))c.balanceAnchorAmount=preserveBalance-derivedNow;else c.openingBalance=preserveBalance-derivedNow;c.balance=preserveBalance;}
   await save();modal=null;render();showToast(`${added} HARCAMA · ${payAdded} ÖDEME EKLENDİ${skipped?` · ${skipped} ATLANDI`:''}`)
+
+  } finally { statementImportBusy=false }
 }
 
 async function saveCard(d,i){
