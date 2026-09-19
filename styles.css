@@ -1309,3 +1309,13 @@ html.lightMode .profile .ava,html.lightMode .ava{box-shadow:0 0 0 2px rgba(184,1
 .refundItem{border-color:rgba(22,215,125,.18)!important;background:linear-gradient(90deg,rgba(22,215,125,.055),transparent 55%)}
 .calendarMove.refund>i{background:var(--green)!important}
 @media(max-width:520px){.statementTotals.refundAware{grid-template-columns:1fr 1fr}}
+
+/* Local Data Only 7 — statement reconciliation */
+.statementReconcileBox,.statementBankSummary{margin:12px 0;padding:14px;border:1px solid rgba(216,173,79,.34);border-radius:18px;background:linear-gradient(180deg,rgba(216,173,79,.08),rgba(255,255,255,.025))}
+.statementReconcileBox .field{margin-bottom:10px}.statementReconcileBox .field:last-of-type{margin-bottom:8px}
+.stmtCheckLine{display:flex;align-items:flex-start;gap:10px;margin:9px 0;color:var(--text);font-size:12px;line-height:1.35}.stmtCheckLine input{width:19px;height:19px;flex:0 0 19px;margin:0}
+.statementReconcileBox>small{display:block;color:var(--muted);font-size:10px;line-height:1.45;margin-top:8px}
+.statementBankSummary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.statementBankSummary>div{min-width:0;padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(0,0,0,.18)}
+.statementBankSummary small{display:block;color:var(--muted);font-size:8px;letter-spacing:.08em}.statementBankSummary b{display:block;margin-top:7px;font-size:16px}
+.statementBankSummary p{grid-column:1/-1;margin:2px 0 0;padding:9px 10px;border-radius:12px;background:rgba(0,0,0,.18);font-size:10px;line-height:1.4;color:var(--muted)}

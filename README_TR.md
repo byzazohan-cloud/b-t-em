@@ -22,3 +22,10 @@ Build: 20260918-CLEAN-FINAL
 - OCR/PDF motor paketleri sadece Service Worker kurulurken sabit npm paket URL'lerinden indirilir; SHA-512 bütünlük değeri doğrulanmadan çalıştırılabilir dosyalar cache'e alınmaz.
 - Uygulama kabuğu veya doğrulanmış motorlardan biri eksikse yeni Service Worker aktive olmaz ve eski çalışan cache silinmez.
 - Ekstre PDF/fotoğraf içeriği ağa gönderilmez; okuma cihaz tarafında yapılır.
+
+
+## Local Data Only 6 – Akıllı Kategoriler
+- Hazır kategori kataloğu 50 kategoriye çıkarıldı.
+- Kullanılmayan hazır kategoriler Kategoriler ekranında gösterilmez; kullanılmaya başlayınca otomatik görünür.
+- Gider ve ekstre önizleme seçimlerinde tüm hazır kategoriler kullanılabilir.
+- Ekstre otomatik sınıflandırması Getir/GetirYemek, online alışveriş, abonelik, araç, kargo, seyahat, kişisel bakım ve diğer yaygın işyeri türleri için genişletildi.

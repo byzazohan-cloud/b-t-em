@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 Local Data Only 5: banka ekstre parserı çok satırlı PDF/OCR tabloları için yeniden yazıldı; tarih, açıklama ve tutarın ayrı satırlarda olduğu ekstreler blok halinde birleştirilir. Döviz+TL çift tutar, ikinci işlem/provizyon tarihi ve farklı para formatları daha güvenli ayrıştırılır.",
+  "message": "HANE 19.4.8 Local Data Only 7: ekstre içe aktarmada aynı dönemin eski kayıtlarını değiştirme, banka harcama toplamı ve dönem borcu mutabakatı, geçmiş ekstrelerin kart borcunu ikinci kez şişirmesini önleme ve ekstre fark uyarısı eklendi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-5",
-  "version": "19.4.8-LOCAL-DATA-ONLY-5"
+  "build": "20260919-LOCAL-DATA-ONLY-7-RECONCILE",
+  "version": "19.4.8-LOCAL-DATA-ONLY-7"
 }
