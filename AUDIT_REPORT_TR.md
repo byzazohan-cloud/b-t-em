@@ -1,14 +1,10 @@
-# HANE V24 – Ekstre Parser Audit
+# HANE V25 Güçlendirme Taraması
 
-- JavaScript sözdizimi kontrolü: başarılı.
-- Service Worker sözdizimi kontrolü: başarılı.
-- update-config.json doğrulaması: başarılı.
-- Banka özetinde PDF metin sırası bozulduğunda muhasebe eşitliği ile yeniden doğrulama eklendi.
-- Referans Bankkart testi: 15.890,61 + 22.004,59 + 0,00 - 15.933,65 = 21.961,55 doğrulandı.
-- Üç kart ödeme satırının toplamı 15.933,65 TL olarak işlem satırlarından doğrulanıyor.
-- Harcama toplamında 91,00 TL fazlalık varsa 45,50 TL tekrarlı kümeden tam iki parser kopyasının çıkarılması regresyon testiyle doğrulandı.
-- Gerçek aynı gün/aynı tutarlı tekrarlar yalnızca banka harcama toplamına tam uzlaşma varsa azaltılıyor.
-- Kart ödemeleri gider listesine değil cardPayments alanına kaydediliyor; aynı tarih/tutar/açıklamadaki gerçek birden fazla ödeme adet bazında korunuyor.
-- Para gösterimi 2 kuruş basamağıyla sabit.
-- Ekstre özet kutusu dar HANE panelinde iki sütun + tam genişlik dönem borcu şeklinde düzenlendi; taşma engellendi.
-- Geliştirme amaçlı parser_test dosyaları final ZIP'ten çıkarıldı.
+- Ekstre tekrar uzlaştırması yalnız tek ve açıklanabilir tekrar kümesi banka toplamına tam oturursa otomatik satır azaltır.
+- Aynı tarih + aynı açıklama + aynı tutar tek başına mükerrer sayılmaz.
+- PDF metin katmanı ile OCR arasında seçim yalnız satır sayısına göre değil; işlem satırları, banka harcama/ödeme toplamları ve muhasebe eşitliği puanıyla yapılır.
+- Ekstre özeti artık ancak banka eşitliği ve işlem satırı toplamları birlikte uyuşursa `doğrulandı` kabul edilir.
+- Runtime CDN fallback kaldırıldı. PDF/OCR motorları yalnız Service Worker tarafından SHA-512 doğrulanmış paketlerden yerel cache'e hazırlanır.
+- Cross-origin runtime istekleri tamamen engellenir.
+- Para gösterimi kuruşlu olarak korunur.
+- JS, Service Worker, JSON ve ZIP kontrolleri paketleme sırasında çalıştırıldı.

@@ -1098,6 +1098,34 @@ function normalizeStatementSummary(text,rows,raw){
 }
 
 
+function stmtFinalizeSummaryConfidence(meta,rows){
+  const m={...(meta||{})},round2=n=>Math.round((+n||0)*100)/100,finite=n=>Number.isFinite(+n);
+  const spendRows=(rows||[]).filter(r=>r?.kind==='spend');
+  const paymentRows=(rows||[]).filter(r=>r?.kind==='payment');
+  const parsedSpend=round2(spendRows.reduce((a,r)=>a+Math.abs(+r.amount||0),0));
+  const parsedPayments=round2(paymentRows.reduce((a,r)=>a+Math.abs(+r.amount||0),0));
+  m.parsedSpendingTotal=parsedSpend;m.parsedPaymentsTotal=parsedPayments;
+  m.spendingRowsMatch=finite(m.spendingTotal)&&Math.abs((+m.spendingTotal)-parsedSpend)<.02;
+  m.paymentRowsMatch=!paymentRows.length||!finite(m.paymentsTotal)||Math.abs((+m.paymentsTotal)-parsedPayments)<.02;
+  m.summaryEquationOk=finite(m.previousBalance)&&finite(m.spendingTotal)&&finite(m.feesTotal)&&finite(m.paymentsTotal)&&finite(m.periodDebt)
+    ?Math.abs((+m.previousBalance)+(+m.spendingTotal)+(+m.feesTotal)-(+m.paymentsTotal)-(+m.periodDebt))<.02:false;
+  m.summaryTrusted=!!(m.summaryEquationOk&&m.spendingRowsMatch&&m.paymentRowsMatch);
+  return m
+}
+function stmtChronologyPenalty(rows,i){
+  const cur=rows[i]?.date||'',prev=i>0?(rows[i-1]?.date||''):'',next=i<rows.length-1?(rows[i+1]?.date||''):'';
+  let p=0;if(prev&&cur&&prev>cur)p+=2;if(cur&&next&&cur>next)p+=2;if(prev&&next&&cur&&prev===next&&cur!==prev)p+=1;return p
+}
+function stmtDuplicateRemovalCandidates(list,idxs){
+  const sorted=[...idxs].sort((a,b)=>(Number.isFinite(list[a]?.sourceStart)?list[a].sourceStart:a)-(Number.isFinite(list[b]?.sourceStart)?list[b].sourceStart:b));
+  const scored=sorted.map(i=>({i,penalty:stmtChronologyPenalty(list,i),raw:String(list[i]?.rawKey||'')}));
+  const rawCounts={};for(const x of scored)if(x.raw)rawCounts[x.raw]=(rawCounts[x.raw]||0)+1;
+  return scored.filter(x=>{
+    if(x.penalty>0)return true;
+    if(x.raw&&rawCounts[x.raw]>1){const first=scored.find(y=>y.raw===x.raw);return first&&first.i!==x.i}
+    return false
+  }).map(x=>x.i)
+}
 function stmtReconcileRowsToBankSpending(rows,meta){
   const list=[...(rows||[])];
   const target=Number(meta?.spendingTotal);
@@ -1111,33 +1139,27 @@ function stmtReconcileRowsToBankSpending(rows,meta){
   if(diff<=1)return{rows:list,removed:0,amount:0};
   const groups=new Map();
   for(const i of spendIdx){const r=list[i],cents=Math.round(Math.abs(+r.amount||0)*100);if(cents<=0)continue;const k=r.semanticKey||`${r.date}|${stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR')}|${cents}`;if(!groups.has(k))groups.set(k,{k,cents,idx:[]});groups.get(k).idx.push(i)}
-  // Yalnızca tekrar eden aynı işlem kümelerini aday yap. En az bir gerçek işlem mutlaka korunur.
-  const cand=[...groups.values()].filter(g=>g.idx.length>=2&&g.cents<=diff).map(g=>({...g,max:g.idx.length-1}));
+  // Aynı tarih + aynı açıklama + aynı tutar tek başına silme nedeni değildir.
+  // Yalnızca kronolojiyi bozan veya aynı ham kaynak bloğunun parser yankısı olan kopyalar adaydır.
+  const cand=[...groups.values()].filter(g=>g.idx.length>=2&&g.cents<=diff).map(g=>{
+    const removable=stmtDuplicateRemovalCandidates(list,g.idx);
+    return {...g,removable,max:Math.min(g.idx.length-1,removable.length)}
+  }).filter(g=>g.max>0);
   if(!cand.length)return{rows:list,removed:0,amount:0};
-  // Kuruş bazında sınırlı DP: banka harcama toplamına TAM oturan tekrar azaltımı varsa uygula.
-  // Birden fazla çözüm varsa en az satır silen çözümü seç; eşitlikte yüksek tekrar sayılı kümeyi tercih et.
-  let dp=new Map([[0,[]]]);
+  // Güvenli otomatik uzlaştırma: farkı TEK BAŞINA açıklayabilen yalnız bir tekrar kümesi varsa uygula.
+  // Birden fazla olası kombinasyon varsa gerçek işlemi yanlışlıkla silmemek için otomatik karar verme.
+  const exact=[];
   for(let gi=0;gi<cand.length;gi++){
-    const g=cand[gi],next=new Map(dp);
-    for(const [sum,choices] of dp){
-      for(let n=1;n<=g.max;n++){
-        const ns=sum+g.cents*n;if(ns>diff)break;
-        const nc=[...choices,[gi,n]];
-        const old=next.get(ns);
-        const score=x=>x.reduce((a,[j,k])=>a+k,0);
-        if(!old||score(nc)<score(old))next.set(ns,nc)
-      }
-    }
-    dp=next;
-  }
-  const solution=dp.get(diff);if(!solution?.length)return{rows:list,removed:0,amount:0};
-  const drop=new Set();
-  for(const [gi,n] of solution){
     const g=cand[gi];
-    // Kaynak akışında daha sonra gelen kopyaları kaldır; ilk gerçek satırlar korunur.
-    const sorted=[...g.idx].sort((a,b)=>(Number.isFinite(list[a]?.sourceStart)?list[a].sourceStart:a)-(Number.isFinite(list[b]?.sourceStart)?list[b].sourceStart:b));
-    for(const i of sorted.slice(-n))drop.add(i)
+    if(diff%g.cents!==0)continue;
+    const n=diff/g.cents;
+    if(Number.isInteger(n)&&n>=1&&n<=g.max)exact.push([gi,n])
   }
+  if(exact.length!==1)return{rows:list,removed:0,amount:0,ambiguous:exact.length>1};
+  const drop=new Set();
+  const [gi,n]=exact[0],g=cand[gi];
+  const ranked=[...g.removable].sort((a,b)=>stmtChronologyPenalty(list,b)-stmtChronologyPenalty(list,a)||((Number.isFinite(list[b]?.sourceStart)?list[b].sourceStart:b)-(Number.isFinite(list[a]?.sourceStart)?list[a].sourceStart:a)));
+  for(const i of ranked.slice(0,n))drop.add(i)
   if(!drop.size)return{rows:list,removed:0,amount:0};
   const out=list.filter((_,i)=>!drop.has(i));
   const after=out.filter(r=>r.kind==='spend').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
@@ -1165,7 +1187,7 @@ function statementPreview(cardId,rows){
   const prev=Number.isFinite(statementImportMeta.previousBalance)?statementImportMeta.previousBalance:'';
   const fees=Number.isFinite(statementImportMeta.feesTotal)?statementImportMeta.feesTotal:0;
   const pays=Number.isFinite(statementImportMeta.paymentsTotal)?statementImportMeta.paymentsTotal:paymentRows.reduce((a,r)=>a+r.amount,0);
-  return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br><b>${rows.length} hareket bulundu</b> · ${spendRows.length} harcama · ${paymentRows.length} ödeme · ${refundRows.length} iade${skipped?` · ${skipped} mükerrer atlandı`:''}.<br>${statementImportMeta.autoDuplicateRemoved?`<small><b>${statementImportMeta.autoDuplicateRemoved} yinelenen satır</b> banka harcama toplamıyla karşılaştırılarak çıkarıldı (${money(statementImportMeta.autoDuplicateAmount||0)}).</small><br>`:''}${statementImportMeta.summaryRepaired?`<small><b>Ekstre özeti doğrulandı ve PDF metin sırası otomatik düzeltildi.</b></small><br>`:''}${statementImportMeta.summaryEquationOk?`<small>✓ Banka özeti muhasebe eşitliğiyle uyumlu.</small><br>`:''}<small>Taksitli alışverişlerde yalnızca bu ekstreye yansıyan taksit tutarı gider olarak eklenir.</small></div>
+  return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br><b>${rows.length} hareket bulundu</b> · ${spendRows.length} harcama · ${paymentRows.length} ödeme · ${refundRows.length} iade${skipped?` · ${skipped} mükerrer atlandı`:''}.<br>${statementImportMeta.autoDuplicateRemoved?`<small><b>${statementImportMeta.autoDuplicateRemoved} yinelenen satır</b> banka harcama toplamıyla karşılaştırılarak çıkarıldı (${money(statementImportMeta.autoDuplicateAmount||0)}).</small><br>`:''}${statementImportMeta.summaryRepaired?`<small><b>Ekstre özeti doğrulandı ve PDF metin sırası otomatik düzeltildi.</b></small><br>`:''}${statementImportMeta.summaryTrusted?`<small>✓ Banka özeti ve işlem satırları birlikte doğrulandı.</small><br>`:statementImportMeta.summaryEquationOk?`<small>⚠ Banka özeti matematiksel olarak tutuyor; işlem satırlarıyla tam doğrulama bekleniyor.</small><br>`:''}<small>Taksitli alışverişlerde yalnızca bu ekstreye yansıyan taksit tutarı gider olarak eklenir.</small></div>
   <div class="statementReconcileBox statementBankEquation">
     <b>BANKA EKSTRE ÖZETİ</b>
     <div class="stmtEquationGrid"><label>Devreden Bakiye<input id="stmtSummaryPrevious" type="number" step="0.01" value="${prev!==''?Number(prev).toFixed(2):''}" placeholder="0,00"></label><label>Harcamalar<input id="stmtSummarySpend" type="number" step="0.01" value="${Number(autoSpend||0).toFixed(2)}"></label><label>Faiz / Ücret<input id="stmtSummaryFees" type="number" step="0.01" value="${Number(fees||0).toFixed(2)}"></label><label>Ödemeler<input id="stmtSummaryPayments" type="number" step="0.01" value="${pays!==''?Number(pays).toFixed(2):''}" placeholder="0,00"></label><label>Dönem Borcu<input id="stmtSummaryDebt" type="number" step="0.01" value="${debt!==''?Number(debt).toFixed(2):''}" placeholder="0,00"></label></div>
@@ -1181,15 +1203,10 @@ const HANE_OCR_WORKER='./__hane_engine__/tesseract/worker.min.js';
 const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
-const HANE_CDN_OCR_SCRIPT='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
-const HANE_CDN_OCR_WORKER='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js';
-const HANE_CDN_OCR_CORE='https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1';
-const HANE_CDN_PDF_MODULE='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
-const HANE_CDN_PDF_WORKER='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false;
-async function loadTesseract(preferCdn=false){
+async function loadTesseract(){
   if(window.Tesseract)return window.Tesseract;
-  const src=preferCdn?HANE_CDN_OCR_SCRIPT:HANE_OCR_SCRIPT;
+  const src=HANE_OCR_SCRIPT;
   await new Promise((res,rej)=>{
     const old=document.querySelector('script[data-hane-ocr="1"]');
     if(old)old.remove();
@@ -1199,19 +1216,19 @@ async function loadTesseract(preferCdn=false){
   });
   return window.Tesseract
 }
-async function getStatementOcrWorker(label='OCR',preferCdn=false){
+async function getStatementOcrWorker(label='OCR'){
   statementOcrLabel=label;if(statementOcrWorker)return statementOcrWorker;
-  const T=await loadTesseract(preferCdn),langPath=new URL('./vendor/tesseract/lang',location.href).href.replace(/\/$/,'');
-  statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:preferCdn?HANE_CDN_OCR_WORKER:HANE_OCR_WORKER,langPath,corePath:preferCdn?HANE_CDN_OCR_CORE:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});
+  const T=await loadTesseract(),langPath=new URL('./vendor/tesseract/lang',location.href).href.replace(/\/$/,'');
+  statementOcrWorker=await T.createWorker(['tur','eng'],1,{workerPath:HANE_OCR_WORKER,langPath,corePath:HANE_OCR_CORE,logger:m=>{const e=document.getElementById('statementImportProgress');if(e&&m.progress)e.textContent=`${statementOcrLabel} · %${Math.round(m.progress*100)}`}});
   return statementOcrWorker
 }
 async function releaseStatementOcrWorker(){if(statementOcrWorker){try{await statementOcrWorker.terminate()}catch{}statementOcrWorker=null}}
 
-async function getStatementPdfRuntime(preferCdn=false){
+async function getStatementPdfRuntime(){
   if(statementPdfjs)return statementPdfjs;
   try{
-    const pdfjs=await import(preferCdn?HANE_CDN_PDF_MODULE:HANE_PDF_MODULE);
-    pdfjs.GlobalWorkerOptions.workerSrc=preferCdn?HANE_CDN_PDF_WORKER:HANE_PDF_WORKER;
+    const pdfjs=await import(HANE_PDF_MODULE);
+    pdfjs.GlobalWorkerOptions.workerSrc=HANE_PDF_WORKER;
     try{statementPdfWorker=new pdfjs.PDFWorker({name:'hane-private-pdf'});await statementPdfWorker.promise}catch{}
     statementPdfjs=pdfjs;return pdfjs;
   }catch{throw new Error('PDF motoru yüklenemedi. İnternet bağlantısını kontrol edip tekrar deneyin.')}
@@ -1227,17 +1244,14 @@ async function requestVerifiedStatementEngines(){
 }
 async function prepareStatementPrivacyRuntime(){
   if(statementPrivacyPrepared)return true;
-  let localReady=false;
+  if(!('serviceWorker' in navigator))throw new Error('Güvenli PDF/OCR motoru için Service Worker desteği gerekiyor.');
+  if(!navigator.serviceWorker?.controller)throw new Error('Güvenli PDF/OCR motoru henüz etkin değil. HANE’yi internet açıkken bir kez yenileyin.');
   try{
-    if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
-      await requestVerifiedStatementEngines();
-      await Promise.all([getStatementPdfRuntime(false),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR',false)]);
-      localReady=true;
-    }
-  }catch(e){console.warn('HANE local OCR/PDF cache unavailable, using pinned engine fallback:',e)}
-  if(!localReady){
+    await requestVerifiedStatementEngines();
+    await Promise.all([getStatementPdfRuntime(),getStatementOcrWorker('GÜVENLİ OCR HAZIRLANIYOR')]);
+  }catch(e){
     await releaseStatementOcrWorker();statementPdfjs=null;statementPdfWorker=null;
-    await Promise.all([getStatementPdfRuntime(true),getStatementOcrWorker('OCR MOTORU HAZIRLANIYOR',true)]);
+    throw new Error('Güvenli PDF/OCR motorları doğrulanamadı. Kişisel ekstre için doğrulanmamış ağ motoru kullanılmadı. İnternet açıkken HANE’yi yenileyip tekrar deneyin.');
   }
   statementPrivacyPrepared=true;
   return true;
@@ -1248,6 +1262,17 @@ async function statementImageForOcr(file,maxSide=2400){
   if(typeof createImageBitmap!=='function')return file;
   const bmp=await createImageBitmap(file);try{const scale=Math.min(1,maxSide/Math.max(bmp.width,bmp.height));if(scale===1)return file;const c=document.createElement('canvas');c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));c.getContext('2d',{alpha:false}).drawImage(bmp,0,0,c.width,c.height);return c}finally{bmp.close?.()}
 }
+function stmtInterpretationScore(text,cardId){
+  const rows=parseStatementText(text,cardId),raw=parseStatementSummary(text),meta0=normalizeStatementSummary(text,rows,raw),rec=stmtReconcileRowsToBankSpending(rows,meta0),meta=stmtFinalizeSummaryConfidence(meta0,rec.rows);
+  const spend=rec.rows.filter(r=>r.kind==='spend').reduce((a,r)=>a+Math.abs(+r.amount||0),0),payments=rec.rows.filter(r=>r.kind==='payment').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
+  let score=Math.min(rec.rows.length,120)*2;
+  if(meta.summaryEquationOk)score+=80;
+  if(meta.summaryTrusted)score+=120;
+  if(Number.isFinite(+meta.spendingTotal))score+=Math.max(0,50-Math.min(50,Math.abs(spend-(+meta.spendingTotal))*2));
+  if(Number.isFinite(+meta.paymentsTotal)&&payments>0)score+=Math.max(0,30-Math.min(30,Math.abs(payments-(+meta.paymentsTotal))*2));
+  score-=rec.rows.filter(r=>!stmtValidIsoDate(r.date)||!Number.isFinite(+r.amount)||Math.abs(+r.amount)<=0).length*25;
+  return{score,rows:rec.rows,meta}
+}
 async function readStatementFile(file){
   if(!file)throw new Error('Ekstre dosyası seçilmedi.');
   if(file.size>MAX_STATEMENT_FILE_BYTES)throw new Error('Ekstre dosyası 20 MB sınırını aşıyor.');
@@ -1257,13 +1282,15 @@ async function readStatementFile(file){
     const pdfjs=await getStatementPdfRuntime();
     const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let text='',pages=[];
     for(let n=1;n<=Math.min(pdf.numPages,12);n++){const pg=await pdf.getPage(n),ct=await pg.getTextContent();const pt=ct.items.map(i=>i.str+(i.hasEOL?'\n':' ')).join('');pages.push(pg);text+='\n'+pt}
-    const textChars=text.replace(/\s/g,'').length,textRows=textChars>40?parseStatementText(text,statementImportCardId).length:0,dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
-    const suspicious=textChars<=80||(dateTokens>=6&&textRows<Math.max(3,Math.floor(dateTokens*.35)));
+    const textChars=text.replace(/\s/g,'').length,textEval=textChars>40?stmtInterpretationScore(text,statementImportCardId):{score:-1,rows:[],meta:{}},dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
+    const suspicious=textChars<=80||(dateTokens>=6&&textEval.rows.length<Math.max(3,Math.floor(dateTokens*.35)))||(!textEval.meta.summaryTrusted&&dateTokens>=10);
     if(!suspicious)return text;
-    // If the PDF text layer is fragmented (many dates but very few transactions), OCR the pages and keep whichever interpretation finds more real rows.
+    // PDF metin katmanı şüpheliyse OCR da değerlendirilir. Seçim satır sayısına değil,
+    // işlem satırları + banka toplamları + muhasebe eşitliği puanına göre yapılır.
     let ocr='';const w=await getStatementOcrWorker('PDF OCR');for(let n=1;n<=pages.length;n++){statementOcrLabel=`PDF SAYFA ${n}/${pages.length}`;const pg=pages[n-1],vp=pg.getViewport({scale:1.8}),canvas=document.createElement('canvas');canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const r=await w.recognize(canvas);ocr+='\n'+(r.data.text||'')}
-    const ocrRows=ocr.replace(/\s/g,'').length>40?parseStatementText(ocr,statementImportCardId).length:0;
-    if(ocrRows>textRows)return ocr;if(textRows)return text;if(ocrRows)return ocr;throw new Error('PDF içindeki işlem satırları okunamadı.');
+    const ocrEval=ocr.replace(/\s/g,'').length>40?stmtInterpretationScore(ocr,statementImportCardId):{score:-1,rows:[],meta:{}};
+    if(textEval.score<0&&ocrEval.score<0)throw new Error('PDF içindeki işlem satırları okunamadı.');
+    return ocrEval.score>textEval.score?ocr:text;
   }
   const w=await getStatementOcrWorker('FOTOĞRAF OKUNUYOR'),source=await statementImageForOcr(file);const r=await w.recognize(source);return r.data.text||''
 }
@@ -1420,7 +1447,7 @@ function bootHane(){
       statementImportInput.addEventListener('change',async e=>{
         const input=e.currentTarget,f=input.files&&input.files[0];if(!f||!statementImportCardId)return;
         open('EKSTRE OKUNUYOR',`<div class="notice"><b id="statementImportProgress">DOSYA HAZIRLANIYOR...</b><br>Ekstre dosyası cihazdan dışarı gönderilmez. OCR/PDF motorları dosya seçilmeden önce hazırlanmıştır; okuma cihazında yapılır. Yalnızca tarih, açıklama, tutar ve kategori HANE’ye kaydedilir.</div>`,{cardId:statementImportCardId});
-        try{const text=await readStatementFile(f);const parsedRows=parseStatementText(text,statementImportCardId);statementImportMeta=normalizeStatementSummary(text,parsedRows,parseStatementSummary(text));const reconciled=stmtReconcileRowsToBankSpending(parsedRows,statementImportMeta);statementImportMeta.autoDuplicateRemoved=reconciled.removed||0;statementImportMeta.autoDuplicateAmount=reconciled.amount||0;open('EKSTRE ÖNİZLEME',statementPreview(statementImportCardId,reconciled.rows),{cardId:statementImportCardId})}catch(err){console.error(err);open('EKSTRE OKUNAMADI',`<div class="notice">${esc(err.message||'Dosya okunamadı.')}</div>`,{cardId:statementImportCardId})}finally{input.value=''}
+        try{const text=await readStatementFile(f);const parsedRows=parseStatementText(text,statementImportCardId);let meta=normalizeStatementSummary(text,parsedRows,parseStatementSummary(text));const reconciled=stmtReconcileRowsToBankSpending(parsedRows,meta);meta=stmtFinalizeSummaryConfidence(meta,reconciled.rows);meta.autoDuplicateRemoved=reconciled.removed||0;meta.autoDuplicateAmount=reconciled.amount||0;statementImportMeta=meta;open('EKSTRE ÖNİZLEME',statementPreview(statementImportCardId,reconciled.rows),{cardId:statementImportCardId})}catch(err){console.error(err);open('EKSTRE OKUNAMADI',`<div class="notice">${esc(err.message||'Dosya okunamadı.')}</div>`,{cardId:statementImportCardId})}finally{input.value=''}
       });
     }
 

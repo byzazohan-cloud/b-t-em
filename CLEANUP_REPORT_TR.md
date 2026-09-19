@@ -1,5 +1,5 @@
-# HANE V24 – Temizlik
+# HANE V25 Temizlik Raporu
 
-- parser_test.js, parser_test2.js ve test_parser.js final paketten kaldırıldı.
-- Eski V23 build/cache referansları V24 ile eşitlendi.
-- update-config sürüm ve güncelleme mesajı V24 ile eşitlendi.
+- Doğrudan CDN motor fallback kodu kaldırıldı.
+- Önceki V24 build/cache referansları V25 ile eşitlendi.
+- Parser güvenlik ve uzlaştırma kodu sadeleştirildi; belirsiz çoklu tekrar kombinasyonlarında otomatik silme yapılmaz.

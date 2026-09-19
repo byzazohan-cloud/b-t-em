@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: Ekstre özeti doğrulama, yinelenen toplu taşıma ve kart ödeme ayrımı düzeltildi.",
+  "message": "HANE 19.4.8: Ekstre okuyucu güçlendirildi; güvenli mükerrer uzlaştırma, OCR/PDF puanlama ve yalnız doğrulanmış yerel motor kullanımı.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-24-SUMMARY-AUDIT",
-  "version": "19.4.8-LOCAL_DATA_ONLY_24_SUMMARY_AUDIT"
+  "build": "20260919-LOCAL-DATA-ONLY-25-HARDENED-PARSER",
+  "version": "19.4.8-LOCAL_DATA_ONLY_25_HARDENED_PARSER"
 }
