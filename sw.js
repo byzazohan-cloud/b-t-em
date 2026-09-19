@@ -1,60 +1,185 @@
-/* HANE PWA update worker - network first + OCR/PDF offline warm cache */
-const CACHE_NAME = 'hane-v19-4-8-STATEMENT-REBUILT-1-20260919';
-const APP_SHELL = [
-  './', './index.html', './styles.css', './app-v19.js', './manifest.json', './update-config.json',
-  './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png', './icons/hane-app-icon.png',
-  './vendor/tesseract/lang/tur.traineddata.gz', './vendor/tesseract/lang/eng.traineddata.gz'
+/* HANE PWA - LOCAL DATA ONLY 4 privacy worker
+   SECURITY MODEL
+   1) Personal HANE data/documents are never uploaded by this worker.
+   2) OCR/PDF engine packages are fetched only during SW install using fixed npm tarball URLs,
+      credentials omitted and no referrer.
+   3) Each package tarball is verified with pinned SHA-512 integrity BEFORE any executable
+      engine file is extracted/cached.
+   4) Runtime is cache-only: no page/worker request is allowed to reach the network.
+*/
+const CACHE_NAME='hane-v19-4-8-LOCAL-DATA-ONLY-4-20260919';
+const APP_SHELL=[
+  './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
+  './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
+  './vendor/tesseract/lang/tur.traineddata.gz','./vendor/tesseract/lang/eng.traineddata.gz'
 ];
-const ENGINE_ASSETS = [
-  'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
-  'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
-  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core.wasm.js',
-  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-simd.wasm.js',
-  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-lstm.wasm.js',
-  'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-simd-lstm.wasm.js',
-  'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs',
-  'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs'
+
+const PACKAGES=[
+  {
+    url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',
+    integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',
+    files:{
+      'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js',
+      'package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'
+    }
+  },
+  {
+    url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',
+    integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',
+    files:{
+      'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js',
+      'package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js',
+      'package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js',
+      'package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js',
+      'package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm',
+      'package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm',
+      'package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm',
+      'package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'
+    }
+  },
+  {
+    url:'https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-4.10.38.tgz',
+    integrity:'sha512-/Y3fcFrXEAsMjJXeL9J8+ZG9U01LbuWaYypvDW2ycW1jL269L3js3DVBjDJ0Up9Np1uqDXsDrRihHANhZOlwdQ==',
+    files:{
+      'package/build/pdf.min.mjs':'__hane_engine__/pdf/pdf.min.mjs',
+      'package/build/pdf.worker.min.mjs':'__hane_engine__/pdf/pdf.worker.min.mjs'
+    }
+  }
 ];
-self.addEventListener('install', event => {
-  self.skipWaiting();
+
+const SCOPE=new URL(self.registration.scope);
+const virtualHref=rel=>new URL(String(rel).replace(/^\.\//,''),SCOPE).href;
+const VIRTUAL_BY_PATH=new Map(PACKAGES.flatMap(p=>Object.values(p.files)).map(rel=>{const href=virtualHref(rel);return[new URL(href).pathname,href]}));
+const APP_PATHS=new Map(APP_SHELL.map(rel=>[new URL(rel,SCOPE).pathname,rel]));
+
+function bytesToBase64(bytes){
+  let s=''; const step=0x8000;
+  for(let i=0;i<bytes.length;i+=step)s+=String.fromCharCode(...bytes.subarray(i,i+step));
+  return btoa(s);
+}
+async function verifyIntegrity(buffer,expected){
+  const [alg,want]=expected.split('-',2);
+  if(alg!=='sha512'||!want)throw new Error('Unsupported package integrity');
+  const digest=new Uint8Array(await crypto.subtle.digest('SHA-512',buffer));
+  const got=bytesToBase64(digest);
+  if(got!==want)throw new Error('Engine package integrity mismatch');
+}
+function readTarString(u8,start,len){
+  const part=u8.subarray(start,start+len); let end=part.indexOf(0); if(end<0)end=part.length;
+  return new TextDecoder().decode(part.subarray(0,end)).trim();
+}
+function parseOctal(s){const clean=String(s||'').replace(/\0/g,'').trim();return clean?parseInt(clean,8)||0:0}
+async function gunzip(buffer){
+  if(typeof DecompressionStream!=='function')throw new Error('Secure package decompression is unsupported on this device');
+  const stream=new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+function extractTarFiles(tar,needed){
+  const found=new Map();
+  for(let off=0;off+512<=tar.length;){
+    const name=readTarString(tar,off,100),prefix=readTarString(tar,off+345,155);
+    if(!name)break;
+    const full=prefix?`${prefix}/${name}`:name;
+    const size=parseOctal(readTarString(tar,off+124,12));
+    const type=String.fromCharCode(tar[off+156]||48);
+    const dataStart=off+512,dataEnd=dataStart+size;
+    if((type==='0'||type==='\0')&&needed.has(full))found.set(full,tar.slice(dataStart,dataEnd));
+    off=dataStart+Math.ceil(size/512)*512;
+  }
+  return found;
+}
+function mimeFor(path){
+  if(path.endsWith('.wasm'))return'application/wasm';
+  if(path.endsWith('.mjs'))return'text/javascript; charset=utf-8';
+  if(path.endsWith('.js'))return'text/javascript; charset=utf-8';
+  return'application/octet-stream';
+}
+async function installVerifiedPackage(cache,pkg){
+  const req=new Request(pkg.url,{mode:'cors',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'});
+  const res=await fetch(req);
+  if(!res||!res.ok)throw new Error('Engine package download failed');
+  const archive=await res.arrayBuffer();
+  await verifyIntegrity(archive,pkg.integrity);
+  const tar=await gunzip(archive);
+  const needed=new Set(Object.keys(pkg.files)),files=extractTarFiles(tar,needed);
+  if(files.size!==needed.size){
+    const missing=[...needed].filter(x=>!files.has(x));
+    throw new Error('Verified engine package is missing required files: '+missing.join(','));
+  }
+  for(const [tarPath,virtualPath] of Object.entries(pkg.files)){
+    const body=files.get(tarPath);
+    const localUrl=virtualHref(virtualPath);
+    await cache.put(localUrl,new Response(body,{status:200,headers:{
+      'Content-Type':mimeFor(virtualPath),
+      'Cache-Control':'public, max-age=31536000, immutable',
+      'X-HANE-Verified':'sha512-package'
+    }}));
+  }
+}
+async function installVerifiedEngines(cache){for(const pkg of PACKAGES)await installVerifiedPackage(cache,pkg)}
+
+self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
-    const cache=await caches.open(CACHE_NAME);
-    await cache.addAll(APP_SHELL).catch(()=>{});
-    await Promise.allSettled(ENGINE_ASSETS.map(async url=>{
-      try{const req=new Request(url,{mode:'cors',credentials:'omit',cache:'no-store'}),res=await fetch(req);if(res&&res.ok)await cache.put(req,res.clone())}catch{}
-    }));
+    try{
+      const cache=await caches.open(CACHE_NAME);
+      // Do not suppress shell failures. A partial build must never activate.
+      await cache.addAll(APP_SHELL);
+      await installVerifiedEngines(cache);
+      await self.skipWaiting();
+    }catch(err){
+      await caches.delete(CACHE_NAME);
+      throw err;
+    }
   })());
 });
-self.addEventListener('activate', event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
+
+self.addEventListener('activate',event=>{
+  event.waitUntil((async()=>{
+    // Activation only occurs after a complete shell + verified engine install.
+    const current=await caches.open(CACHE_NAME);
+    for(const rel of APP_SHELL){if(!(await current.match(rel)))throw new Error('HANE shell validation failed: '+rel)}
+    for(const [path,href] of VIRTUAL_BY_PATH){if(!(await current.match(href)))throw new Error('HANE engine validation failed: '+path)}
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)));
     await self.clients.claim();
   })());
 });
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+
+self.addEventListener('message',event=>{
+  if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting();
 });
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  const sameOrigin=url.origin===self.location.origin;
-  const engine=ENGINE_ASSETS.includes(url.href);
-  if(!sameOrigin&&!engine)return;
-  event.respondWith((async () => {
+
+function blocked(status=403,msg='Blocked by HANE local-data firewall'){
+  return new Response(msg,{status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+}
+
+self.addEventListener('fetch',event=>{
+  const req=event.request,url=new URL(req.url);
+  const sameOrigin=url.origin===SCOPE.origin;
+
+  // Runtime firewall: absolutely no cross-origin network and no state-changing HTTP methods.
+  if(!sameOrigin){event.respondWith(blocked());return}
+  if(req.method!=='GET'){event.respondWith(blocked(405,'HANE runtime network writes are disabled'));return}
+
+  // Only exact HANE resources are addressable. Query strings cannot create an exfiltration channel.
+  const path=url.pathname;
+  const virtualUrl=VIRTUAL_BY_PATH.get(path);
+  const isVirtual=!!virtualUrl;
+  const appRel=APP_PATHS.get(path);
+  const scopePath=SCOPE.pathname.endsWith('/')?SCOPE.pathname:SCOPE.pathname+'/';
+  const isRootNav=req.mode==='navigate'&&(path===scopePath||path===new URL('./index.html',SCOPE).pathname);
+
+  if(!isVirtual&&!appRel&&!isRootNav){event.respondWith(blocked(404,'Not an allowed HANE resource'));return}
+
+  // Runtime is CACHE ONLY. No controlled request ever falls through to fetch().
+  event.respondWith((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    try {
-      const fresh = await fetch(event.request, {cache:'no-store'});
-      if (fresh && (fresh.ok || fresh.type==='opaque')) {
-        cache.put(event.request, fresh.clone()).catch(()=>{});
-        if (sameOrigin && event.request.mode === 'navigate') cache.put('./index.html', fresh.clone()).catch(()=>{});
-      }
-      return fresh;
-    } catch (e) {
-      const cached=await cache.match(event.request);
-      if(cached)return cached;
-      if (sameOrigin && event.request.mode === 'navigate') return (await cache.match('./index.html')) || Response.error();
-      return Response.error();
+    if(isVirtual){
+      const hit=await cache.match(virtualUrl);
+      return hit||blocked(503,'Verified HANE engine is unavailable. Reopen HANE online to complete a secure update.');
     }
+    const canonical=isRootNav?'./index.html':appRel;
+    const hit=await cache.match(canonical);
+    return hit||blocked(503,'HANE application cache is incomplete. Reopen HANE online to complete a secure update.');
   })());
 });

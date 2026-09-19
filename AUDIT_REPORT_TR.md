@@ -1,16 +1,23 @@
-# HANE 19.4.8 — Final Audit
+# HANE 19.4.8 — Local Data Only 4 Audit
 
-## Düzeltilen kritik noktalar
-- Hane Üyesi ve Toplam Gider detaylarında sabit gider ödemesi artık ana sabit gider kaydını değil, tam ödeme kaydını düzenler/siler.
-- Bu Ay Harcanan / Bu Ay Ödenen ve rapor hareketlerinde sabit gider ödeme kaydı doğru ID ile açılır.
-- Sabit gider ödeme tarihi başka aya taşındığında `month` ve `paidMonths` birlikte güncellenir; aylar birbirinden kopmaz.
-- Aynı sabit gider için aynı ayda ikinci ödeme kaydı oluşması engellenir.
-- Üye atanmamış sabit giderler yanlışlıkla BEN üyesine yazılmaz; Hane Geneli / Atanmamış altında kalır.
-- Geçmiş hareketi veya ödemesi bulunan kredi kartının silinip ekstre bağlantılarının yetim kalması engellendi.
-- Hakkında ekranındaki build etiketi Final Audit olarak güncellendi.
+## İlk taramada bulunan ve düzeltilenler
+- Alt klasörde yayınlandığında OCR/PDF sanal motor yollarının Service Worker tarafından eşleşmemesi düzeltildi.
+- Ekstre motoru hazırlanamadığında sonsuza kadar bekleme riski kaldırıldı; kontrollü zaman aşımı eklendi.
+- Ekstre dosyaları için tür ve 20 MB boyut kontrolü eklendi.
+- Çok büyük fotoğraflar OCR öncesi cihaz içinde küçültülerek bellek riski azaltıldı.
+- Ekstre önizlemesinden kaydedilecek tarihler tekrar doğrulanıyor; geçersiz tarih kaydı engellendi.
+- Türkçe binlik ayırıcıyla yazılmış 1.250 TL gibi tutarların 1,25 TL okunması düzeltildi.
+- Modal başlıklarında kullanıcı kaynaklı metin HTML olarak yorumlanmıyor.
+- OCR/PDF npm paketleri sabit SHA-512 bütünlük değerleriyle doğrulanmaya devam ediyor.
 
-## Doğrulama
-- JavaScript sözdizimi kontrolü
-- manifest.json / update-config.json JSON doğrulaması
-- ZIP bütünlük testi
-- PWA cache anahtarı yenilendi
+## Son tarama
+- JavaScript sözdizimi: geçti.
+- manifest.json / update-config.json: geçti.
+- data-action -> action handler eşleşmesi: geçti.
+- Form -> submit handler eşleşmesi: geçti.
+- Tekrarlanan fonksiyon tanımı: bulunmadı.
+- Uygulama çalışma kodunda harici ağ URL/fetch/XHR/WebSocket/sendBeacon: bulunmadı.
+- Service Worker runtime: cache-only; cross-origin ve yazma metodları bloklu.
+- ZIP bütünlük testi: geçti.
+
+Not: OCR/PDF motor paketlerinin ilk güvenli kurulumu internet gerektirir; kişisel ekstre seçilmeden önce yapılır. Ekstre dosyası uygulama tarafından dışarı yüklenmez.

@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: kilit CARD INTEGRATED çekirdeğindeki temel işlevler geri getirildi; ekstre okuma, iade, güvenlik, önizleme ve kart ödeme özeti birlikte düzeltildi.",
+  "message": "HANE 19.4.8 Local Data Only 4: kapsam yolu güvenli OCR/PDF motor cache adresleri düzeltildi; runtime cache-only veri duvarı korunuyor. Ekstre hazırlama zaman aşımı, dosya türü/boyut kontrolü, büyük fotoğraf küçültme, tarih doğrulama ve modal başlık kaçışları eklendi. npm OCR/PDF paket bütünlüğü SHA-512 ile doğrulanmaya devam eder.",
   "updateUrl": "",
-  "build": "20260919-STATEMENT-REBUILT-1",
-  "version": "19.4.8-STATEMENT-REBUILT-1-20260919"
+  "build": "20260919-LOCAL-DATA-ONLY-4",
+  "version": "19.4.8-LOCAL-DATA-ONLY-4"
 }
