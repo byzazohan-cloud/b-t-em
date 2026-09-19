@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8: OCR/PDF motor hazırlama hatası düzeltildi. Yerel güvenli motor cache kullanılır; gerekirse ekstre seçilmeden önce sabit sürümlü motorlar güvenli yedek kaynaktan yüklenir.",
+  "message": "HANE 19.4.8 V14: ekstre son işlem satırı footer metnine karışmadan okunur; aynı dönem yeniden içe aktarılırken eski içe aktarımlar tarih aralığına göre temizlenir.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK",
-  "version": "19.4.8-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK"
+  "build": "20260919-LOCAL-DATA-ONLY-14-LASTROW-DEDUPE-FIX",
+  "version": "19.4.8-LOCAL-DATA-ONLY-14-20260919"
 }

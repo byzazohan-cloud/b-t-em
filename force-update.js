@@ -10,5 +10,5 @@
       await Promise.all(ks.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)));
     }
   }catch(e){}
-  location.replace('./?v=19.4.8.20260919-LOCAL-DATA-ONLY-13-ENGINE-FALLBACK&fresh='+Date.now());
+  location.replace('./?v=19.4.8.20260919-LOCAL-DATA-ONLY-14-LASTROW-DEDUPE-FIX&fresh='+Date.now());
 })();

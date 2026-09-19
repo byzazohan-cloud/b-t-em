@@ -889,6 +889,23 @@ function stmtCategoryBase(t){
 function stmtCategory(t){const key=stmtMerchantKey(t),learned=state?.statementCategoryRules?.[key];return learned&&C.includes(learned)?learned:stmtCategoryBase(t)}
 function stmtFingerprint(cardId,date,title,amount){return [cardId,date,stmtCleanTitle(title).toLocaleUpperCase('tr-TR'),Number(amount).toFixed(2)].join('|')}
 function stmtExistingCount(cardId,date,title,amount){const base=stmtFingerprint(cardId,date,title,amount);return (state.expenses||[]).filter(x=>x.importedFromStatement&&x.cardId===cardId&&((x.importBaseFingerprint||String(x.importFingerprint||'').replace(/\|#\d+$/,''))===base||stmtFingerprint(cardId,x.date,x.title,+(x.actualAmount??x.amount)||0)===base)).length}
+function stmtTransactionTailOnly(v){
+  const s=String(v||'');
+  const stops=[
+    /\bFA[İI]Z\s+VE\s+[ÜU]CRETLER\b/i,
+    /\bAYLIK\s+FA[İI]Z\s+ORANLARI\b/i,
+    /\bYILLIK\s+FA[İI]Z\s+ORANLARI\b/i,
+    /\bDEVREDEN\s+BAK[İI]YE\b/i,
+    /\bHARCAMALAR(?:INIZ)?\b/i,
+    /\bFA[İI]Z\s*[ÜU]CRETLER\s*VE\s*KES[İI]NT[İI]LER\b/i,
+    /\b[ÖO]DEMELER[İI]N[İI]Z\b/i,
+    /\bD[ÖO]NEM\s+BORCU\b/i,
+    /\bDOĞUM\s+G[ÜU]N[ÜU]N[ÜU]Z[ÜU]\b/i
+  ];
+  let end=s.length;
+  for(const rx of stops){const m=s.match(rx);if(m&&m.index!=null)end=Math.min(end,m.index)}
+  return s.slice(0,end).trim()
+}
 function stmtLogicalBlocks(text,anchor){
   const src=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').replace(/[\u200B-\u200D\uFEFF]/g,' ');
   const hits=[];
@@ -902,7 +919,7 @@ function stmtLogicalBlocks(text,anchor){
   const blocks=[];let cur=null;
   const flush=()=>{if(cur){const body=cur.parts.join(' ').replace(/\s+/g,' ').trim();if(body)blocks.push({date:cur.date,lines:[body],dateCount:cur.dateCount});cur=null}};
   for(let i=0;i<uniq.length;i++){
-    const h=uniq[i],next=uniq[i+1],tail=src.slice(h.end,next?next.index:src.length).replace(/\s+/g,' ').trim();
+    const h=uniq[i],next=uniq[i+1],tail=stmtTransactionTailOnly(src.slice(h.end,next?next.index:src.length).replace(/\s+/g,' ').trim());
     if(!cur)cur={date:h.date,parts:[h.raw],dateCount:1};else{cur.parts.push(h.raw);cur.dateCount++}
     if(tail)cur.parts.push(tail);
     // A transaction ends as soon as the text between this date and the next date contains money.
@@ -1105,7 +1122,7 @@ async function confirmStatementImport(){
   state.statementCategoryRules=state.statementCategoryRules&&typeof state.statementCategoryRules==='object'?state.statementCategoryRules:{};for(const r of selected.filter(x=>!x.payment)){const k=stmtMerchantKey(r.title),auto=stmtCategoryBase(r.title);if(k&&r.category&&r.category!==auto)state.statementCategoryRules[k]=r.category}
   const month=statementImportMonthForRows(c,selected),period=statementPeriodRange(c,month),preserveBalance=+c.balance||0;
   const replace=document.getElementById('stmtReplacePeriod')?.checked!==false;
-  if(replace){state.expenses=(state.expenses||[]).filter(x=>!(x.importedFromStatement&&x.cardId===c.id&&((x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)));state.cardPayments=(state.cardPayments||[]).filter(x=>!(x.importedFromStatement&&x.cardId===c.id&&((x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)))}
+  if(replace){const inPeriod=x=>String(x?.date||'')>=period.start&&String(x?.date||'')<=period.end;state.expenses=(state.expenses||[]).filter(x=>!(x.importedFromStatement&&x.cardId===c.id&&(inPeriod(x)||(x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)));state.cardPayments=(state.cardPayments||[]).filter(x=>!(x.importedFromStatement&&x.cardId===c.id&&(inPeriod(x)||(x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)))}
   const seen={};let added=0,payAdded=0;
   for(const r of selected){
     if(r.payment){const dup=(state.cardPayments||[]).some(x=>x.cardId===c.id&&x.date===r.date&&Math.abs((+x.amount||0)-r.amount)<.005&&stmtCleanTitle(x.title||'').toLocaleUpperCase('tr-TR')===stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR'));if(dup){skipped++;continue}state.cardPayments.push({id:id(),cardId:c.id,amount:r.amount,date:r.date,title:upper(r.title||'KART ÖDEMESİ'),importedFromStatement:true,statementImportMonth:month});payAdded++;continue}
