@@ -4,6 +4,6 @@
   "force": true,
   "message": "Ekstre önizlemesi tarihe göre kronolojik sıralanır; aynı tarihte işlemler bankadaki fiziksel satır sırasını korur. Cache/build sürümleri eşitlendi.",
   "updateUrl": "",
-  "build": "20260919-LOCAL-DATA-ONLY-20-DATE-ORDER",
-  "version": "19.4.8-LOCAL-DATA-ONLY-20-DATE-ORDER"
+  "build": "20260919-LOCAL-DATA-ONLY-21-DUPLICATE-FLOW",
+  "version": "19.4.8-LOCAL-DATA-ONLY-21-DUPLICATE-FLOW"
 }

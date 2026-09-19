@@ -941,6 +941,35 @@ function stmtPaymentLike(blockText){
   const u=String(blockText||'').toLocaleUpperCase('tr-TR');
   return /(?:ŞUBE|SUBE)?\s*-?\s*OTOMATİK\s*ÖDEME|OTOMATIK\s*ODEME|ÖDEME\s*-?\s*TEŞEKK|ODEME\s*-?\s*TESEKK|KART\s*ÖDEMESİ|KART\s*ODEMESI|BORÇ\s*ÖDEME|BORC\s*ODEME/.test(u)
 }
+
+function stmtDropChronologyBreakingDuplicates(rows){
+  const a=[...(rows||[])];
+  const groups={};
+  a.forEach((r,i)=>{if(r?.semanticKey)(groups[r.semanticKey]||(groups[r.semanticKey]=[])).push(i)});
+  const drop=new Set();
+  const penalty=i=>{
+    const cur=a[i]?.date||'',prev=i>0?(a[i-1]?.date||''):'',next=i<a.length-1?(a[i+1]?.date||''):'';
+    let p=0;
+    if(prev&&cur&&prev>cur)p+=2;
+    if(cur&&next&&cur>next)p+=2;
+    // A row inserted far away from its same-date neighborhood is suspicious.
+    if(prev&&next&&cur&&prev===next&&cur!==prev)p+=1;
+    return p;
+  };
+  for(const idxs of Object.values(groups)){
+    // Conservative rule: only resolve an exact pair. Groups with 3+ identical rows are often
+    // legitimate repeated charges (public transport/tolls) and must never be reduced automatically.
+    if(idxs.length!==2)continue;
+    // Adjacent identical rows are also treated as genuine repeated transactions.
+    if(Math.abs(idxs[1]-idxs[0])===1)continue;
+    const ps=idxs.map(i=>({i,p:penalty(i)}));
+    const min=Math.min(...ps.map(x=>x.p)),max=Math.max(...ps.map(x=>x.p));
+    // Remove only the copy that clearly creates a backwards date jump in the source stream.
+    if(max>min){for(const x of ps)if(x.p>min)drop.add(x.i)}
+  }
+  return a.filter((_,i)=>!drop.has(i));
+}
+
 function parseStatementText(text,cardId){
   const anchor=stmtAnchorInfo(text),datePref=stmtDatePreference(text);
   const bad=/(?:D[ÖO]NEM\s+BORCU|TOPLAM\s+BOR[ÇC]|TOPLAM\s+HARCAMA|ASGAR[İI]\s*(?:[ÖO]DEME|TUTAR)|KULLANILAB[İI]L[İI]R\s+L[İI]M[İI]T|KART\s+L[İI]M[İI]T[İI]|SON\s+[ÖO]DEME\s+TAR[İI]H|HESAP\s+KES[İI]M\s+TAR[İI]H|[ÖO]NCEK[İI]\s+AYDAN\s+DEV[İI]R|DEVREDEN\s+BAK[İI]YE)/i;
@@ -975,7 +1004,7 @@ function parseStatementText(text,cardId){
     const occ=(seen[semanticKey]=(seen[semanticKey]||0)+1);
     out.push({date:di.date,title,amount,category:payment?'Kart Ödemesi':stmtCategory(title),baseFp,semanticKey,rawKey,physicalKey,sourceStart,sourceEnd,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund,payment,kind,...inst})
   }
-  return out
+  return stmtDropChronologyBreakingDuplicates(out)
 }
 
 function stmtParseLooseMoney(v){
