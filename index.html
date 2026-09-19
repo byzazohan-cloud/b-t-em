@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +19,7 @@
 <meta http-equiv="Expires" content="0">
 <script>
 (function(){
-  const BUILD='19.4.8.20260918-BRAND_SIGNATURE_2_KEYBOARD_PIN';
+  const BUILD='19.4.8.20260919-STATEMENT-PRIVACY';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {
@@ -29,9 +31,9 @@
 })();
 </script>
 
-<link rel="manifest" href="./manifest.json?v=19.4.8.20260918-BRAND_SIGNATURE_2_KEYBOARD_PIN">
+<link rel="manifest" href="./manifest.json?v=19.4.8.20260919-STATEMENT-PRIVACY">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
-<link rel="stylesheet" href="./styles.css?v=19.4.8.20260918-BRAND_SIGNATURE_2_KEYBOARD_PIN">
+<link rel="stylesheet" href="./styles.css?v=19.4.8.20260919-STATEMENT-PRIVACY">
 <title>HANE</title>
 </head>
 <body>
@@ -39,11 +41,12 @@
 <input id="profileInput" type="file" accept="image/*" hidden>
 <input id="receiptInput" type="file" accept="image/*" capture="environment" hidden>
 <input id="restoreInput" type="file" hidden>
-<script defer src="./app-v19.js?v=19.4.8.20260918-BRAND_SIGNATURE_2_KEYBOARD_PIN"></script>
+<input id="statementImportInput" type="file" accept="image/*,application/pdf,.pdf" hidden>
+<script defer src="./app-v19.js?v=19.4.8.20260919-STATEMENT-PRIVACY"></script>
 
 <script>
 (function(){
-  const BUILD = '19.4.8.20260918-BRAND_SIGNATURE_2_KEYBOARD_PIN';
+  const BUILD = '19.4.8.20260919-STATEMENT-PRIVACY';
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', async () => {
     try {
