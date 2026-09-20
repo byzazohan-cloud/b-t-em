@@ -1754,7 +1754,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-78-HALKBANK-COMPACT-FOOTER-GUARD';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-79-HALKBANK-TABLE-ENGINE';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
@@ -1891,7 +1891,49 @@ async function stmtPdfPageTexts(pg){
   for(const it of items){const x=Number(it.transform?.[4]||0),y=Number(it.transform?.[5]||0),h=Math.max(1,Math.abs(Number(it.height||it.transform?.[3]||8)));let line=lines.find(l=>Math.abs(l.y-y)<=Math.max(2.2,Math.min(5,h*.42)));if(!line){line={y,items:[]};lines.push(line)}line.items.push({x,s:String(it.str||'')})}
   lines.sort((a,b)=>b.y-a.y);for(const l of lines)l.items.sort((a,b)=>a.x-b.x);
   const layout=lines.map(l=>l.items.map(i=>i.s).join(' ').replace(/\s+/g,' ').trim()).filter(Boolean).join('\n');
-  return{raw,layout}
+
+  // V79: HALKBANK TABLE ENGINE
+  // PDF.js kelimelerinin x/y koordinatlarını kullanarak gerçek tabloyu sütun bazında kurar.
+  // Böylece özet/footer satırları sonradan regex ile ayıklanmaz; işlem tablosuna hiç girmez.
+  const pageU=layout.toLocaleUpperCase('tr-TR');
+  let halkLayout=layout;
+  const amountHead=lines.flatMap(l=>l.items).find(i=>/TUTAR\s*\(?TL\)?/i.test(i.s));
+  const parafHead=lines.flatMap(l=>l.items).find(i=>/PARAFPARA/i.test(i.s));
+  const hasHalkTable=!!amountHead&&!!parafHead&&(pageU.includes('AÇIKLAMA')||pageU.includes('ACIKLAMA'));
+  if(hasHalkTable){
+    const amountX=amountHead.x,parafX=parafHead.x;
+    const start=Math.max(0,lines.findIndex(l=>l.items.some(i=>/TUTAR\s*\(?TL\)?/i.test(i.s))));
+    let end=lines.length;
+    for(let k=start+1;k<lines.length;k++){
+      const t=lines[k].items.map(i=>i.s).join(' ').replace(/\s+/g,' ').trim().toLocaleUpperCase('tr-TR');
+      if(/BİR\s+SONRAKİ|BIR\s+SONRAKI|TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI/.test(t)){end=k;break}
+    }
+    const tx=[];
+    for(let k=start+1;k<end;k++){
+      const li=lines[k],dateItem=li.items.find(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim()));
+      if(!dateItem)continue;
+      const date=dateItem.s.trim();
+      // Tarih sütunundaki footer tarihi ancak tablo bitiş işaretinden önceyse gelebilir; yine de açıklama zorunlu.
+      const amountItems=li.items.filter(i=>i.x>=amountX-12&&i.x<parafX-18);
+      let moneyItem=null;
+      for(const it of amountItems){if(/^[+-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)[.,]\d{2}\s*\+?$/.test(it.s.trim())){moneyItem=it;break}}
+      if(!moneyItem)continue;
+      let desc=li.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+      // Açıklama bir alt fiziksel satıra taşmışsa yalnız açıklama kolonundan ekle; tutar/paraf kolonlarına dokunma.
+      for(let j=k+1;j<Math.min(end,k+3);j++){
+        const nx=lines[j];if(nx.items.some(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim())))break;
+        const extra=nx.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+        if(extra&&!/^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA)$/i.test(extra))desc+=(desc?' ':'')+extra;
+      }
+      if(!desc)continue;
+      const amt=moneyItem.s.trim();
+      const reward=li.items.filter(i=>i.x>=parafX-25).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+      tx.push(`${date} ${desc} ${amt}${reward?' '+reward:''}`);
+    }
+    // Table sayfasında sadece koordinatla doğrulanmış gerçek hareketleri bırak.
+    halkLayout=['İşlem Tarihi Açıklama TUTAR(TL) ParafPara',...tx].join('\n');
+  }
+  return{raw,layout,halkLayout,hasHalkTable}
 }
 const MAX_STATEMENT_FILE_BYTES=20*1024*1024;
 async function readStatementFile(file){
@@ -1903,12 +1945,20 @@ async function readStatementFile(file){
     const pe=document.getElementById('statementImportProgress');if(pe)pe.textContent='PDF MOTORU HAZIRLANIYOR...';
     await ensurePdfEngineReady();
     const pdfjs=await getStatementPdfRuntime();
-    const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let rawText='',layoutText='',pages=[];
-    for(let n=1;n<=Math.min(pdf.numPages,12);n++){const pg=await pdf.getPage(n),pt=await stmtPdfPageTexts(pg);pages.push(pg);rawText+='\n'+pt.raw;layoutText+='\n'+pt.layout}
+    const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let rawText='',layoutText='',halkText='',pages=[];
+    for(let n=1;n<=Math.min(pdf.numPages,12);n++){
+      const pg=await pdf.getPage(n),pt=await stmtPdfPageTexts(pg);pages.push(pg);rawText+='\n'+pt.raw;layoutText+='\n'+pt.layout;
+      // Özet sayfalarını aynen, işlem tablosu olan sayfaları yalnız koordinat-doğrulanmış satırlarla taşı.
+      halkText+='\n'+(pt.hasHalkTable?pt.halkLayout:pt.layout)
+    }
     const rawEval=rawText.replace(/\s/g,'').length>40?stmtInterpretationScore(rawText,statementImportCardId):{score:-1,rows:[],meta:{}},layoutEval=layoutText.replace(/\s/g,'').length>40?stmtInterpretationScore(layoutText,statementImportCardId):{score:-1,rows:[],meta:{}};
     let text=layoutEval.score>=rawEval.score?layoutText:rawText,textEval=layoutEval.score>=rawEval.score?layoutEval:rawEval;
     const layoutBank=stmtDetectBank(layoutText,statementImportCardId);
-    if(['halkbank','denizbank','teb','isbank'].includes(layoutBank.id)&&layoutEval.rows.length>=3){text=layoutText;textEval=layoutEval}
+    if(layoutBank.id==='halkbank'&&halkText.replace(/\s/g,'').length>40){
+      const halkEval=stmtInterpretationScore(halkText,statementImportCardId);
+      // Halkbank'ta koordinat tablosu tek gerçek kaynak: regex yamalarının ürettiği footer/özet hareketlerini kökten önler.
+      text=halkText;textEval=halkEval;
+    }else if(['denizbank','teb','isbank'].includes(layoutBank.id)&&layoutEval.rows.length>=3){text=layoutText;textEval=layoutEval}
     const textChars=text.replace(/\s/g,'').length,dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
     const suspicious=textChars<=80||(dateTokens>=6&&textEval.rows.length<Math.max(3,Math.floor(dateTokens*.35)))||(!textEval.meta.summaryTrusted&&dateTokens>=10);
     if(!suspicious)return text;
