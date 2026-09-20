@@ -1259,7 +1259,18 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     if(!pick)return;
     const amount=Math.abs(+pick.value||0);if(!Number.isFinite(amount)||amount<=0)return;
     const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-amount)<.005);if(exists)return;
-    const row=stmtMakeRow(cardId,di,src,pick,sourceStart,profile.id,seen,false);if(!row)return;
+    // Devir/önceki dönem borcu aynı mantıksal blokta ödeme ile birleşmiş olabilir.
+    // stmtMakeRow tüm bloğu devir bilgisi sanıp null döndürmesin diye yalnız ödeme kısmını kullan.
+    let paymentSrc=String(src||'');
+    const payStart=paymentSrc.toLocaleUpperCase('tr-TR').search(/HESAPTAN\s+[ÖO]DEME|[ÖO]DEME\s*-?\s*TE[ŞS]EKK|KART\s*[ÖO]DEMES[Iİ]|BOR[ÇC]\s*[ÖO]DEME/);
+    if(payStart>=0)paymentSrc=paymentSrc.slice(payStart).trim();
+    let row=stmtMakeRow(cardId,di,paymentSrc,pick,sourceStart,profile.id,seen,false);
+    if(!row){
+      // Son emniyet: Halkbank ödeme olduğu kesinleştiyse devir filtresini bypass ederek ödeme satırını doğrudan oluştur.
+      const title='HESAPTAN ÖDEME';
+      const baseFp=stmtFingerprint(cardId,di.date,title,-amount),semanticKey=`${baseFp}|payment|0/0/0.00`,occ=(seen[semanticKey]=(seen[semanticKey]||0)+1);
+      row={date:di.date,title,amount,category:'Kart Ödemesi',baseFp,semanticKey,rawKey:String(paymentSrc).toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim(),physicalKey:sourceStart!=null?`LN|${sourceStart}|${semanticKey}`:null,sourceStart,sourceEnd:sourceStart,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund:false,payment:true,kind:'payment',installmentNo:null,installmentCount:null,installmentTotal:null,bankProfile:profile.id};
+    }
     row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=amount;row.parserStrategy=strategy;out.push(row)
   };
   // Tarih aynı satırda ya da tek başına olabilir; sonraki fiziksel satırlar ödeme açıklamasının devamı sayılır.
@@ -1293,8 +1304,15 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     const pick={raw:pm[3],value:val,index:Math.max(0,pm[0].lastIndexOf(pm[3])),currency:'TL',score:2000};
     const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-Math.abs(val))<.005);
     if(exists)continue;
-    const row=stmtMakeRow(cardId,di,pm[0],pick,200000+pm.index,profile.id,seen,false);
-    if(row){row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(val);row.parserStrategy='halkbank-payment-flat-rescue';out.push(row)}
+    let flatSrc=String(pm[0]||'');
+    const flatStart=flatSrc.toLocaleUpperCase('tr-TR').search(/HESAPTAN\s+[ÖO]DEME|[ÖO]DEME\s*-?\s*TE[ŞS]EKK/);
+    if(flatStart>=0)flatSrc=flatSrc.slice(flatStart).trim();
+    let row=stmtMakeRow(cardId,di,flatSrc,pick,200000+pm.index,profile.id,seen,false);
+    if(!row){
+      const amount=Math.abs(val),title='HESAPTAN ÖDEME',baseFp=stmtFingerprint(cardId,di.date,title,-amount),semanticKey=`${baseFp}|payment|0/0/0.00`,occ=(seen[semanticKey]=(seen[semanticKey]||0)+1);
+      row={date:di.date,title,amount,category:'Kart Ödemesi',baseFp,semanticKey,rawKey:String(flatSrc).toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim(),physicalKey:`LN|${200000+pm.index}|${semanticKey}`,sourceStart:200000+pm.index,sourceEnd:200000+pm.index,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund:false,payment:true,kind:'payment',installmentNo:null,installmentCount:null,installmentTotal:null,bankProfile:profile.id};
+    }
+    row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(val);row.parserStrategy='halkbank-payment-flat-rescue';out.push(row)
   }
   out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
   return out
@@ -1592,7 +1610,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-69-HALKBANK-PAYMENT-FINAL';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-70-HALKBANK-CARRY-PAYMENT-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
