@@ -1734,8 +1734,9 @@ function statementPreview(cardId,rows){
   const c=state.cards.find(x=>x.id===cardId),month=statementImportMonthForRows(c,finalRows),monthBreakdown=statementRowsMonthBreakdown(finalRows),existingImported=(state.expenses||[]).filter(x=>x.importedFromStatement&&x.cardId===cardId&&((x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)).length;
   const usable=existingImported?finalRows:finalRows.filter(r=>r.payment||r.occurrence>stmtExistingCount(cardId,r.date,r.title,r.amount));statementImportRows=usable;
   const skipped=existingImported?0:finalRows.length-usable.length;
-  const spendRows=finalRows.filter(r=>r.kind==='spend'),refundRows=finalRows.filter(r=>r.kind==='refund'),paymentRows=finalRows.filter(r=>r.kind==='payment'),feeRows=finalRows.filter(r=>r.kind==='fee'),bankProfile=STMT_BANK_PROFILES.find(p=>p.id===statementImportMeta.bankProfileId)||stmtDetectBank('',cardId);
-  const movementCount=spendRows.length+paymentRows.length+refundRows.length+feeRows.length;
+  // Sayaçlar ekranda gerçekten gösterilen / içe aktarılabilir satırlarla birebir aynı kaynaktan hesaplanır.
+  const spendRows=usable.filter(r=>r.kind==='spend'),refundRows=usable.filter(r=>r.kind==='refund'),paymentRows=usable.filter(r=>r.kind==='payment'),feeRows=usable.filter(r=>r.kind==='fee'),bankProfile=STMT_BANK_PROFILES.find(p=>p.id===statementImportMeta.bankProfileId)||stmtDetectBank('',cardId);
+  const movementCount=usable.length;
   const autoSpend=Number.isFinite(statementImportMeta.spendingTotal)?statementImportMeta.spendingTotal:spendRows.reduce((a,r)=>a+r.amount,0);
   const debt=Number.isFinite(statementImportMeta.periodDebt)?statementImportMeta.periodDebt:'';
   const prev=Number.isFinite(statementImportMeta.previousBalance)?statementImportMeta.previousBalance:'';
@@ -1758,9 +1759,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-80-COUNT-CONSISTENCY';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-80-COUNT-CONSISTENCY';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
