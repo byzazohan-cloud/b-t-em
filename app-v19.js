@@ -1618,23 +1618,22 @@ function normalizeStatementSummary(text,rows,raw){
   const parsedRefunds=round2((rows||[]).filter(r=>r?.kind==='refund').reduce((a,r)=>a+Math.abs(+r.amount||0),0));
   const feeCount=(rows||[]).filter(r=>r?.kind==='fee').length;
   let repaired=false;
-  // V85: Halkbank/Paraf ozetini genel tahmin motoruna birakma.
-  // Bankanin acik etiketlerini dogrudan oku; sonra tablo toplamlarini bu ozete karsi dogrula.
+  // V86: Halkbank/Paraf özetini banka etiketlerinden doğrudan oku.
+  // Regex literal kullanılır; JS string içindeki \\s kaçışlarının bozulmasına izin verilmez.
   if(detectedBank?.id==='halkbank'){
     const flat=String(text||'').replace(/\s+/g,' ');
-    const M='([+-]?(?:(?:\d{1,3}(?:[.,]\d{3})+)(?:[.,]\d{2})?|\d+(?:[.,]\d{2})))';
-    const grab=(pat)=>{const m=flat.match(new RegExp(pat.replace('{M}',M),'i'));return m?stmtMoney(m[1]):null};
-    const hbPrev=grab('Bir\s+Onceki\s+Donem(?:\s+Ekstre)?\s+Borcu\s*[:\-]?\s*{M}') ?? grab('Bir\s+Önceki\s+Dönem(?:\s+Ekstre)?\s+Borcu\s*[:\-]?\s*{M}');
-    const hbSpend=grab('Donem\s+Ici\s+Borc\s+Tutari\s*[:\-]?\s*{M}') ?? grab('Dönem\s+İçi\s+Borç\s+Tutarı\s*[:\-]?\s*{M}');
-    const hbFees=grab('Toplam\s+Faiz\s*,?\s*Ucret\s*,?\s*Vergiler\s*[:\-]?\s*{M}') ?? grab('Toplam\s+Faiz\s*,?\s*Ücret\s*,?\s*Vergiler\s*[:\-]?\s*{M}');
-    const hbPay=grab('Donemsel\s+Alacak\s+Kayitlari\s*[:\-]?\s*{M}') ?? grab('Dönemsel\s+Alacak\s+Kayıtları\s*[:\-]?\s*{M}');
-    const hbDebt=grab('Hesap\s+Bakiyesi\s*[:\-]?\s*{M}');
+    const money='([+-]?(?:(?:\\d{1,3}(?:[.,]\\d{3})+)(?:[.,]\\d{2})?|\\d+(?:[.,]\\d{2})))';
+    const grab=(re)=>{const m=flat.match(re);return m?stmtMoney(m[1]):null};
+    const hbPrev=grab(/Bir\s+Önceki\s+Dönem(?:\s+Ekstre)?\s+Borcu\s*[:\-]?\s*([+-]?(?:(?:\d{1,3}(?:[.,]\d{3})+)(?:[.,]\d{2})?|\d+(?:[.,]\d{2})))/i);
+    const hbSpend=grab(/Dönem\s+İçi\s+Borç\s+Tutarı\s*[:\-]?\s*([+-]?(?:(?:\d{1,3}(?:[.,]\d{3})+)(?:[.,]\d{2})?|\d+(?:[.,]\d{2})))/i);
+    const hbFees=grab(/Toplam\s+Faiz\s*,?\s*Ücret\s*,?\s*Vergiler\s*[:\-]?\s*([+-]?(?:(?:\d{1,3}(?:[.,]\d{3})+)(?:[.,]\d{2})?|\d+(?:[.,]\d{2})))/i);
+    const hbPay=grab(/Dönemsel\s+Alacak\s+Kayıtları\s*[:\-]?\s*([+-]?(?:(?:\d{1,3}(?:[.,]\d{3})+)(?:[.,]\d{2})?|\d+(?:[.,]\d{2})))/i);
+    const hbDebt=grab(/Hesap\s+Bakiyesi\s*[:\-]?\s*([+-]?(?:(?:\d{1,3}(?:[.,]\d{3})+)(?:[.,]\d{2})?|\d+(?:[.,]\d{2})))/i);
     if(finite(hbPrev))meta.previousBalance=round2(hbPrev);
     if(finite(hbSpend))meta.spendingTotal=round2(hbSpend);
     if(finite(hbFees))meta.feesTotal=round2(hbFees);
     if(finite(hbPay))meta.paymentsTotal=round2(Math.abs(hbPay));
     if(finite(hbDebt))meta.periodDebt=round2(hbDebt);
-    // Acik ozet alanlari tam bulunduysa genel aday/tahmin onarimini atla.
     if([meta.previousBalance,meta.spendingTotal,meta.feesTotal,meta.paymentsTotal,meta.periodDebt].every(finite)){
       meta.summaryRepaired=false;
       meta.summaryEquationOk=Math.abs((+meta.previousBalance)+(+meta.spendingTotal)+(+meta.feesTotal)-(+meta.paymentsTotal)-(+meta.periodDebt))<.02;
@@ -1836,9 +1835,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-85-HALKBANK-SUMMARY-LOCK';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-86-HALKBANK-COORD-SUMMARY-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-85-HALKBANK-SUMMARY-LOCK';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-86-HALKBANK-COORD-SUMMARY-FIX';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1991,29 +1990,33 @@ async function stmtPdfPageTexts(pg){
       if(/BİR\s+SONRAKİ|BIR\s+SONRAKI|TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI/.test(t)){end=k;break}
     }
     const tx=[];
+    // V86: PDF'de açıklama ile tarih/tutar satırı birkaç piksel farklı Y koordinatında olabilir.
+    // Her açıklama fiziksel satırı en yakın tarih satırına atanır; komşu işlemin açıklaması birleşmez.
+    const anchors=[];
     for(let k=start+1;k<end;k++){
       const li=lines[k],dateItem=li.items.find(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim()));
-      if(!dateItem)continue;
-      const date=dateItem.s.trim();
-      // Tarih sütunundaki footer tarihi ancak tablo bitiş işaretinden önceyse gelebilir; yine de açıklama zorunlu.
+      if(dateItem)anchors.push({k,y:li.y,dateItem});
+    }
+    const ownerForLine=(ln)=>{
+      let best=null,dist=Infinity;
+      for(const a of anchors){const d=Math.abs(Number(ln.y)-Number(a.y));if(d<dist){dist=d;best=a}}
+      return best;
+    };
+    for(const a of anchors){
+      const k=a.k,li=lines[k],dateItem=a.dateItem,date=dateItem.s.trim();
       const amountItems=li.items.filter(i=>i.x>=amountX-12&&i.x<parafX-18);
       let moneyItem=null;
       for(const it of amountItems){if(/^[+-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)[.,]\d{2}\s*\+?$/.test(it.s.trim())){moneyItem=it;break}}
       if(!moneyItem)continue;
-      let desc=li.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
-      // Açıklama bir alt fiziksel satıra taşmışsa yalnız açıklama kolonundan ekle; tutar/paraf kolonlarına dokunma.
-      for(let j=k+1;j<Math.min(end,k+3);j++){
-        const nx=lines[j];
-        if(nx.items.some(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim())))break;
-        // V83: Başka bir işlemin açıklamasını önceki harekete yapıştırma.
-        // Devam satırı yalnızca açıklama metni taşıyorsa birleştirilir; TUTAR kolonunda
-        // yeni bir parasal değer varsa bu fiziksel satır yeni/ayrı işleme aittir.
-        const nextAmountItems=nx.items.filter(i=>i.x>=amountX-12&&i.x<parafX-18);
-        const hasOwnAmount=nextAmountItems.some(it=>/^[+-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)[.,]\d{2}\s*\+?$/.test(it.s.trim()));
-        if(hasOwnAmount)break;
-        const extra=nx.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
-        if(extra&&!/^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA)$/i.test(extra))desc+=(desc?' ':'')+extra;
+      const descParts=[];
+      for(let j=start+1;j<end;j++){
+        const nx=lines[j],owner=ownerForLine(nx);if(!owner||owner.k!==k)continue;
+        const part=nx.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+        if(part&&!/^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA)$/i.test(part))descParts.push({y:nx.y,text:part});
       }
+      // PDF koordinatlarında aşağı doğru y artar; açıklama parçalarını sayfadaki doğal sırada birleştir.
+      descParts.sort((x,y)=>Number(x.y)-Number(y.y));
+      const desc=descParts.map(x=>x.text).join(' ').replace(/\s+/g,' ').trim();
       if(!desc)continue;
       const amt=moneyItem.s.trim();
       const reward=li.items.filter(i=>i.x>=parafX-25).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
