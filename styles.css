@@ -1407,3 +1407,44 @@ input,select,textarea{caret-color:var(--gold2)!important}
 .monthAction i,.detailMini i,.premiumIco,.detailCatIcon{border-color:rgba(88,199,255,.26)!important;color:var(--gold2)!important;background:linear-gradient(180deg,#152130,#0a1016)!important}
 .fixedItem.isPaid,.paidBadge,.okBadge,.statusPaid{border-color:rgba(43,212,142,.35)!important;box-shadow:0 0 0 1px rgba(43,212,142,.05) inset!important}.waitingBadge,.statusPending{border-color:rgba(255,97,109,.35)!important}
 .homeHero,.quote,.greet,.recoInfo,.miniCard{position:relative}.quote:after,.greet:after,.card:after{content:'';position:absolute;inset:auto 14px 0 14px;height:1px;background:linear-gradient(90deg,transparent,rgba(76,186,255,.26),transparent);pointer-events:none}
+
+
+/* HANE V44 — Z DESIGN CLEAN authoritative skin cleanup */
+:root{
+  --z-bg:#05080d;--z-panel:#0a0f15;--z-panel2:#0d141d;
+  --z-cyan:#47bfff;--z-cyan2:#65d7ff;--z-cyan-soft:rgba(71,191,255,.14);
+  --z-emerald:#2bd48e;--z-red:#ff616d;--z-purple:#a87eff;
+  --z-line:rgba(106,205,255,.22);--z-line2:rgba(106,205,255,.42)
+}
+/* remove remaining gold/yellow visual language without changing geometry */
+.darkMode{--gold:var(--z-cyan)!important;--gold2:var(--z-cyan)!important;--gi:var(--z-emerald)!important;--ge:var(--z-red)!important;--gr:var(--z-cyan2)!important}
+.darkMode .brand,.darkMode .section span,.darkMode .greet small,.darkMode .quote b,.darkMode .recoHead,.darkMode .cashRow small,.darkMode .detailHero small,.darkMode .detailMini i,.darkMode .detailCatIcon,.darkMode .premiumIco,.darkMode .paidToggle,.darkMode .setting b,.darkMode .haneLogo,.darkMode .logoSvgWrap,.darkMode .lockLogoWrap,.darkMode .compactFinanceHead small,.darkMode .categoryReport strong,.darkMode .fixedCatGrand strong,.darkMode .fixedCatTotal strong,.darkMode .liveTxSearch>span,.darkMode .searchResultItem .tapDetailHint,.darkMode .reportTapItem .reportMoveRight small,.darkMode .fixedCatDetailHero strong{color:var(--z-cyan)!important}
+.darkMode .btn.gold,.darkMode .seg .active,.darkMode .calendarTopTabs button.active,.darkMode .cardPayTypeSeg button.active,.darkMode .financeTabs button.active,.darkMode .monthBtn.active,.darkMode .nav .active,.darkMode .miniAddBtn{color:#eefaff!important;border-color:var(--z-line2)!important;background:linear-gradient(180deg,#17344c,#0c1a28)!important;box-shadow:inset 0 0 0 1px rgba(101,215,255,.10),0 0 14px rgba(71,191,255,.16)!important}
+.darkMode .detailCatIcon,.darkMode .premiumIco,.darkMode .monthAction i,.darkMode .miniCard,.darkMode .fixedCatDetailHero,.darkMode .haneRecordHero,.darkMode .fixedCatTotal,.darkMode .fixedCatGrand,.darkMode .preview{border-color:var(--z-line)!important;background:linear-gradient(180deg,#0d151e,#090f16)!important}
+.darkMode .paidToggle,.darkMode .homeEditActions button,.darkMode .tinyEdit{border-color:var(--z-line)!important;background:#0b121a!important;color:var(--z-cyan)!important}
+.darkMode .fixedItem.dragOver{border-color:var(--z-cyan)!important}
+.darkMode .receiptViewer img{border-color:var(--z-line)!important}
+.darkMode .haneRecordHero{background:linear-gradient(135deg,rgba(71,191,255,.08),rgba(255,255,255,.012))!important}
+/* finance cards: keep each card's identity but remove gold trim/glow */
+.darkMode .haneVerticalCard,.darkMode .flexCredit,.darkMode .bankAccount,.darkMode .luxuryCard{border-color:rgba(91,188,255,.18)!important;box-shadow:0 24px 52px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.06)!important}
+.darkMode .haneVerticalCard.blackgold{background:radial-gradient(circle at 80% 10%,rgba(71,191,255,.08),transparent 22%),linear-gradient(160deg,#06080b 0%,#101820 52%,#05070a 100%)!important;border-color:rgba(91,188,255,.22)!important}
+.darkMode .haneVerticalCard.blackgold .hvcGlow{background:var(--z-cyan)!important}
+.darkMode .hvcBrand strong,.darkMode .hvcFooter small{color:#dfefff!important}
+.darkMode .hvcBrand img{border-color:rgba(91,188,255,.18)!important}
+.darkMode .hvcTag i{background:var(--z-cyan)!important}
+.darkMode .hvcGrid>div{border-color:rgba(91,188,255,.18)!important;background:rgba(7,13,19,.38)!important}
+.darkMode .hvcChip{background:linear-gradient(135deg,#d8e4ed 0%,#72889a 24%,#e8f1f6 50%,#637786 76%,#c7d6df 100%)!important}
+.darkMode .financeDots button:first-child{border-color:var(--z-line2)!important;color:var(--z-cyan)!important;box-shadow:0 0 12px rgba(71,191,255,.10)!important}
+/* lock screen chrome instead of gold */
+.darkMode .signatureLogo .haneFullLogo,.darkMode .ultraBrandLogo{box-shadow:0 9px 24px #000a,0 0 0 1px rgba(91,188,255,.30)!important}
+.darkMode .signaturePortrait,.darkMode .ultraPortraitWrap{background:linear-gradient(145deg,#e9f3f8,#667887 28%,#f7fbfd 52%,#4a5b68 75%,#10151a)!important}
+.darkMode .signatureDots i,.darkMode .ultraDots i{border-color:#cfefff!important}
+.darkMode .signatureDots i.on,.darkMode .ultraDots i.on{background:radial-gradient(circle at 35% 30%,#fff,#cdeeff 60%,#57bfff)!important;border-color:#dff5ff!important;box-shadow:0 0 14px rgba(71,191,255,.34)!important}
+.darkMode .signatureKeypad button,.darkMode .ultraKeypad button{border-color:rgba(129,204,242,.55)!important;color:#eef9ff!important;background:linear-gradient(145deg,#202a32,#0c1116 70%,#111a22)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 7px 18px #0007,0 0 10px rgba(71,191,255,.06)!important}
+.darkMode .signatureFooter span{background:linear-gradient(90deg,transparent,var(--z-cyan))!important}.darkMode .signatureFooter span:last-child{background:linear-gradient(90deg,var(--z-cyan),transparent)!important}.darkMode .signatureFooter b{color:#dff6ff!important}
+/* status colors remain semantic */
+.darkMode .fixedItem.isPaid,.darkMode .paidAction i,.darkMode .paidBadge,.darkMode .statusPaid{border-color:rgba(43,212,142,.36)!important;color:var(--z-emerald)!important}
+.darkMode .danger,.darkMode .dangerText,.darkMode .statusPending,.darkMode .waitingBadge{border-color:rgba(255,97,109,.38)!important}
+/* restrained purple only for calendar/planned accents */
+.darkMode .calDay.active{border-color:rgba(168,126,255,.42)!important;box-shadow:0 0 0 1px rgba(168,126,255,.08) inset!important}
+.darkMode .calDot.futureflex,.darkMode .calDot.flexSpend{background:var(--z-purple)!important}
