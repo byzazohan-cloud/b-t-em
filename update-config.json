@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 V42: parola ekranı iPhone boyuna sığacak şekilde sıkılaştırıldı; profil fotoğrafı başarılı PIN girişinden sonra kilit önizlemesine otomatik kaydedilir.",
+  "message": "HANE 19.4.8 V43: parola ekranı iPhone boyuna sığacak şekilde sıkılaştırıldı; profil fotoğrafı başarılı PIN girişinden sonra kilit önizlemesine otomatik kaydedilir.",
   "updateUrl": "",
-  "build": "20260920-LOCAL-DATA-ONLY-42-LOCK-FIT-PHOTO",
-  "version": "19.4.8-LOCAL_DATA_ONLY_42_LOCK_FIT_PHOTO"
+  "build": "20260920-LOCAL-DATA-ONLY-43-Z-DESIGN-SKIN",
+  "version": "19.4.8-LOCAL_DATA_ONLY_43_Z_DESIGN_SKIN"
 }
