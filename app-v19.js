@@ -1060,8 +1060,62 @@ function stmtDropChronologyBreakingDuplicates(rows){
   return a.filter((_,i)=>!drop.has(i));
 }
 
+function stmtHalkbankIgnoreLine(v){
+  const u=String(v||'').toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();
+  if(!u)return true;
+  return /^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA|TUTAR|KALAN|BORÇ|BORC|TAKSİT|TAKSIT|PARAFPARA)$/.test(u)
+    || /(?:İŞLEM|ISLEM).*TARİH|(?:AÇIKLAMA|ACIKLAMA).*TUTAR|TUTAR\s*\(TL\)|KALAN.*BORÇ|KALAN.*BORC|BORÇ.*TAKSİT|BORC.*TAKSIT/.test(u)
+    || /TÜRKİYE HALK BANKASI|TURKIYE HALK BANKASI|MERSİS|MERSIS|MÜKELLEFLER VERGİ|MUKELLEFLER VERGI|TİCARET SİCİL|TICARET SICIL|DIALOG|PARAF\.COM\.TR|FAİZ ORANLARI|FAIZ ORANLARI|AYLIK\s+YILLIK/.test(u);
+}
+function stmtParseHalkbank(text,cardId){
+  const anchor=stmtAnchorInfo(text),lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+  const rows=[];let pending=[],last=null,started=false,ended=false;
+  const flushPendingToLast=()=>{if(last&&pending.length){last.title=stmtCleanTitle(`${last.title} ${pending.join(' ')}`);pending=[]}};
+  for(const line0 of lines){
+    const line=String(line0||'').trim(),u=line.toLocaleUpperCase('tr-TR');
+    if(started&&/(?:^BİR\s+SONRAKİ$|^BIR\s+SONRAKI$|BİR\s+SONRAKİ\s+(?:HESAP|SON\s+ÖDEME)|BIR\s+SONRAKI\s+(?:HESAP|SON\s+ODEME)|EKSTRE\s+İLE\s+İLGİLİ|EKSTRE\s+ILE\s+ILGILI)/.test(u)){flushPendingToLast();ended=true;break}
+    if(ended)break;
+    const dm=line.match(/^\s*(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\b\s*(.*)$/);
+    if(dm){
+      const di=stmtDateInfo(dm[1],anchor);if(!di)continue;
+      const rest=dm[2]||'',amounts=stmtAmountCandidates(rest).sort((a,b)=>a.index-b.index);
+      if(!amounts.length)continue;
+      const pick=amounts[0],payment=stmtPaymentLike(rest),fee=!payment&&stmtFeeLike(rest);
+      let title=rest;
+      [...amounts].sort((a,b)=>b.index-a.index).forEach(a=>{title=title.replace(a.raw,' ')});
+      title=stmtCleanTitle(title.replace(/\b(?:TL|TRY|₺)\b/gi,' ').replace(/^[\s+\-–—|:;,]+|[\s+\-–—|:;,]+$/g,' ').replace(/\s+/g,' '));
+      if(pending.length){
+        if(!title)title=stmtCleanTitle(pending.join(' '));
+        else flushPendingToLast();
+        pending=[];
+      }
+      const rawAmount=pick.value;if(!Number.isFinite(rawAmount)||rawAmount===0)continue;
+      const refund=!payment&&!fee&&(/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b|\bALACAK\b/i.test(rest)||rawAmount<0);
+      const amount=payment?Math.abs(rawAmount):(refund?-Math.abs(rawAmount):Math.abs(rawAmount));
+      if(!title)title=payment?'KART ÖDEMESİ':refund?'KART İADESİ':fee?'VERGİ / FAİZ':'KART HARCAMASI';
+      const kind=payment?'payment':refund?'refund':fee?'fee':'spend';
+      const baseFp=stmtFingerprint(cardId,di.date,title,payment?-amount:amount),semanticKey=`${baseFp}|${kind}|0/0/0.00`;
+      const row={date:di.date,title,amount,category:payment?'Kart Ödemesi':fee?'Vergi & Faiz':stmtCategory(title),baseFp,semanticKey,rawKey:u,physicalKey:`HB|${rows.length}|${semanticKey}`,sourceStart:rows.length,sourceEnd:rows.length,occurrence:1,fp:`${semanticKey}|#1`,checked:true,refund,payment,kind,installmentNo:null,installmentCount:null,installmentTotal:null,bankProfile:'halkbank'};
+      rows.push(row);last=row;started=true;continue
+    }
+    if(!started||stmtHalkbankIgnoreLine(line))continue;
+    // Halkbank/Paraf'ta uzun açıklamalar bir önceki veya bir sonraki fiziksel satıra taşabiliyor.
+    // Parasal değer içermeyen bu satırları bir sonraki tarih satırının inline açıklamasına göre bağla.
+    if(!stmtAmountCandidates(line).length&&/[A-ZÇĞİÖŞÜa-zçğıöşü]/.test(line))pending.push(line)
+  }
+  flushPendingToLast();
+  // Son sınıflandırmayı, devam satırları eklendikten sonra tekrar yap.
+  for(const r of rows){if(r.kind==='spend')r.category=stmtCategory(r.title)}
+  return rows
+}
+
 function parseStatementText(text,cardId){
-  const bankProfile=stmtDetectBank(text,cardId),anchor=stmtAnchorInfo(text),datePref=stmtDatePreference(text);
+  const bankProfile=stmtDetectBank(text,cardId);
+  if(bankProfile.id==='halkbank'){
+    const hb=stmtParseHalkbank(text,cardId);
+    if(hb.length>=3)return hb
+  }
+  const anchor=stmtAnchorInfo(text),datePref=stmtDatePreference(text);
   const bad=/(?:D[ÖO]NEM\s+BORCU|TOPLAM\s+BOR[ÇC]|TOPLAM\s+HARCAMA|ASGAR[İI]\s*(?:[ÖO]DEME|TUTAR)|KULLANILAB[İI]L[İI]R\s+L[İI]M[İI]T|KART\s+L[İI]M[İI]T[İI]|SON\s+[ÖO]DEME\s+TAR[İI]H|HESAP\s+KES[İI]M\s+TAR[İI]H|[ÖO]NCEK[İI]\s+AYDAN\s+DEV[İI]R|DEVREDEN\s+BAK[İI]YE)/i;
   const out=[],seen={};
   for(const block of stmtLogicalBlocks(text,anchor)){
@@ -1121,16 +1175,19 @@ function parseStatementText(text,cardId){
   return rows
 }
 
-function stmtParseLooseMoney(v){
-  const t=String(v||'').replace(/\s/g,'').replace(/₺|TL|TRY/gi,'').replace(/[^0-9,.-]/g,'');
-  if(!t)return null;let x=t;
-  if(x.includes(',')&&x.includes('.'))x=x.replace(/\./g,'').replace(',','.');
-  else if(x.includes(','))x=x.replace(',','.');
-  else if(/^\d{1,3}(?:\.\d{3})+$/.test(x))x=x.replace(/\./g,'');
-  const n=Number(x);return Number.isFinite(n)?n:null
-}
+function stmtParseLooseMoney(v){return stmtMoney(v)}
 function parseStatementSummary(text){
   const src=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' '),flat=src.replace(/\s+/g,' '),lines=src.split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+  if(stmtDetectBank(text).id==='halkbank'){
+    const mv='([+-]?(?:\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})|\d+(?:[.,]\d{2})))';
+    const grab=rx=>{const m=flat.match(rx);return m?stmtMoney(m[1]):null};
+    const previousBalance=grab(new RegExp('Bir\s+Önceki\s+Dönem(?:\s+Ekstre\s+Borcu)?\s*[:\-]?\s*'+mv+'(?:\s*TL)?(?:\s+Ekstre\s+Borcu)?','i'));
+    const spendingTotal=grab(new RegExp('Dönem\s+İçi\s+Borç\s+Tutarı\s*[:\-]?\s*'+mv,'i'));
+    const feesTotal=grab(new RegExp('Toplam\s+Faiz,?\s*Ücret,?(?:\s+Vergiler)?\s*[:\-]?\s*'+mv+'(?:\s*TL)?(?:\s+Vergiler)?','i'));
+    const paymentsTotal=grab(new RegExp('Dönemsel\s+Alacak(?:\s+Kayıtları)?\s*[:\-]?\s*'+mv+'(?:\s*TL)?(?:\s+Kayıtları)?','i'));
+    const periodDebt=grab(new RegExp('Hesap\s+Bakiyesi\s*[:\-]?\s*'+mv,'i'));
+    if([previousBalance,spendingTotal,feesTotal,paymentsTotal,periodDebt].some(Number.isFinite))return{previousBalance,spendingTotal,feesTotal,paymentsTotal,periodDebt}
+  }
   const moneyRe=/(-?\d{1,3}(?:[.\s]\d{3})*(?:,\d{2})|-?\d+(?:[.,]\d{2}))\s*(?:TL|TRY|₺)?/gi;
   const values=line=>[...String(line||'').matchAll(moneyRe)].map(m=>stmtParseLooseMoney(m[1])).filter(v=>Number.isFinite(v));
   const find=(rx)=>{for(const line of lines){rx.lastIndex=0;if(!rx.test(line))continue;rx.lastIndex=0;const vals=values(line);if(vals.length)return vals.at(-1)}return null};
@@ -1301,9 +1358,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-53-MULTIBANK-STATEMENT';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-54-HALKBANK-EXACT-PARSER';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-49-Z-THEME-STUDIO-FIX';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-54-HALKBANK-EXACT-PARSER';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1454,6 +1511,8 @@ async function readStatementFile(file){
     for(let n=1;n<=Math.min(pdf.numPages,12);n++){const pg=await pdf.getPage(n),pt=await stmtPdfPageTexts(pg);pages.push(pg);rawText+='\n'+pt.raw;layoutText+='\n'+pt.layout}
     const rawEval=rawText.replace(/\s/g,'').length>40?stmtInterpretationScore(rawText,statementImportCardId):{score:-1,rows:[],meta:{}},layoutEval=layoutText.replace(/\s/g,'').length>40?stmtInterpretationScore(layoutText,statementImportCardId):{score:-1,rows:[],meta:{}};
     let text=layoutEval.score>=rawEval.score?layoutText:rawText,textEval=layoutEval.score>=rawEval.score?layoutEval:rawEval;
+    const layoutBank=stmtDetectBank(layoutText,statementImportCardId);
+    if(layoutBank.id==='halkbank'&&layoutEval.rows.length>=10){text=layoutText;textEval=layoutEval}
     const textChars=text.replace(/\s/g,'').length,dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
     const suspicious=textChars<=80||(dateTokens>=6&&textEval.rows.length<Math.max(3,Math.floor(dateTokens*.35)))||(!textEval.meta.summaryTrusted&&dateTokens>=10);
     if(!suspicious)return text;

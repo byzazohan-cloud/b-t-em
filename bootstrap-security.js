@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-53-MULTIBANK-STATEMENT';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-54-HALKBANK-EXACT-PARSER';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

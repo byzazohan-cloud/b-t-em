@@ -2,7 +2,7 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V53: Tema Stüdyosu merkezi Z tema tokenlarına bağlandı; detay rengi artık aktif durum, border, glow ve ikonlara gerçek olarak uygulanır. Ana logo üst ayırıcı çizgiden ayrıldı. Veri ve işleyiş değiştirilmedi.",
+  "message": "V54: Tema Stüdyosu merkezi Z tema tokenlarına bağlandı; detay rengi artık aktif durum, border, glow ve ikonlara gerçek olarak uygulanır. Ana logo üst ayırıcı çizgiden ayrıldı. Veri ve işleyiş değiştirilmedi.",
   "updateUrl": "",
   "build": "20260920-LOCAL-DATA-ONLY-48-Z-AUDIT-FIX",
   "version": "19.4.8-LOCAL_DATA_ONLY_52_SELECT_READABILITY"
