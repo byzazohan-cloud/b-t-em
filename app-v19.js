@@ -1041,7 +1041,17 @@ function stmtFeeLike(blockText){
 }
 function stmtPaymentLike(blockText){
   const u=String(blockText||'').toLocaleUpperCase('tr-TR');
-  return /(?:ŞUBE|SUBE)?\s*-?\s*OTOMATİK\s*ÖDEME|OTOMATIK\s*ODEME|ÖDEME\s*-?\s*TEŞEKK|ODEME\s*-?\s*TESEKK|HESAPTAN\s+ÖDEME|HESAPTAN\s+ODEME|KART\s*ÖDEMESİ|KART\s*ODEMESI|BORÇ\s*ÖDEME|BORC\s*ODEME/.test(u)
+  return /(?:ŞUBE|SUBE)?\s*-?\s*OTOMATİK\s*ÖDEME|OTOMATIK\s*ODEME|İNTERAKTİF\s*ÖDEME|INTERAKTIF\s*ODEME|İNTERNET\s*ŞUBE(?:Sİ)?\s*ÖDEME|INTERNET\s*SUBE(?:SI)?\s*ODEME|MOBİL\s*ÖDEME|MOBIL\s*ODEME|ÖDEME\s*-?\s*TEŞEKK|ODEME\s*-?\s*TESEKK|HESAPTAN\s+ÖDEME|HESAPTAN\s+ODEME|KART\s*ÖDEMESİ|KART\s*ODEMESI|KREDİ\s*KARTI\s*ÖDEME|KREDI\s*KARTI\s*ODEME|BORÇ\s*ÖDEME|BORC\s*ODEME/.test(u)
+}
+function stmtCarryForwardLike(blockText){
+  const u=String(blockText||'').toLocaleUpperCase('tr-TR').replace(/İ/g,'I').replace(/\s+/g,' ').trim();
+  if(!u)return false;
+  // Ekstre tablosunda bilgi amaçlı gösterilen önceki dönem/devir satırları gerçek işlem değildir.
+  // Ödeme satırlarını etkilememek için yalnızca devir + ekstre borcu/bakiye bağlamı filtrelenir.
+  return /BIR\s+ONCEKI\s+DONEM(?:.{0,90})?(?:EKSTRE\s+BORCU|DONEM\s+BORCU|DEVIR|DEVREDEN|BAKIYE)/.test(u)
+    || /ONCEKI\s+DONEM(?:.{0,90})?(?:EKSTRE\s+BORCU|DONEM\s+BORCU|DEVIR|DEVREDEN|BAKIYE)/.test(u)
+    || /(?:DEVREDEN\s+BAKIYE|ONCEKI\s+AYDAN\s+DEVIR)/.test(u)
+    || /EKSTRE\s+BORCU(?:.{0,80})?KART\s+NO/.test(u);
 }
 function stmtDropChronologyBreakingDuplicates(rows){
   const a=[...(rows||[])],groups={};
@@ -1051,14 +1061,14 @@ function stmtDropChronologyBreakingDuplicates(rows){
   return a.filter((_,i)=>!drop.has(i))
 }
 function stmtCommonIgnoreLine(v){
-  const u=String(v||'').toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();if(!u)return true;
+  const u=String(v||'').toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();if(!u)return true;if(stmtCarryForwardLike(u))return true;
   return /^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA|TUTAR|KALAN|BORÇ|BORC|TAKSİT|TAKSIT|PARAFPARA)$/.test(u)
     || /(?:İŞLEM|ISLEM).*TARİH|(?:AÇIKLAMA|ACIKLAMA).*TUTAR|TUTAR\s*\(TL\)|KALAN.*BORÇ|KALAN.*BORC|BORÇ.*TAKSİT|BORC.*TAKSIT/.test(u)
     || /TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI|MERSİS|MERSIS|MÜKELLEFLER\s+VERGİ|MUKELLEFLER\s+VERGI|TİCARET\s+SİCİL|TICARET\s+SICIL|DIALOG|PARAF\.COM\.TR|FAİZ\s+ORANLARI|FAIZ\s+ORANLARI|AYLIK\s+YILLIK/.test(u)
     || /BİR\s+SONRAKİ\s+(?:HESAP|SON\s+ÖDEME)|BIR\s+SONRAKI\s+(?:HESAP|SON\s+ODEME)|EKSTRE\s+İLE\s+İLGİLİ|EKSTRE\s+ILE\s+ILGILI/.test(u)
 }
 function stmtMakeRow(cardId,di,sourceText,amountPick,sourceStart,profileId,occSeen,installments=true){
-  if(!di||!amountPick)return null;const rawAmount=amountPick.value;if(!Number.isFinite(rawAmount)||rawAmount===0)return null;
+  if(!di||!amountPick||stmtCarryForwardLike(sourceText))return null;const rawAmount=amountPick.value;if(!Number.isFinite(rawAmount)||rawAmount===0)return null;
   const payment=stmtPaymentLike(sourceText),fee=!payment&&stmtFeeLike(sourceText),refund=!payment&&!fee&&(/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b|\bALACAK\b/i.test(sourceText)||rawAmount<0);
   const amount=payment?Math.abs(rawAmount):(refund?-Math.abs(rawAmount):Math.abs(rawAmount));
   let title=stmtStripDates(sourceText),amounts=stmtAmountCandidates(title);[...amounts].sort((a,b)=>b.index-a.index).forEach(a=>{title=title.replace(a.raw,' ')});
@@ -1090,7 +1100,7 @@ function stmtParseLineEngine(text,cardId,profile){
 function stmtParseBlockEngine(text,cardId,profile){
   const anchor=stmtAnchorInfo(text),datePref=stmtDatePreference(text),bad=/(?:D[ÖO]NEM\s+BORCU|TOPLAM\s+BOR[ÇC]|TOPLAM\s+HARCAMA|ASGAR[İI]\s*(?:[ÖO]DEME|TUTAR)|KULLANILAB[İI]L[İI]R\s+L[İI]M[İI]T|KART\s+L[İI]M[İI]T[İI]|SON\s+[ÖO]DEME\s+TAR[İI]H|HESAP\s+KES[İI]M\s+TAR[İI]H|[ÖO]NCEK[İI]\s+AYDAN\s+DEV[İI]R|DEVREDEN\s+BAK[İI]YE)/i,out=[],seen={};
   for(const block of stmtLogicalBlocks(text,anchor)){
-    const blockText=block.lines.join(' ').replace(/\s+/g,' ').trim();if(!blockText||bad.test(blockText))continue;const di=stmtPickTransactionDate(blockText,anchor,datePref);if(!di)continue;const noDates=stmtStripDates(blockText),amounts=stmtAmountCandidates(noDates);if(!amounts.length)continue;
+    const blockText=block.lines.join(' ').replace(/\s+/g,' ').trim();if(!blockText||bad.test(blockText)||stmtCarryForwardLike(blockText))continue;const di=stmtPickTransactionDate(blockText,anchor,datePref);if(!di)continue;const noDates=stmtStripDates(blockText),amounts=stmtAmountCandidates(noDates);if(!amounts.length)continue;
     const upperNoDates=noDates.toLocaleUpperCase('tr-TR'),taksitPos=Math.max(upperNoDates.indexOf('TAKSİDİ'),upperNoDates.indexOf('TAKSIDI'),upperNoDates.indexOf('TAKSİT'),upperNoDates.indexOf('TAKSIT'));let pick=null;
     if(taksitPos>=0){const islemPos=Math.max(upperNoDates.indexOf('İŞLEMİN'),upperNoDates.indexOf('ISLEMIN')),before=islemPos>=0?amounts.filter(a=>a.index<islemPos).sort((a,b)=>a.index-b.index):[],totalCandidate=before.length?before.at(-1):null,cands=amounts.filter(a=>!totalCandidate||a.index!==totalCandidate.index).sort((a,b)=>a.index-b.index);if(cands.length)pick=cands[0]}
     if(!pick){const explicit=amounts.filter(a=>['TL','TRY','₺'].includes(a.currency)).sort((a,b)=>a.index-b.index);pick=(explicit.length?explicit:amounts.slice().sort((a,b)=>a.index-b.index))[0]}
@@ -1288,9 +1298,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-55-UNIFIED-STATEMENT-ENGINE';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-57-CARRY-FORWARD-FILTER';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-55-UNIFIED-STATEMENT-ENGINE';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-57-CARRY-FORWARD-FILTER';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
