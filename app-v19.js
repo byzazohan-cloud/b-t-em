@@ -1241,7 +1241,22 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
   const addPayment=(di,src,sourceStart,strategy)=>{
     if(!di||!stmtPaymentLike(src))return;
     const amounts=stmtAmountCandidates(src).sort((a,b)=>a.index-b.index);if(!amounts.length)return;
-    const pick=stmtPickAmountForProfile(profile,src,amounts);if(!pick)return;
+    // Halkbank ödeme satırında önceki dönem borcu / ParafPara gibi başka sayılar aynı blokta bulunabilir.
+    // Bu nedenle tutarı genel ilk-sayı kuralından değil, ödeme ifadesinden SONRAKİ ilk sıfır-olmayan parasal değerden seç.
+    const up=String(src||'').toLocaleUpperCase('tr-TR');
+    const km=up.match(/ÖDEME\s*-?\s*TEŞEKK|ODEME\s*-?\s*TESEKK|HESAPTAN\s+ÖDEME|HESAPTAN\s+ODEME|KART\s*ÖDEMESİ|KART\s*ODEMESI|BORÇ\s*ÖDEME|BORC\s*ODEME/);
+    let pick=null;
+    if(km){
+      const kpos=km.index+km[0].length;
+      const after=amounts.filter(a=>a.index>=kpos&&Number.isFinite(+a.value)&&Math.abs(+a.value)>.004);
+      if(after.length)pick=after[0];
+    }
+    if(!pick){
+      // Artı işaretli değer Halkbank'ta kart ödemesinin güçlü göstergesidir.
+      const signed=amounts.find(a=>/\+/.test(String(a.raw||''))&&Number.isFinite(+a.value)&&Math.abs(+a.value)>.004);
+      pick=signed||stmtPickAmountForProfile(profile,src,amounts);
+    }
+    if(!pick)return;
     const amount=Math.abs(+pick.value||0);if(!Number.isFinite(amount)||amount<=0)return;
     const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-amount)<.005);if(exists)return;
     const row=stmtMakeRow(cardId,di,src,pick,sourceStart,profile.id,seen,false);if(!row)return;
@@ -1268,6 +1283,18 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     const seg=rawText.slice(cur.end,next?next.index:Math.min(rawText.length,cur.end+600)).replace(/\s+/g,' ').trim();
     if(!seg)continue;
     addPayment(di,seg,100000+i,'halkbank-payment-segment-rescue')
+  }
+  // Son koruma: Halkbank'ın tablo satırı tek parça geldiyse, ödeme ifadesi ve tutarı doğrudan satırdan yakala.
+  const flatPayRx=/(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\s+([^\n]{0,180}?(?:HESAPTAN\s+[ÖO]DEME|[ÖO]DEME\s*-?\s*TE[ŞS]EKK[^\n]{0,80}))\s+([+\-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)(?:[.,]\d{2})\s*\+?)/giu;
+  let pm;
+  while((pm=flatPayRx.exec(rawText))!==null){
+    const di=stmtDateInfo(pm[1],anchor);if(!di)continue;
+    const val=stmtMoney(pm[3]);if(!Number.isFinite(val)||Math.abs(val)<=.004)continue;
+    const pick={raw:pm[3],value:val,index:Math.max(0,pm[0].lastIndexOf(pm[3])),currency:'TL',score:2000};
+    const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-Math.abs(val))<.005);
+    if(exists)continue;
+    const row=stmtMakeRow(cardId,di,pm[0],pick,200000+pm.index,profile.id,seen,false);
+    if(row){row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(val);row.parserStrategy='halkbank-payment-flat-rescue';out.push(row)}
   }
   out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
   return out
@@ -1565,7 +1592,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-69-HALKBANK-PAYMENT-FINAL';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[

@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-69-HALKBANK-PAYMENT-FINAL';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {
