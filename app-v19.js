@@ -1167,6 +1167,43 @@ function stmtParseDenizBankFixedEngine(text,cardId,profile){
   }
   return rows
 }
+
+// V73: Halkbank / Paraf fixed row engine.
+// Halkbank işlem tablosunda tarihli satırın sonunda çoğunlukla iki parasal kolon vardır:
+// gerçek TUTAR(TL) + ParafPara. Abone/referans numaraları tutar değildir.
+// Bu motor devir satırından bağımsız olarak her tarihli fiziksel satırı yeniden kurar.
+function stmtParseHalkbankFixedEngine(text,cardId,profile){
+  if(profile?.id!=='halkbank')return[];
+  const anchor=stmtAnchorInfo(text),rows=[],seen={},lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+  for(let i=0;i<lines.length;i++){
+    const m=lines[i].match(/^(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\s+(.+)$/);if(!m)continue;
+    const di=stmtDateInfo(m[1],anchor);if(!di)continue;
+    let seg=m[2].trim();
+    if(stmtCarryForwardLike(seg))continue;
+    // Açıklama alt satıra taşmışsa, sonraki tarihli satıra kadar en fazla 2 metin satırını ekle.
+    for(let j=i+1;j<Math.min(lines.length,i+3);j++){
+      if(/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})\b/.test(lines[j]))break;
+      if(stmtCommonIgnoreLine(lines[j])||/TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI|MERSİS|MERSIS|PARAF\.COM\.TR/i.test(lines[j]))break;
+      // Sadece açıklama devamı veya parasal kolon satırı olabilecek kısa satırları ekle.
+      if(lines[j].length<180)seg+=' '+lines[j];
+    }
+    const amounts=stmtAmountCandidates(seg).sort((a,b)=>a.index-b.index);if(!amounts.length)continue;
+    // TUTAR(TL), ParafPara kolonundan önce gelir. Son aday küçük bir ParafPara ise bir önceki tutarı seç.
+    let pick=null;
+    const explicit=amounts.filter(a=>['TL','TRY','₺'].includes(a.currency));
+    if(explicit.length)pick=explicit[0];
+    else if(amounts.length>=2){
+      const last=amounts.at(-1),prev=amounts.at(-2);
+      const rewardLike=Math.abs(+last.value||0)<=5 && Math.abs(+prev.value||0)>=5;
+      pick=rewardLike?prev:amounts[0];
+    }else pick=amounts[0];
+    if(!pick||!Number.isFinite(+pick.value)||Math.abs(+pick.value)<=.004)continue;
+    const row=stmtMakeRow(cardId,di,seg,pick,i,profile.id,seen,true);if(!row)continue;
+    row.sourceEnd=i;row.physicalKey=`HALK|${i}|${row.semanticKey}`;row.parserStrategy='halkbank-fixed-row';rows.push(row)
+  }
+  return stmtDropChronologyBreakingDuplicates(rows)
+}
+
 function stmtParseTebFixedEngine(text,cardId,profile){
   if(profile?.id!=='teb')return[];
   const anchor=stmtAnchorInfo(text),rows=[],seen={},lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
@@ -1469,10 +1506,11 @@ function stmtZiraatPostProcess(text,cardId,rows,profile){
   return out
 }
 function parseStatementText(text,cardId){
-  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),tebSegRows=stmtParseTebSegmentEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile');
+  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),halkRows=stmtParseHalkbankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),tebSegRows=stmtParseTebSegmentEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile'),hs=stmtStrategyQuality(halkRows,text,profile,'halk-fixed');
   let rows=line,strategy='common-line',best=ls;if(bs>best){rows=block;strategy='common-block';best=bs}if(ps>best){rows=profileRows;strategy='profile-layout';best=ps}
   // DenizBank'ta fiyat yalnızca en sağdaki İşlem Tutarı sütunundan alınır; Bonus/Kalan Borç sütunları yok sayılır.
   if(profile.id==='denizbank'&&denizRows.length>=3){rows=denizRows;strategy='deniz-fixed-right-column'}
+  else if(profile.id==='halkbank'&&halkRows.length>=3&&(halkRows.length>rows.length||hs>=best-2)){rows=halkRows;strategy='halkbank-fixed-row';best=hs}
   else if(profile.id==='teb'&&tebSegRows.length>=3){rows=tebSegRows;strategy='teb-date-segment'}
   else if(profile.id==='teb'&&tebRows.length>=3){rows=tebRows;strategy='teb-fixed-final-tl'}
   else if(profile.id==='isbank'&&profileRows.length>=3){rows=profileRows;strategy='profile-layout'}
@@ -1685,7 +1723,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-72-HALKBANK-FIRST-TX-RESCUE';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-73-HALKBANK-FIXED-ROW';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
