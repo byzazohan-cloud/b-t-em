@@ -1639,9 +1639,22 @@ function normalizeStatementSummary(text,rows,raw){
     if(finite(hbFees))meta.feesTotal=round2(hbFees);
     if(finite(hbPay))meta.paymentsTotal=round2(Math.abs(hbPay));
     if(finite(hbDebt))meta.periodDebt=round2(hbDebt);
+
+    // V91: Halkbank PDF'lerinde bazı özet hücreleri PDF.js tarafından 0,00 gibi yanlış eşleşebiliyor.
+    // Gerçek işlem satırları pozitif toplam veriyorsa, bu sahte sıfırlar banka özeti kabul edilmez.
+    // İşlem tablosu + dönem borcu birlikte kullanılarak eksik özet alanları güvenli biçimde tamamlanır.
+    if(parsedSpend>0&&(!finite(meta.spendingTotal)||+meta.spendingTotal===0)){meta.spendingTotal=parsedSpend;repaired=true;meta.halkbankSpendFromRows=true}
+    if(parsedFees>0&&(!finite(meta.feesTotal)||+meta.feesTotal===0)){meta.feesTotal=parsedFees;repaired=true;meta.halkbankFeesFromRows=true}
+    if(pays>0&&(!finite(meta.paymentsTotal)||+meta.paymentsTotal===0)){meta.paymentsTotal=round2(pays);repaired=true;meta.halkbankPaymentsFromRows=true}
+    if(finite(meta.periodDebt)&&finite(meta.spendingTotal)&&finite(meta.feesTotal)&&finite(meta.paymentsTotal)){
+      const impliedPrev=round2((+meta.periodDebt)-(+meta.spendingTotal)-(+meta.feesTotal)+(+meta.paymentsTotal)+parsedRefunds);
+      if(impliedPrev>=0&&(!finite(meta.previousBalance)||(+meta.previousBalance===0&&impliedPrev>0))){
+        meta.previousBalance=impliedPrev;repaired=true;meta.halkbankPreviousFromEquation=true;
+      }
+    }
     if([meta.previousBalance,meta.spendingTotal,meta.feesTotal,meta.paymentsTotal,meta.periodDebt].every(finite)){
-      meta.summaryRepaired=false;
-      meta.summaryEquationOk=Math.abs((+meta.previousBalance)+(+meta.spendingTotal)+(+meta.feesTotal)-(+meta.paymentsTotal)-(+meta.periodDebt))<.02;
+      meta.summaryRepaired=repaired;
+      meta.summaryEquationOk=Math.abs((+meta.previousBalance)+(+meta.spendingTotal)+(+meta.feesTotal)-(+meta.paymentsTotal)-parsedRefunds-(+meta.periodDebt))<.02;
       meta.halkbankExplicitSummary=true;
       return meta;
     }
@@ -1734,6 +1747,10 @@ function stmtImportGuardStatus(meta,rows,bankId,cardId=''){
   // Harcamalar + Ödemeler + Faiz/Ücret satır toplamları birebir uyuşuyorsa gereksiz blok koyma.
   let halkbankEquationOk=false;
   if(bankId==='halkbank'){
+    // V91: Özet hücresindeki sahte 0,00 değerleri gerçek pozitif işlem toplamlarının önüne geçemez.
+    if(spendSum>0&&(!known(meta?.spendingTotal)||cents(meta.spendingTotal)===0)){meta.spendingTotal=Math.round(spendSum*100)/100;meta.halkbankSpendFromRows=true}
+    if(paymentSum>0&&(!known(meta?.paymentsTotal)||cents(meta.paymentsTotal)===0)){meta.paymentsTotal=Math.round(paymentSum*100)/100;meta.halkbankPaymentsFromRows=true}
+    if(feeSum>0&&(!known(meta?.feesTotal)||cents(meta.feesTotal)===0)){meta.feesTotal=Math.round(feeSum*100)/100;meta.halkbankFeesFromRows=true}
     const spendMatch=known(meta?.spendingTotal)&&cents(meta.spendingTotal)===cents(spendSum);
     const payMatch=known(meta?.paymentsTotal)&&cents(meta.paymentsTotal)===cents(paymentSum);
     const feeMatch=known(meta?.feesTotal)&&cents(meta.feesTotal)===cents(feeSum);
@@ -1868,9 +1885,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260921-LOCAL-DATA-ONLY-90-PDF-TEXT-FALLBACK';
+const HANE_SW_BUILD='19.4.8.20260921-LOCAL-DATA-ONLY-91-HALKBANK-ZERO-SUMMARY-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-90-PDF-TEXT-FALLBACK';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-91-HALKBANK-ZERO-SUMMARY-FIX';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
