@@ -1575,7 +1575,12 @@ function parseStatementText(text,cardId){
   else if(profile.id==='teb'&&tebSegRows.length>=3){rows=tebSegRows;strategy='teb-date-segment'}
   else if(profile.id==='teb'&&tebRows.length>=3){rows=tebRows;strategy='teb-fixed-final-tl'}
   else if(profile.id==='isbank'&&profileRows.length>=3){rows=profileRows;strategy='profile-layout'}
-  if(profile.id==='halkbank')rows=stmtHalkbankPostProcess(text,cardId,rows,profile);
+  if(profile.id==='halkbank'){
+    const coordFinal=String(text||'').includes('__HANE_HALKBANK_TABLE_ENGINE__')&&strategy==='halkbank-coordinate-final';
+    // Koordinat motoru fiziksel tablonun kendisidir. Eski rescue/footer yamalarını yeniden çalıştırmak
+    // temiz satırları bozabiliyordu. Legacy post-process yalnız koordinat motoru yoksa fallback olarak kalır.
+    if(!coordFinal)rows=stmtHalkbankPostProcess(text,cardId,rows,profile);
+  }
   if(profile.id==='ziraat')rows=stmtZiraatPostProcess(text,cardId,rows,profile);
   rows.forEach(r=>{r.bankProfile=profile.id;if(!r.parserStrategy)r.parserStrategy=strategy});return rows
 }
@@ -1618,7 +1623,7 @@ function normalizeStatementSummary(text,rows,raw){
   const parsedRefunds=round2((rows||[]).filter(r=>r?.kind==='refund').reduce((a,r)=>a+Math.abs(+r.amount||0),0));
   const feeCount=(rows||[]).filter(r=>r?.kind==='fee').length;
   let repaired=false;
-  // V86: Halkbank/Paraf özetini banka etiketlerinden doğrudan oku.
+  // V87: Halkbank/Paraf özetini banka etiketlerinden doğrudan oku.
   // Regex literal kullanılır; JS string içindeki \\s kaçışlarının bozulmasına izin verilmez.
   if(detectedBank?.id==='halkbank'){
     const flat=String(text||'').replace(/\s+/g,' ');
@@ -1835,9 +1840,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-86-HALKBANK-COORD-SUMMARY-FIX';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-87-HALKBANK-DETERMINISTIC-TABLE';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-86-HALKBANK-COORD-SUMMARY-FIX';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-87-HALKBANK-DETERMINISTIC-TABLE';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1973,56 +1978,84 @@ async function stmtPdfPageTexts(pg){
   lines.sort((a,b)=>b.y-a.y);for(const l of lines)l.items.sort((a,b)=>a.x-b.x);
   const layout=lines.map(l=>l.items.map(i=>i.s).join(' ').replace(/\s+/g,' ').trim()).filter(Boolean).join('\n');
 
-  // V79: HALKBANK TABLE ENGINE
-  // PDF.js kelimelerinin x/y koordinatlarını kullanarak gerçek tabloyu sütun bazında kurar.
-  // Böylece özet/footer satırları sonradan regex ile ayıklanmaz; işlem tablosuna hiç girmez.
+  // V87: HALKBANK DETERMINISTIC TABLE ENGINE
+  // Halkbank/Paraf işlem tablosu artık satır metni yamalarıyla değil, kolon koordinatlarıyla kurulur.
+  // Tarih, Tutar ve ParafPara kolonları bağımsız toplanır; tarih-tutar eşleşmesi Y konumuna göre yapılır.
+  // Açıklama parçaları iki işlem arasındaki gerçek dikey banda atanır. Böylece bir işlemin açıklaması
+  // komşu işleme yapışamaz ve tutar aynı PDF satır objesinde olmasa bile işlem kaybolmaz.
   const pageU=layout.toLocaleUpperCase('tr-TR');
   let halkLayout=layout;
-  const amountHead=lines.flatMap(l=>l.items).find(i=>/TUTAR\s*\(?TL\)?/i.test(i.s));
-  const parafHead=lines.flatMap(l=>l.items).find(i=>/PARAFPARA/i.test(i.s));
+  const amountHeadLine=lines.findIndex(l=>l.items.some(i=>/TUTAR\s*\(?TL\)?/i.test(i.s)));
+  const parafHeadLine=lines.findIndex(l=>l.items.some(i=>/PARAFPARA/i.test(i.s)));
+  const amountHead=amountHeadLine>=0?lines[amountHeadLine].items.find(i=>/TUTAR\s*\(?TL\)?/i.test(i.s)):null;
+  const parafHead=parafHeadLine>=0?lines[parafHeadLine].items.find(i=>/PARAFPARA/i.test(i.s)):null;
   const hasHalkTable=!!amountHead&&!!parafHead&&(pageU.includes('AÇIKLAMA')||pageU.includes('ACIKLAMA'));
   if(hasHalkTable){
-    const amountX=amountHead.x,parafX=parafHead.x;
-    const start=Math.max(0,lines.findIndex(l=>l.items.some(i=>/TUTAR\s*\(?TL\)?/i.test(i.s))));
+    const amountX=Number(amountHead.x),parafX=Number(parafHead.x);
+    const start=Math.max(amountHeadLine,parafHeadLine,0);
     let end=lines.length;
     for(let k=start+1;k<lines.length;k++){
       const t=lines[k].items.map(i=>i.s).join(' ').replace(/\s+/g,' ').trim().toLocaleUpperCase('tr-TR');
       if(/BİR\s+SONRAKİ|BIR\s+SONRAKI|TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI/.test(t)){end=k;break}
     }
-    const tx=[];
-    // V86: PDF'de açıklama ile tarih/tutar satırı birkaç piksel farklı Y koordinatında olabilir.
-    // Her açıklama fiziksel satırı en yakın tarih satırına atanır; komşu işlemin açıklaması birleşmez.
-    const anchors=[];
+    const dateRe=/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/;
+    const moneyRe=/^[+\-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)[.,]\d{2}\s*\+?$/;
+    const dateAnchors=[],amountCells=[],rewardCells=[];
     for(let k=start+1;k<end;k++){
-      const li=lines[k],dateItem=li.items.find(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim()));
-      if(dateItem)anchors.push({k,y:li.y,dateItem});
-    }
-    const ownerForLine=(ln)=>{
-      let best=null,dist=Infinity;
-      for(const a of anchors){const d=Math.abs(Number(ln.y)-Number(a.y));if(d<dist){dist=d;best=a}}
-      return best;
-    };
-    for(const a of anchors){
-      const k=a.k,li=lines[k],dateItem=a.dateItem,date=dateItem.s.trim();
-      const amountItems=li.items.filter(i=>i.x>=amountX-12&&i.x<parafX-18);
-      let moneyItem=null;
-      for(const it of amountItems){if(/^[+-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)[.,]\d{2}\s*\+?$/.test(it.s.trim())){moneyItem=it;break}}
-      if(!moneyItem)continue;
-      const descParts=[];
-      for(let j=start+1;j<end;j++){
-        const nx=lines[j],owner=ownerForLine(nx);if(!owner||owner.k!==k)continue;
-        const part=nx.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
-        if(part&&!/^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA)$/i.test(part))descParts.push({y:nx.y,text:part});
+      const li=lines[k];
+      for(const it of li.items){
+        const raw=String(it.s||'').trim(),x=Number(it.x),y=Number(li.y);
+        if(dateRe.test(raw)&&x<amountX-80)dateAnchors.push({k,y,x,raw});
+        if(moneyRe.test(raw)&&x>=amountX-32&&x<parafX-34)amountCells.push({k,y,x,raw});
+        if(moneyRe.test(raw)&&x>=parafX-30)rewardCells.push({k,y,x,raw});
       }
-      // PDF koordinatlarında aşağı doğru y artar; açıklama parçalarını sayfadaki doğal sırada birleştir.
-      descParts.sort((x,y)=>Number(x.y)-Number(y.y));
-      const desc=descParts.map(x=>x.text).join(' ').replace(/\s+/g,' ').trim();
-      if(!desc)continue;
-      const amt=moneyItem.s.trim();
-      const reward=li.items.filter(i=>i.x>=parafX-25).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
-      tx.push(`${date} ${desc} ${amt}${reward?' '+reward:''}`);
     }
-    // Table sayfasında sadece koordinatla doğrulanmış gerçek hareketleri bırak.
+    // Sayfadaki görsel sırayı koru. lines dizisi zaten yukarıdan aşağı sıralı.
+    dateAnchors.sort((a,b)=>a.k-b.k||b.y-a.y);
+    const usedAmount=new Set();
+    const txAnchors=[];
+    for(const d of dateAnchors){
+      let best=null,bestIdx=-1,bestDist=Infinity;
+      for(let ai=0;ai<amountCells.length;ai++){
+        if(usedAmount.has(ai))continue;
+        const a=amountCells[ai],dist=Math.abs(a.y-d.y);
+        // Tutar hücresi aynı işlem satırına çok yakın olmalı. PDF.js bazı fontlarda birkaç px kaydırabilir.
+        if(dist<=13&&dist<bestDist){best=a;bestIdx=ai;bestDist=dist}
+      }
+      if(!best)continue;
+      usedAmount.add(bestIdx);
+      txAnchors.push({date:d,amount:best,y:(d.y+best.y)/2,k:d.k});
+    }
+    // Her açıklama fiziksel satırını yalnız en yakın GERÇEK tarih+tutar çiftine bağla.
+    // Dış başlık/footer satırları için maksimum uzaklık da uygulanır.
+    const descByIndex=txAnchors.map(()=>[]);
+    for(let k=start+1;k<end;k++){
+      const li=lines[k];
+      const part=li.items.filter(i=>Number(i.x)>135&&Number(i.x)<amountX-12).map(i=>String(i.s||'')).join(' ').replace(/\s+/g,' ').trim();
+      if(!part)continue;
+      const pu=part.toLocaleUpperCase('tr-TR');
+      if(/^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA|TUTAR|KALAN|BORÇ|BORC|TAKSİT|TAKSIT|PARAFPARA)$/.test(pu))continue;
+      if(/KART\s+NO|####-?\d+\/|ZEKİYE\s+EDA|^KIZAN$|BİR\s+ÖNCEKİ|BIR\s+ONCEKI|EKSTRE\s+BORCU/.test(pu))continue;
+      let bi=-1,bd=Infinity;
+      for(let i=0;i<txAnchors.length;i++){
+        const dist=Math.abs(Number(li.y)-Number(txAnchors[i].y));
+        if(dist<bd){bd=dist;bi=i}
+      }
+      // Halkbank satır aralığı tipik olarak 15-24 px. 14 px üstü başka blok/başlık kabul edilir.
+      if(bi>=0&&bd<=14.5)descByIndex[bi].push({k,y:Number(li.y),text:part});
+    }
+    const tx=[];
+    for(let i=0;i<txAnchors.length;i++){
+      const a=txAnchors[i],parts=descByIndex[i].sort((x,y)=>x.k-y.k).map(x=>x.text);
+      // Aynı fiziksel açıklama parçası PDF.js tarafından iki kez dönerse tekilleştir.
+      const cleanParts=[];for(const q of parts){if(!cleanParts.length||cleanParts.at(-1)!==q)cleanParts.push(q)}
+      const desc=cleanParts.join(' ').replace(/\s+/g,' ').trim();
+      if(!desc)continue;
+      let reward='';let rd=Infinity;
+      for(const r of rewardCells){const d=Math.abs(r.y-a.y);if(d<=13&&d<rd){reward=r.raw;rd=d}}
+      tx.push(`${a.date.raw} ${desc} ${a.amount.raw}${reward?' '+reward:''}`);
+    }
+    // Marker yalnız koordinatla doğrulanmış işlem satırlarının kullanılmasını sağlar.
     halkLayout=['__HANE_HALKBANK_TABLE_ENGINE__','İşlem Tarihi Açıklama TUTAR(TL) ParafPara',...tx].join('\n');
   }
   return{raw,layout,halkLayout,hasHalkTable}
