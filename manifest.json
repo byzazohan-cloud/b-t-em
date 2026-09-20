@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.8.20260920-LOCAL-DATA-ONLY-50-THEME-COLOR-BINDING",
+  "start_url": "./?v=19.4.8.20260920-LOCAL-DATA-ONLY-51-THEME-TRUE-BINDING",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",
