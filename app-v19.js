@@ -1840,9 +1840,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-87-HALKBANK-DETERMINISTIC-TABLE';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-88-HALKBANK-SUMMARY-COORD';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-87-HALKBANK-DETERMINISTIC-TABLE';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-88-HALKBANK-SUMMARY-COORD';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -1990,6 +1990,42 @@ async function stmtPdfPageTexts(pg){
   const amountHead=amountHeadLine>=0?lines[amountHeadLine].items.find(i=>/TUTAR\s*\(?TL\)?/i.test(i.s)):null;
   const parafHead=parafHeadLine>=0?lines[parafHeadLine].items.find(i=>/PARAFPARA/i.test(i.s)):null;
   const hasHalkTable=!!amountHead&&!!parafHead&&(pageU.includes('AÇIKLAMA')||pageU.includes('ACIKLAMA'));
+
+  // V88: HALKBANK COORDINATE SUMMARY ENGINE
+  // Halkbank özet kutusunda çok satırlı etiketlerin rakamları PDF.js metin sırasına göre
+  // etiketin arasına/yanına düşebiliyor. Bu yüzden özet değerlerini metin regex'inden değil,
+  // sol özet kolonundaki etiketlerin Y merkezine en yakın parasal hücreden okuyoruz.
+  const hbLeft=lines.map((l,k)=>({k,y:Number(l.y),text:l.items.filter(i=>Number(i.x)<370).map(i=>String(i.s||'')).join(' ').replace(/\s+/g,' ').trim()}));
+  const hbMoney=[];
+  for(const l of lines)for(const it of l.items){
+    const raw=String(it.s||'').trim(),x=Number(it.x),y=Number(l.y);
+    if(x<210||x>365)continue;
+    if(!/^[+\-]?\s*(?:\d{1,3}(?:[.,]\d{3})+|\d+)(?:[.,]\d{2})$/.test(raw))continue;
+    const value=stmtMoney(raw);if(Number.isFinite(value))hbMoney.push({x,y,raw,value});
+  }
+  const hbFindLine=(rx,afterY=null)=>{for(const l of hbLeft){if(afterY!=null&&l.y<=afterY)continue;if(rx.test(l.text.toLocaleUpperCase('tr-TR')))return l}return null};
+  const hbNearestMoney=(targetY,maxDist=18)=>{let best=null,bd=Infinity;for(const m of hbMoney){const d=Math.abs(m.y-targetY);if(d<bd&&d<=maxDist){best=m;bd=d}}return best};
+  const hbBetween=(rx1,rx2)=>{const a=hbFindLine(rx1),b=hbFindLine(rx2);if(!a||!b)return null;return hbNearestMoney((a.y+b.y)/2)};
+  const hbAt=(rx)=>{const a=hbFindLine(rx);return a?hbNearestMoney(a.y):null};
+  const hbPrev=hbBetween(/B[İI]R\s+[ÖO]NCEK[İI]\s+D[ÖO]NEM/,/EKSTRE\s+BORCU/);
+  const hbSpend=hbAt(/D[ÖO]NEM\s+[İI][ÇC][İI]\s+BOR[ÇC]\s+TUTARI/);
+  const hbFees=hbBetween(/TOPLAM\s+FA[İI]Z/,/VERG[İI]LER/);
+  const hbPay=hbBetween(/D[ÖO]NEMSEL\s+ALACAK/,/KAYITLARI/);
+  const hbDebtCandidates=hbLeft.filter(l=>/HESAP\s+BAK[İI]YES[İI]/.test(l.text.toLocaleUpperCase('tr-TR'))).map(l=>hbNearestMoney(l.y)).filter(Boolean);
+  const hbDebt=hbDebtCandidates.find(m=>Math.abs(m.value)>0)||hbDebtCandidates[0]||null;
+  const hbSummary={previousBalance:hbPrev?.value,spendingTotal:hbSpend?.value,feesTotal:hbFees?.value,paymentsTotal:hbPay?Math.abs(hbPay.value):null,periodDebt:hbDebt?.value};
+  const hbSummaryKnown=Object.values(hbSummary).filter(v=>Number.isFinite(v)).length;
+  const hasHalkSummary=hbSummaryKnown>=4;
+  const hbSummaryLines=hasHalkSummary?[
+    '__HANE_HALKBANK_SUMMARY_COORD__',
+    Number.isFinite(hbSummary.previousBalance)?`Bir Önceki Dönem Ekstre Borcu: ${hbSummary.previousBalance.toFixed(2)}`:'',
+    Number.isFinite(hbSummary.spendingTotal)?`Dönem İçi Borç Tutarı: ${hbSummary.spendingTotal.toFixed(2)}`:'',
+    Number.isFinite(hbSummary.feesTotal)?`Toplam Faiz, Ücret, Vergiler: ${hbSummary.feesTotal.toFixed(2)}`:'',
+    Number.isFinite(hbSummary.paymentsTotal)?`Dönemsel Alacak Kayıtları: ${hbSummary.paymentsTotal.toFixed(2)}`:'',
+    Number.isFinite(hbSummary.periodDebt)?`Hesap Bakiyesi: ${hbSummary.periodDebt.toFixed(2)}`:''
+  ].filter(Boolean):[];
+  if(hasHalkSummary&&!hasHalkTable)halkLayout=[layout,...hbSummaryLines].join('\n');
+
   if(hasHalkTable){
     const amountX=Number(amountHead.x),parafX=Number(parafHead.x);
     const start=Math.max(amountHeadLine,parafHeadLine,0);
@@ -2056,9 +2092,9 @@ async function stmtPdfPageTexts(pg){
       tx.push(`${a.date.raw} ${desc} ${a.amount.raw}${reward?' '+reward:''}`);
     }
     // Marker yalnız koordinatla doğrulanmış işlem satırlarının kullanılmasını sağlar.
-    halkLayout=['__HANE_HALKBANK_TABLE_ENGINE__','İşlem Tarihi Açıklama TUTAR(TL) ParafPara',...tx].join('\n');
+    halkLayout=[...hbSummaryLines,'__HANE_HALKBANK_TABLE_ENGINE__','İşlem Tarihi Açıklama TUTAR(TL) ParafPara',...tx].join('\n');
   }
-  return{raw,layout,halkLayout,hasHalkTable}
+  return{raw,layout,halkLayout,hasHalkTable,hasHalkSummary}
 }
 const MAX_STATEMENT_FILE_BYTES=20*1024*1024;
 async function readStatementFile(file){
@@ -2074,7 +2110,7 @@ async function readStatementFile(file){
     for(let n=1;n<=Math.min(pdf.numPages,12);n++){
       const pg=await pdf.getPage(n),pt=await stmtPdfPageTexts(pg);pages.push(pg);rawText+='\n'+pt.raw;layoutText+='\n'+pt.layout;
       // Özet sayfalarını aynen, işlem tablosu olan sayfaları yalnız koordinat-doğrulanmış satırlarla taşı.
-      halkText+='\n'+(pt.hasHalkTable?pt.halkLayout:pt.layout)
+      halkText+='\n'+((pt.hasHalkTable||pt.hasHalkSummary)?pt.halkLayout:pt.layout)
     }
     const rawEval=rawText.replace(/\s/g,'').length>40?stmtInterpretationScore(rawText,statementImportCardId):{score:-1,rows:[],meta:{}},layoutEval=layoutText.replace(/\s/g,'').length>40?stmtInterpretationScore(layoutText,statementImportCardId):{score:-1,rows:[],meta:{}};
     let text=layoutEval.score>=rawEval.score?layoutText:rawText,textEval=layoutEval.score>=rawEval.score?layoutEval:rawEval;
