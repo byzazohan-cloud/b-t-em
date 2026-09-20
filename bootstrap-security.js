@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-84-HALKBANK-COORD-FINAL';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-85-HALKBANK-SUMMARY-LOCK';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {
