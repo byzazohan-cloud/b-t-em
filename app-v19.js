@@ -1779,7 +1779,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-82-HALKBANK-RECONCILIATION';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-83-HALKBANK-DESC-ROW-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE';
 const HANE_ENGINE_PACKAGES=[
@@ -1946,7 +1946,14 @@ async function stmtPdfPageTexts(pg){
       let desc=li.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
       // Açıklama bir alt fiziksel satıra taşmışsa yalnız açıklama kolonundan ekle; tutar/paraf kolonlarına dokunma.
       for(let j=k+1;j<Math.min(end,k+3);j++){
-        const nx=lines[j];if(nx.items.some(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim())))break;
+        const nx=lines[j];
+        if(nx.items.some(i=>/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})$/.test(i.s.trim())))break;
+        // V83: Başka bir işlemin açıklamasını önceki harekete yapıştırma.
+        // Devam satırı yalnızca açıklama metni taşıyorsa birleştirilir; TUTAR kolonunda
+        // yeni bir parasal değer varsa bu fiziksel satır yeni/ayrı işleme aittir.
+        const nextAmountItems=nx.items.filter(i=>i.x>=amountX-12&&i.x<parafX-18);
+        const hasOwnAmount=nextAmountItems.some(it=>/^[+-]?\s*(?:\d{1,3}(?:[.,]\d{3})*|\d+)[.,]\d{2}\s*\+?$/.test(it.s.trim()));
+        if(hasOwnAmount)break;
         const extra=nx.items.filter(i=>i.x>dateItem.x+55&&i.x<amountX-12).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
         if(extra&&!/^(?:İŞLEM|ISLEM|TARİHİ|TARIHI|AÇIKLAMA|ACIKLAMA)$/i.test(extra))desc+=(desc?' ':'')+extra;
       }
