@@ -24,14 +24,14 @@ const enc=new TextEncoder(),dec=new TextDecoder();let state=null,key=null,curren
 let browserNavReady=false;
 let normalExpensesOpen=true,fixedExpensesOpen=true,returnScrollTop=null;
 const Q=['Bugün küçük adımlar, yarın büyük rahatlık getirir.','Disiplin, özgürlüğün kapısını açar.','Küçük birikimler büyük huzur getirir.','Planlı para, güçlü yarınlar demektir.'];
-const BASE_C=['Kira','Aidat','Market','Manav','Fırın','Harçlık','Kafe','Yemek','Restoran','Giyim','Online Alışveriş','Elektronik','Mobilya','Ev Bakım','Kırtasiye','Kitap','Kozmetik','Kişisel Bakım','Spor','Oyun','Abonelik','Akaryakıt','Otopark','Otoyol/Köprü','Araç Bakım','Ulaşım','Kuyumculuk','Kargo','Sağlık','Eğitim','Çocuk','Evcil Hayvan','Ev','Temizlik','Eğlence','Tatil','Konaklama','Uçak','Hediye','Bağış','Sigorta','Vergi','Banka Masrafı','Faiz','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu','Diğer'];
-const BASE_NORMAL_C=['Market','Manav','Fırın','Harçlık','Kafe','Yemek','Restoran','Giyim','Online Alışveriş','Elektronik','Mobilya','Ev Bakım','Kırtasiye','Kitap','Kozmetik','Kişisel Bakım','Spor','Oyun','Abonelik','Akaryakıt','Otopark','Otoyol/Köprü','Araç Bakım','Ulaşım','Kuyumculuk','Kargo','Sağlık','Eğitim','Çocuk','Evcil Hayvan','Ev','Temizlik','Eğlence','Tatil','Konaklama','Uçak','Hediye','Bağış','Sigorta','Vergi','Banka Masrafı','Faiz','Diğer'];
+const BASE_C=['Kira','Aidat','Market','Manav','Fırın','Harçlık','Kafe','Yemek','Restoran','Giyim','Online Alışveriş','Elektronik','Mobilya','Ev Bakım','Kırtasiye','Kitap','Kozmetik','Kişisel Bakım','Spor','Oyun','Abonelik','Akaryakıt','Otopark','Otoyol/Köprü','Araç Bakım','Ulaşım','Kuyumculuk','Kargo','Sağlık','Eğitim','Çocuk','Evcil Hayvan','Ev','Temizlik','Eğlence','Tatil','Konaklama','Uçak','Hediye','Bağış','Sigorta','Vergi & Faiz','Vergi','Banka Masrafı','Faiz','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu','Diğer'];
+const BASE_NORMAL_C=['Market','Manav','Fırın','Harçlık','Kafe','Yemek','Restoran','Giyim','Online Alışveriş','Elektronik','Mobilya','Ev Bakım','Kırtasiye','Kitap','Kozmetik','Kişisel Bakım','Spor','Oyun','Abonelik','Akaryakıt','Otopark','Otoyol/Köprü','Araç Bakım','Ulaşım','Kuyumculuk','Kargo','Sağlık','Eğitim','Çocuk','Evcil Hayvan','Ev','Temizlik','Eğlence','Tatil','Konaklama','Uçak','Hediye','Bağış','Sigorta','Vergi & Faiz','Vergi','Banka Masrafı','Faiz','Diğer'];
 const BASE_FIXED_C=['Kira','Aidat','Faturalar','İnternet','Elektrik','Su','Doğalgaz','Cep Telefonu','Abonelik','Sigorta','Vergi'];
 let C=[...BASE_C];
 let NORMAL_C=[...BASE_NORMAL_C];
 let FIXED_C=[...BASE_FIXED_C];
-const I={Kira:'🏠',Aidat:'🏢',Market:'🛒',Manav:'🍎',Fırın:'🥖',Harçlık:'💵',Kafe:'☕',Yemek:'🍽️',Restoran:'🍴',Giyim:'👕',Akaryakıt:'⛽',Faturalar:'🧾',İnternet:'📡',Elektrik:'⚡',Su:'💧',Doğalgaz:'🔥','Cep Telefonu':'📱',Ulaşım:'◆',Sağlık:'✚',Eğitim:'✎',Ev:'⌂',Temizlik:'✦',Çocuk:'★','Evcil Hayvan':'♣','Kişisel Bakım':'✧',Abonelik:'◎',Eğlence:'♪',Tatil:'☀',Hediye:'🎁',Sigorta:'◇',Vergi:'▤',Diğer:'●'};
-const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957',Fırın:'#e5a85b',Harçlık:'#d9b44a',Kafe:'#c58a52',Yemek:'#ff8b5c',Restoran:'#ff6f61',Giyim:'#c084fc','Online Alışveriş':'#8b5cf6',Elektronik:'#38bdf8',Mobilya:'#c4a484','Ev Bakım':'#f59e0b',Kırtasiye:'#60a5fa',Kitap:'#818cf8',Kozmetik:'#f472b6','Kişisel Bakım':'#ec4899',Spor:'#22c55e',Oyun:'#a78bfa',Abonelik:'#6366f1',Akaryakıt:'#f59e0b',Otopark:'#64748b','Otoyol/Köprü':'#94a3b8','Araç Bakım':'#f97316',Ulaşım:'#4dd6c7',Kuyumculuk:'#e0b341',Kargo:'#06b6d4',Sağlık:'#ff5f78',Eğitim:'#60a5fa',Çocuk:'#fb7185','Evcil Hayvan':'#34d399',Ev:'#d8ad4f',Temizlik:'#22d3ee',Eğlence:'#f06dad',Tatil:'#fbbf24',Konaklama:'#eab308',Uçak:'#0ea5e9',Hediye:'#e879f9',Bağış:'#14b8a6',Sigorta:'#38bdf8',Vergi:'#94a3b8','Banka Masrafı':'#a3a3a3',Faiz:'#ef4444',Faturalar:'#ff8c42','İnternet':'#6ed4ff',Elektrik:'#ffd84d',Su:'#3fa9ff','Doğalgaz':'#ff6b45','Cep Telefonu':'#b879ff',Diğer:'#9ca3af'};
+const I={Kira:'🏠',Aidat:'🏢',Market:'🛒',Manav:'🍎',Fırın:'🥖',Harçlık:'💵',Kafe:'☕',Yemek:'🍽️',Restoran:'🍴',Giyim:'👕',Akaryakıt:'⛽',Faturalar:'🧾',İnternet:'📡',Elektrik:'⚡',Su:'💧',Doğalgaz:'🔥','Cep Telefonu':'📱',Ulaşım:'◆',Sağlık:'✚',Eğitim:'✎',Ev:'⌂',Temizlik:'✦',Çocuk:'★','Evcil Hayvan':'♣','Kişisel Bakım':'✧',Abonelik:'◎',Eğlence:'♪',Tatil:'☀',Hediye:'🎁',Sigorta:'◇',Vergi:'▤','Vergi & Faiz':'▤',Diğer:'●'};
+const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957',Fırın:'#e5a85b',Harçlık:'#d9b44a',Kafe:'#c58a52',Yemek:'#ff8b5c',Restoran:'#ff6f61',Giyim:'#c084fc','Online Alışveriş':'#8b5cf6',Elektronik:'#38bdf8',Mobilya:'#c4a484','Ev Bakım':'#f59e0b',Kırtasiye:'#60a5fa',Kitap:'#818cf8',Kozmetik:'#f472b6','Kişisel Bakım':'#ec4899',Spor:'#22c55e',Oyun:'#a78bfa',Abonelik:'#6366f1',Akaryakıt:'#f59e0b',Otopark:'#64748b','Otoyol/Köprü':'#94a3b8','Araç Bakım':'#f97316',Ulaşım:'#4dd6c7',Kuyumculuk:'#e0b341',Kargo:'#06b6d4',Sağlık:'#ff5f78',Eğitim:'#60a5fa',Çocuk:'#fb7185','Evcil Hayvan':'#34d399',Ev:'#d8ad4f',Temizlik:'#22d3ee',Eğlence:'#f06dad',Tatil:'#fbbf24',Konaklama:'#eab308',Uçak:'#0ea5e9',Hediye:'#e879f9',Bağış:'#14b8a6',Sigorta:'#38bdf8','Vergi & Faiz':'#f59e0b',Vergi:'#94a3b8','Banka Masrafı':'#a3a3a3',Faiz:'#ef4444',Faturalar:'#ff8c42','İnternet':'#6ed4ff',Elektrik:'#ffd84d',Su:'#3fa9ff','Doğalgaz':'#ff6b45','Cep Telefonu':'#b879ff',Diğer:'#9ca3af'};
 function categoryIconSvg(cat,size=22){
   const P={
     'Kira':'<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10"/><path d="M10 20v-6h4v6"/>',
@@ -59,7 +59,7 @@ function categoryIconSvg(cat,size=22){
     'Cep Telefonu':'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 5h4M11 19h2"/>',
     'Diğer':'<circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="16" cy="12" r="1"/>'
   };
-  const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Sağlık','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Sigorta':'Faturalar','Vergi':'Faturalar','Banka Masrafı':'Faturalar','Faiz':'Faturalar'};
+  const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Sağlık','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Sigorta':'Faturalar','Vergi & Faiz':'Faturalar','Vergi':'Faturalar','Banka Masrafı':'Faturalar','Faiz':'Faturalar'};
   const path=P[cat]||P[alias[cat]]||P['Diğer'];
   return `<svg class="catSvg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${path}</svg>`;
 }
@@ -942,6 +942,7 @@ function stmtCategoryBase(t){
   if(/HEDİYE|HEDIYE|ÇİÇEKSEPETİ|CICEKSEPETI/.test(t))return'Hediye';
   if(/BAĞIŞ|BAGIS|KIZILAY|LÖSEV|LOSEV/.test(t))return'Bağış';
   if(/SİGORTA|SIGORTA|ALLIANZ|AKSİGORTA|AKSIGORTA|ANADOLU\s*SİGORTA|ANADOLU\s*SIGORTA/.test(t))return'Sigorta';
+  if(/\bKKDF\b|\bBSMV\b|\bBSMW\b|BANKA\s+VE\s+SİGORTA\s+MUAMELE|BANKA\s+VE\s+SIGORTA\s+MUAMELE|KREDİ\s+KARTI\s+FAİZ|KREDI\s+KARTI\s+FAIZ|ALIŞVERİŞ\s+FAİZ|ALISVERIS\s+FAIZ|NAKİT\s+AVANS\s+FAİZ|NAKIT\s+AVANS\s+FAIZ|GECİKME\s+FAİZ|GECIKME\s+FAIZ|AKDİ\s+FAİZ|AKDI\s+FAIZ|TEMERRÜT\s+FAİZ|TEMERRUT\s+FAIZ|FAİZ\s+TUTARI|FAIZ\s+TUTARI/.test(t))return'Vergi & Faiz';
   if(/VERGİ|VERGI|GİB|GELİR\s*İDARESİ|GELIR\s*IDARESI/.test(t))return'Vergi';
   if(/KOMİSYON|KOMISYON|KART\s*AİDAT|KART\s*AIDAT|BANKA\s*MASRAF|İŞLEM\s*ÜCRET|ISLEM\s*UCRET/.test(t))return'Banka Masrafı';
   if(/FAİZ|FAIZ|GECİKME\s*FAİZ|GECIKME\s*FAIZ/.test(t))return'Faiz';
@@ -1004,6 +1005,28 @@ function stmtInstallmentInfo(blockText,selectedAmount){
   if(totalMatch){const n=stmtParseLooseMoney(totalMatch[1]);if(Number.isFinite(n)&&n>Math.abs(selectedAmount||0))total=n}
   return{installmentNo:no,installmentCount:count,installmentTotal:total}
 }
+function stmtDetectBank(text,cardId=''){
+  const card=state?.cards?.find?.(x=>x.id===cardId),u=(String(text||'')+' '+String(card?.bank||'')).toLocaleUpperCase('tr-TR').replace(/İ/g,'I');
+  const tests=[
+    ['ziraat','ZİRAAT / BANKKART',/ZIRAAT|BANKKART/],
+    ['halkbank','HALKBANK / PARAF',/HALKBANK|PARAF/],
+    ['vakifbank','VAKIFBANK',/VAKIFBANK|VAKIFKART|WORLD.*VAKIF/],
+    ['garanti','GARANTİ BBVA',/GARANTI|BONUS|BBVA/],
+    ['akbank','AKBANK',/AKBANK|AXESS/],
+    ['yapikredi','YAPI KREDİ',/YAPI\s*KREDI|WORLD/],
+    ['isbank','İŞ BANKASI',/IS\s*BANKASI|MAXIMUM/],
+    ['qnb','QNB',/QNB|FINANSBANK|CARDFINANS/],
+    ['denizbank','DENİZBANK',/DENIZBANK/],
+    ['teb','TEB',/TURK\s*EKONOMI\s*BANKASI|\bTEB\b|BONUS\s*CARD/],
+    ['ing','ING',/\bING\b/]
+  ];
+  for(const [id,label,rx] of tests)if(rx.test(u))return{id,label};
+  return{id:'generic',label:card?.bank?String(card.bank).toLocaleUpperCase('tr-TR'):'GENEL BANKA PARSER'}
+}
+function stmtFeeLike(blockText){
+  const u=String(blockText||'').toLocaleUpperCase('tr-TR');
+  return /\bKKDF\b|\bBSMV\b|\bBSMW\b|BANKA\s+VE\s+SİGORTA\s+MUAMELE|BANKA\s+VE\s+SIGORTA\s+MUAMELE|KREDİ\s+KARTI\s+FAİZ|KREDI\s+KARTI\s+FAIZ|ALIŞVERİŞ\s+FAİZ|ALISVERIS\s+FAIZ|NAKİT\s+AVANS\s+FAİZ|NAKIT\s+AVANS\s+FAIZ|GECİKME\s+FAİZ|GECIKME\s+FAIZ|AKDİ\s+FAİZ|AKDI\s+FAIZ|TEMERRÜT\s+FAİZ|TEMERRUT\s+FAIZ|FAİZ\s+TUTARI|FAIZ\s+TUTARI|KART\s+AİDAT|KART\s+AIDAT|BANKA\s+MASRAF|KOMİSYON|KOMISYON|İŞLEM\s+ÜCRET|ISLEM\s+UCRET/.test(u)
+}
 function stmtPaymentLike(blockText){
   const u=String(blockText||'').toLocaleUpperCase('tr-TR');
   return /(?:ŞUBE|SUBE)?\s*-?\s*OTOMATİK\s*ÖDEME|OTOMATIK\s*ODEME|ÖDEME\s*-?\s*TEŞEKK|ODEME\s*-?\s*TESEKK|KART\s*ÖDEMESİ|KART\s*ODEMESI|BORÇ\s*ÖDEME|BORC\s*ODEME/.test(u)
@@ -1038,14 +1061,14 @@ function stmtDropChronologyBreakingDuplicates(rows){
 }
 
 function parseStatementText(text,cardId){
-  const anchor=stmtAnchorInfo(text),datePref=stmtDatePreference(text);
+  const bankProfile=stmtDetectBank(text,cardId),anchor=stmtAnchorInfo(text),datePref=stmtDatePreference(text);
   const bad=/(?:D[ÖO]NEM\s+BORCU|TOPLAM\s+BOR[ÇC]|TOPLAM\s+HARCAMA|ASGAR[İI]\s*(?:[ÖO]DEME|TUTAR)|KULLANILAB[İI]L[İI]R\s+L[İI]M[İI]T|KART\s+L[İI]M[İI]T[İI]|SON\s+[ÖO]DEME\s+TAR[İI]H|HESAP\s+KES[İI]M\s+TAR[İI]H|[ÖO]NCEK[İI]\s+AYDAN\s+DEV[İI]R|DEVREDEN\s+BAK[İI]YE)/i;
   const out=[],seen={};
   for(const block of stmtLogicalBlocks(text,anchor)){
     const blockText=block.lines.join(' ').replace(/\s+/g,' ').trim();if(!blockText||bad.test(blockText))continue;
     const di=stmtPickTransactionDate(blockText,anchor,datePref);if(!di)continue;
     const noDates=stmtStripDates(blockText),amounts=stmtAmountCandidates(noDates);if(!amounts.length)continue;
-    const payment=stmtPaymentLike(blockText);
+    const payment=stmtPaymentLike(blockText),fee=!payment&&stmtFeeLike(blockText);
     // Banka PDF'lerinde işlem satırının sonunda USD/Bankkart Lira/puan gibi ek sütunlar bulunabilir.
     // Normal işlemlerde gerçek TL işlem tutarı açıklamadan sonraki İLK parasal değerdir.
     // Taksit satırında ise "X TL işlemin 1/2 taksidi Y TL" yapısında gider Y, toplam alışveriş X'tir.
@@ -1070,7 +1093,7 @@ function parseStatementText(text,cardId){
       pick=(explicitTl.length?explicitTl:amounts.slice().sort((a,b)=>a.index-b.index))[0];
     }
     const rawAmount=pick?.value;if(!Number.isFinite(rawAmount)||rawAmount===0)continue;
-    const refund=!payment&&(/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b|\bALACAK\b/i.test(blockText)||rawAmount<0);
+    const refund=!payment&&!fee&&(/\bİADE\b|\bIADE\b|\bİPTAL\b|\bIPTAL\b|\bREFUND\b|\bALACAK\b/i.test(blockText)||rawAmount<0);
     const amount=payment?Math.abs(rawAmount):(refund?-Math.abs(rawAmount):Math.abs(rawAmount));
     let title=noDates;
     [...amounts].sort((a,b)=>b.index-a.index).forEach(a=>{title=title.replace(a.raw,' ')});
@@ -1079,8 +1102,8 @@ function parseStatementText(text,cardId){
       .replace(/\b(?:TL|TRY|USD|EUR|GBP|₺)\b/gi,' ')
       .replace(/^[\s\-–—|:;,]+|[\s\-–—|:;,]+$/g,' ');
     title=title.replace(/\b(?:İŞLEMİN|ISLEMIN)?\s*\d{1,2}\s*\/\s*\d{1,2}\s*(?:TAKSİDİ|TAKSIDI|TAKSİT|TAKSIT)?\b/gi,' ').replace(/\b(?:İŞLEMİN|ISLEMIN|TAKSİDİ|TAKSIDI|TAKSİT|TAKSIT)\b/gi,' ').replace(/\s+/g,' ');title=stmtCleanTitle(title);if(!title)title=payment?'KART ÖDEMESİ':refund?'KART İADESİ':'KART HARCAMASI';
-    const inst=payment||refund?{installmentNo:null,installmentCount:null,installmentTotal:null}:stmtInstallmentInfo(blockText,amount);
-    const kind=payment?'payment':refund?'refund':'spend';
+    const inst=payment||refund||fee?{installmentNo:null,installmentCount:null,installmentTotal:null}:stmtInstallmentInfo(blockText,amount);
+    const kind=payment?'payment':refund?'refund':fee?'fee':'spend';
     const baseFp=stmtFingerprint(cardId,di.date,title,payment?-amount:amount);
     const instKey=`${inst.installmentNo||0}/${inst.installmentCount||0}/${Number(inst.installmentTotal||0).toFixed(2)}`;
     const semanticKey=`${baseFp}|${kind}|${instKey}`;
@@ -1091,9 +1114,11 @@ function parseStatementText(text,cardId){
     const physicalKey=sourceStart!=null?`${sourceStart}:${sourceEnd||sourceStart}|${semanticKey}`:null;
     if(physicalKey&&out.some(x=>x.physicalKey===physicalKey))continue;
     const occ=(seen[semanticKey]=(seen[semanticKey]||0)+1);
-    out.push({date:di.date,title,amount,category:payment?'Kart Ödemesi':stmtCategory(title),baseFp,semanticKey,rawKey,physicalKey,sourceStart,sourceEnd,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund,payment,kind,...inst})
+    out.push({date:di.date,title,amount,category:payment?'Kart Ödemesi':fee?'Vergi & Faiz':stmtCategory(title),baseFp,semanticKey,rawKey,physicalKey,sourceStart,sourceEnd,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund,payment,kind,...inst})
   }
-  return stmtDropChronologyBreakingDuplicates(out)
+  const rows=stmtDropChronologyBreakingDuplicates(out);
+  rows.forEach(r=>{r.bankProfile=bankProfile.id});
+  return rows
 }
 
 function stmtParseLooseMoney(v){
@@ -1128,7 +1153,10 @@ function normalizeStatementSummary(text,rows,raw){
   const meta={...(raw||{})},round2=n=>Math.round((+n||0)*100)/100,finite=n=>Number.isFinite(+n);
   const pays=(rows||[]).filter(r=>r?.kind==='payment').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
   const paymentCount=(rows||[]).filter(r=>r?.kind==='payment').length;
+  const parsedFees=round2((rows||[]).filter(r=>r?.kind==='fee').reduce((a,r)=>a+Math.abs(+r.amount||0),0));
+  const feeCount=(rows||[]).filter(r=>r?.kind==='fee').length;
   let repaired=false;
+  if(feeCount&&parsedFees>0&&(!finite(meta.feesTotal)||Math.abs(+meta.feesTotal-parsedFees)>.01)){meta.feesTotal=parsedFees;repaired=true}
   // İşlem tablosundaki ödeme satırları, özet kutusunun PDF metin sırasından daha güvenilir.
   if(paymentCount&&pays>0){if(!finite(meta.paymentsTotal)||Math.abs(+meta.paymentsTotal-pays)>.01)repaired=true;meta.paymentsTotal=round2(pays)}
   const prev=finite(meta.previousBalance)?+meta.previousBalance:null,debt=finite(meta.periodDebt)?+meta.periodDebt:null,payment=finite(meta.paymentsTotal)?+meta.paymentsTotal:null;
@@ -1168,15 +1196,17 @@ function normalizeStatementSummary(text,rows,raw){
 function stmtFinalizeSummaryConfidence(meta,rows){
   const m={...(meta||{})},round2=n=>Math.round((+n||0)*100)/100,finite=n=>Number.isFinite(+n);
   const spendRows=(rows||[]).filter(r=>r?.kind==='spend');
-  const paymentRows=(rows||[]).filter(r=>r?.kind==='payment');
+  const paymentRows=(rows||[]).filter(r=>r?.kind==='payment'),feeRows=(rows||[]).filter(r=>r?.kind==='fee');
   const parsedSpend=round2(spendRows.reduce((a,r)=>a+Math.abs(+r.amount||0),0));
   const parsedPayments=round2(paymentRows.reduce((a,r)=>a+Math.abs(+r.amount||0),0));
-  m.parsedSpendingTotal=parsedSpend;m.parsedPaymentsTotal=parsedPayments;
+  const parsedFees=round2(feeRows.reduce((a,r)=>a+Math.abs(+r.amount||0),0));
+  m.parsedSpendingTotal=parsedSpend;m.parsedPaymentsTotal=parsedPayments;m.parsedFeesTotal=parsedFees;
   m.spendingRowsMatch=finite(m.spendingTotal)&&Math.abs((+m.spendingTotal)-parsedSpend)<.02;
   m.paymentRowsMatch=!paymentRows.length||!finite(m.paymentsTotal)||Math.abs((+m.paymentsTotal)-parsedPayments)<.02;
+  m.feeRowsMatch=!feeRows.length||!finite(m.feesTotal)||Math.abs((+m.feesTotal)-parsedFees)<.02;
   m.summaryEquationOk=finite(m.previousBalance)&&finite(m.spendingTotal)&&finite(m.feesTotal)&&finite(m.paymentsTotal)&&finite(m.periodDebt)
     ?Math.abs((+m.previousBalance)+(+m.spendingTotal)+(+m.feesTotal)-(+m.paymentsTotal)-(+m.periodDebt))<.02:false;
-  m.summaryTrusted=!!(m.summaryEquationOk&&m.spendingRowsMatch&&m.paymentRowsMatch);
+  m.summaryTrusted=!!(m.summaryEquationOk&&m.spendingRowsMatch&&m.paymentRowsMatch&&m.feeRowsMatch);
   return m
 }
 function stmtChronologyPenalty(rows,i){
@@ -1248,13 +1278,13 @@ function statementPreview(cardId,rows){
   const c=state.cards.find(x=>x.id===cardId),month=statementImportMonthForRows(c,orderedRows),monthBreakdown=statementRowsMonthBreakdown(orderedRows),existingImported=(state.expenses||[]).filter(x=>x.importedFromStatement&&x.cardId===cardId&&((x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)).length;
   const usable=existingImported?orderedRows:orderedRows.filter(r=>r.payment||r.occurrence>stmtExistingCount(cardId,r.date,r.title,r.amount));statementImportRows=usable;
   const skipped=existingImported?0:orderedRows.length-usable.length;
-  const spendRows=orderedRows.filter(r=>r.kind==='spend'),refundRows=orderedRows.filter(r=>r.kind==='refund'),paymentRows=orderedRows.filter(r=>r.kind==='payment');
+  const spendRows=orderedRows.filter(r=>r.kind==='spend'),refundRows=orderedRows.filter(r=>r.kind==='refund'),paymentRows=orderedRows.filter(r=>r.kind==='payment'),feeRows=orderedRows.filter(r=>r.kind==='fee'),bankProfile=stmtDetectBank('',cardId);
   const autoSpend=Number.isFinite(statementImportMeta.spendingTotal)?statementImportMeta.spendingTotal:spendRows.reduce((a,r)=>a+r.amount,0);
   const debt=Number.isFinite(statementImportMeta.periodDebt)?statementImportMeta.periodDebt:'';
   const prev=Number.isFinite(statementImportMeta.previousBalance)?statementImportMeta.previousBalance:'';
-  const fees=Number.isFinite(statementImportMeta.feesTotal)?statementImportMeta.feesTotal:0;
+  const fees=Number.isFinite(statementImportMeta.feesTotal)?statementImportMeta.feesTotal:feeRows.reduce((a,r)=>a+Math.abs(+r.amount||0),0);
   const pays=Number.isFinite(statementImportMeta.paymentsTotal)?statementImportMeta.paymentsTotal:paymentRows.reduce((a,r)=>a+r.amount,0);
-  return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br><b>${rows.length} hareket bulundu</b> · ${spendRows.length} harcama · ${paymentRows.length} ödeme · ${refundRows.length} iade${skipped?` · ${skipped} mükerrer atlandı`:''}.<br>${statementImportMeta.autoDuplicateRemoved?`<small><b>${statementImportMeta.autoDuplicateRemoved} yinelenen satır</b> banka harcama toplamıyla karşılaştırılarak çıkarıldı (${money(statementImportMeta.autoDuplicateAmount||0)}).</small><br>`:''}${statementImportMeta.summaryRepaired?`<small><b>Ekstre özeti doğrulandı ve PDF metin sırası otomatik düzeltildi.</b></small><br>`:''}${statementImportMeta.summaryTrusted?`<small>✓ Banka özeti ve işlem satırları birlikte doğrulandı.</small><br>`:statementImportMeta.summaryEquationOk?`<small>⚠ Banka özeti matematiksel olarak tutuyor; işlem satırlarıyla tam doğrulama bekleniyor.</small><br>`:''}<small>Taksitli alışverişlerde yalnızca bu ekstreye yansıyan taksit tutarı gider olarak eklenir.</small></div>
+  return `<div class="notice"><b>${esc(c?.bank||'KART')} · •••• ${esc(c?.last4||'')}</b><br><b>${rows.length} hareket bulundu</b> · ${spendRows.length} harcama · ${paymentRows.length} ödeme · ${refundRows.length} iade · ${feeRows.length} vergi/faiz${skipped?` · ${skipped} mükerrer atlandı`:''}.<br>${statementImportMeta.autoDuplicateRemoved?`<small><b>${statementImportMeta.autoDuplicateRemoved} yinelenen satır</b> banka harcama toplamıyla karşılaştırılarak çıkarıldı (${money(statementImportMeta.autoDuplicateAmount||0)}).</small><br>`:''}${statementImportMeta.summaryRepaired?`<small><b>Ekstre özeti doğrulandı ve PDF metin sırası otomatik düzeltildi.</b></small><br>`:''}${statementImportMeta.summaryTrusted?`<small>✓ Banka özeti ve işlem satırları birlikte doğrulandı.</small><br>`:statementImportMeta.summaryEquationOk?`<small>⚠ Banka özeti matematiksel olarak tutuyor; işlem satırlarıyla tam doğrulama bekleniyor.</small><br>`:''}<small>Parser: ${esc(bankProfile.label)} · Bankaya özel tanıma başarısız olursa genel parser ve OCR yedeği kullanılır.</small><br><small>Taksitli alışverişlerde yalnızca bu ekstreye yansıyan taksit tutarı gider olarak eklenir.</small></div>
   <div class="statementReconcileBox statementBankEquation">
     <b>BANKA EKSTRE ÖZETİ</b>
     <div class="stmtEquationGrid"><label>Devreden Bakiye<input id="stmtSummaryPrevious" type="number" step="0.01" value="${prev!==''?Number(prev).toFixed(2):''}" placeholder="0,00"></label><label>Harcamalar<input id="stmtSummarySpend" type="number" step="0.01" value="${Number(autoSpend||0).toFixed(2)}"></label><label>Faiz / Ücret<input id="stmtSummaryFees" type="number" step="0.01" value="${Number(fees||0).toFixed(2)}"></label><label>Ödemeler<input id="stmtSummaryPayments" type="number" step="0.01" value="${pays!==''?Number(pays).toFixed(2):''}" placeholder="0,00"></label><label>Dönem Borcu<input id="stmtSummaryDebt" type="number" step="0.01" value="${debt!==''?Number(debt).toFixed(2):''}" placeholder="0,00"></label></div>
@@ -1262,7 +1292,7 @@ function statementPreview(cardId,rows){
     ${existingImported?`<label class="form-check"><input id="stmtReplacePeriod" type="checkbox" checked> <span>Bu ekstre dönemindeki önceki içe aktarmayı yenileriyle değiştir</span></label>`:''}
   </div>
   ${monthBreakdown?`<div class="notice statementMonthCheck"><b>İŞLEM TARİHLERİ</b><br>${esc(monthBreakdown)}</div>`:''}
-  <div class="statementImportList">${usable.length?usable.map((r,i)=>`<div class="statementImportRow"><input type="checkbox" data-stmt-check="${i}" checked><div class="stmtEditGrid"><input type="date" data-stmt-date="${i}" value="${esc(r.date)}"><input type="text" data-stmt-title="${i}" value="${esc(r.title)}" maxlength="100"><input type="number" step="0.01" data-stmt-amount="${i}" value="${Number(r.amount).toFixed(2)}" ${r.payment?'readonly':''}><select data-stmt-category="${i}" ${r.payment?'disabled':''}>${r.payment?`<option value="Kart Ödemesi" selected>Kart Ödemesi</option>`:C.map(cat=>`<option value="${esc(cat)}" ${cat===r.category?'selected':''}>${esc(cat)}</option>`).join('')}</select></div><small class="stmtRowType">${r.payment?'KART ÖDEMESİ':r.refund?'İADE':r.installmentCount?`TAKSİT ${r.installmentNo||'?'} / ${r.installmentCount}${r.installmentTotal?` · TOPLAM ${money(r.installmentTotal)}`:''}`:'HARCAMA'}</small></div>`).join(''):'<div class="notice">EKLENECEK YENİ HAREKET BULUNMADI.</div>'}</div>${usable.length?'<button class="btn gold" style="width:100%;margin-top:12px" data-action="statementImportConfirm">SEÇİLENLERİ EKLE</button>':''}`
+  <div class="statementImportList">${usable.length?usable.map((r,i)=>`<div class="statementImportRow"><input type="checkbox" data-stmt-check="${i}" checked><div class="stmtEditGrid"><input type="date" data-stmt-date="${i}" value="${esc(r.date)}"><input type="text" data-stmt-title="${i}" value="${esc(r.title)}" maxlength="100"><input type="number" step="0.01" data-stmt-amount="${i}" value="${Number(r.amount).toFixed(2)}" ${r.payment?'readonly':''}><select data-stmt-category="${i}" ${r.payment?'disabled':''}>${r.payment?`<option value="Kart Ödemesi" selected>Kart Ödemesi</option>`:C.map(cat=>`<option value="${esc(cat)}" ${cat===r.category?'selected':''}>${esc(cat)}</option>`).join('')}</select></div><small class="stmtRowType">${r.payment?'KART ÖDEMESİ':r.refund?'İADE':r.kind==='fee'?'VERGİ / FAİZ':r.installmentCount?`TAKSİT ${r.installmentNo||'?'} / ${r.installmentCount}${r.installmentTotal?` · TOPLAM ${money(r.installmentTotal)}`:''}`:'HARCAMA'}</small></div>`).join(''):'<div class="notice">EKLENECEK YENİ HAREKET BULUNMADI.</div>'}</div>${usable.length?'<button class="btn gold" style="width:100%;margin-top:12px" data-action="statementImportConfirm">SEÇİLENLERİ EKLE</button>':''}`
 }
 
 const HANE_OCR_SCRIPT='./__hane_engine__/tesseract/tesseract.min.js';
@@ -1271,7 +1301,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-51-THEME-TRUE-BINDING';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-53-MULTIBANK-STATEMENT';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-49-Z-THEME-STUDIO-FIX';
 const HANE_ENGINE_PACKAGES=[
@@ -1391,14 +1421,24 @@ async function statementImageForOcr(file,maxSide=2400){
 }
 function stmtInterpretationScore(text,cardId){
   const rows=parseStatementText(text,cardId),raw=parseStatementSummary(text),meta0=normalizeStatementSummary(text,rows,raw),rec=stmtReconcileRowsToBankSpending(rows,meta0),meta=stmtFinalizeSummaryConfidence(meta0,rec.rows);
-  const spend=rec.rows.filter(r=>r.kind==='spend').reduce((a,r)=>a+Math.abs(+r.amount||0),0),payments=rec.rows.filter(r=>r.kind==='payment').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
+  const spend=rec.rows.filter(r=>r.kind==='spend').reduce((a,r)=>a+Math.abs(+r.amount||0),0),payments=rec.rows.filter(r=>r.kind==='payment').reduce((a,r)=>a+Math.abs(+r.amount||0),0),fees=rec.rows.filter(r=>r.kind==='fee').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
   let score=Math.min(rec.rows.length,120)*2;
   if(meta.summaryEquationOk)score+=80;
   if(meta.summaryTrusted)score+=120;
   if(Number.isFinite(+meta.spendingTotal))score+=Math.max(0,50-Math.min(50,Math.abs(spend-(+meta.spendingTotal))*2));
   if(Number.isFinite(+meta.paymentsTotal)&&payments>0)score+=Math.max(0,30-Math.min(30,Math.abs(payments-(+meta.paymentsTotal))*2));
+  if(Number.isFinite(+meta.feesTotal)&&fees>0)score+=Math.max(0,24-Math.min(24,Math.abs(fees-(+meta.feesTotal))*2));
   score-=rec.rows.filter(r=>!stmtValidIsoDate(r.date)||!Number.isFinite(+r.amount)||Math.abs(+r.amount)<=0).length*25;
   return{score,rows:rec.rows,meta}
+}
+async function stmtPdfPageTexts(pg){
+  const ct=await pg.getTextContent(),items=(ct.items||[]).filter(i=>String(i.str||'').trim());
+  const raw=items.map(i=>i.str+(i.hasEOL?'\n':' ')).join('');
+  const lines=[];
+  for(const it of items){const x=Number(it.transform?.[4]||0),y=Number(it.transform?.[5]||0),h=Math.max(1,Math.abs(Number(it.height||it.transform?.[3]||8)));let line=lines.find(l=>Math.abs(l.y-y)<=Math.max(2.2,Math.min(5,h*.42)));if(!line){line={y,items:[]};lines.push(line)}line.items.push({x,s:String(it.str||'')})}
+  lines.sort((a,b)=>b.y-a.y);for(const l of lines)l.items.sort((a,b)=>a.x-b.x);
+  const layout=lines.map(l=>l.items.map(i=>i.s).join(' ').replace(/\s+/g,' ').trim()).filter(Boolean).join('\n');
+  return{raw,layout}
 }
 const MAX_STATEMENT_FILE_BYTES=20*1024*1024;
 async function readStatementFile(file){
@@ -1410,9 +1450,11 @@ async function readStatementFile(file){
     const pe=document.getElementById('statementImportProgress');if(pe)pe.textContent='PDF MOTORU HAZIRLANIYOR...';
     await ensurePdfEngineReady();
     const pdfjs=await getStatementPdfRuntime();
-    const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let text='',pages=[];
-    for(let n=1;n<=Math.min(pdf.numPages,12);n++){const pg=await pdf.getPage(n),ct=await pg.getTextContent();const pt=ct.items.map(i=>i.str+(i.hasEOL?'\n':' ')).join('');pages.push(pg);text+='\n'+pt}
-    const textChars=text.replace(/\s/g,'').length,textEval=textChars>40?stmtInterpretationScore(text,statementImportCardId):{score:-1,rows:[],meta:{}},dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
+    const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;let rawText='',layoutText='',pages=[];
+    for(let n=1;n<=Math.min(pdf.numPages,12);n++){const pg=await pdf.getPage(n),pt=await stmtPdfPageTexts(pg);pages.push(pg);rawText+='\n'+pt.raw;layoutText+='\n'+pt.layout}
+    const rawEval=rawText.replace(/\s/g,'').length>40?stmtInterpretationScore(rawText,statementImportCardId):{score:-1,rows:[],meta:{}},layoutEval=layoutText.replace(/\s/g,'').length>40?stmtInterpretationScore(layoutText,statementImportCardId):{score:-1,rows:[],meta:{}};
+    let text=layoutEval.score>=rawEval.score?layoutText:rawText,textEval=layoutEval.score>=rawEval.score?layoutEval:rawEval;
+    const textChars=text.replace(/\s/g,'').length,dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
     const suspicious=textChars<=80||(dateTokens>=6&&textEval.rows.length<Math.max(3,Math.floor(dateTokens*.35)))||(!textEval.meta.summaryTrusted&&dateTokens>=10);
     if(!suspicious)return text;
     // PDF metin katmanı şüpheliyse OCR da değerlendirilir. Seçim satır sayısına değil,
@@ -1465,24 +1507,24 @@ async function confirmStatementImport(){
   const uniqueSelected=[];const selectedSeen=new Set();
   for(const r of selected){const k=r.physicalKey||null;if(k&&selectedSeen.has(k)){skipped++;continue}if(k)selectedSeen.add(k);uniqueSelected.push(r)}
   selected.length=0;selected.push(...uniqueSelected);
-  state.statementCategoryRules=state.statementCategoryRules&&typeof state.statementCategoryRules==='object'?state.statementCategoryRules:{};for(const r of selected.filter(x=>!x.payment)){const k=stmtMerchantKey(r.title),auto=stmtCategoryBase(r.title);if(k&&r.category&&r.category!==auto)state.statementCategoryRules[k]=r.category}
+  state.statementCategoryRules=state.statementCategoryRules&&typeof state.statementCategoryRules==='object'?state.statementCategoryRules:{};for(const r of selected.filter(x=>!x.payment&&x.kind!=='fee')){const k=stmtMerchantKey(r.title),auto=stmtCategoryBase(r.title);if(k&&r.category&&r.category!==auto)state.statementCategoryRules[k]=r.category}
   const month=statementImportMonthForRows(c,selected),period=statementPeriodRange(c,month),preserveBalance=+c.balance||0;
   const replace=document.getElementById('stmtReplacePeriod')?.checked!==false;
   if(replace){const inPeriod=x=>String(x?.date||'')>=period.start&&String(x?.date||'')<=period.end;state.expenses=(state.expenses||[]).filter(x=>!(x.importedFromStatement&&x.cardId===c.id&&(inPeriod(x)||(x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)));state.cardPayments=(state.cardPayments||[]).filter(x=>!(x.importedFromStatement&&x.cardId===c.id&&(inPeriod(x)||(x.statementImportMonth&&x.statementImportMonth===month)||statementMonthFor(c,x.date)===month)))}
-  const seen={},paySeen={},payExisting={};let added=0,payAdded=0;
+  const seen={},paySeen={},payExisting={};let added=0,payAdded=0,feeAdded=0;
   for(const p of (state.cardPayments||[])){const k=[p.cardId,p.date,stmtCleanTitle(p.title||'KART ÖDEMESİ').toLocaleUpperCase('tr-TR'),Number(+p.amount||0).toFixed(2)].join('|');payExisting[k]=(payExisting[k]||0)+1}
   for(const r of selected){
     if(r.payment){const pk=[c.id,r.date,stmtCleanTitle(r.title||'KART ÖDEMESİ').toLocaleUpperCase('tr-TR'),Number(r.amount).toFixed(2)].join('|'),ord=(paySeen[pk]=(paySeen[pk]||0)+1);if(ord<=(payExisting[pk]||0)){skipped++;continue}state.cardPayments.push({id:id(),cardId:c.id,amount:r.amount,date:r.date,title:upper(r.title||'KART ÖDEMESİ'),importedFromStatement:true,statementImportMonth:month});payAdded++;continue}
-    const signed=r.refund?-Math.abs(r.amount):Math.abs(r.amount),base=stmtFingerprint(c.id,r.date,r.title,signed),manualDup=(state.expenses||[]).some(x=>!x.importedFromStatement&&x.source==='card'&&x.cardId===c.id&&x.date===r.date&&stmtCleanTitle(x.title).toLocaleUpperCase('tr-TR')===stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR')&&Math.abs((+(x.actualAmount??x.amount)||0)-signed)<.005);if(manualDup){skipped++;continue}const ord=(seen[base]=(seen[base]||0)+1),ex={id:id(),title:upper(r.title),amount:signed,actualAmount:signed,date:r.date,category:r.category,source:'card',cardId:c.id,recurring:false,memberId:'',attachment:'',importBaseFingerprint:base,importFingerprint:`${base}|#${ord}`,importedFromStatement:true,importedRefund:r.refund,statementImportMonth:month,installmentNo:r.installmentNo||null,installmentCount:r.installmentCount||null,totalAmount:r.installmentTotal||null,baseTitle:r.title};state.expenses.push(ex);added++
+    const signed=r.refund?-Math.abs(r.amount):Math.abs(r.amount),base=stmtFingerprint(c.id,r.date,r.title,signed),manualDup=(state.expenses||[]).some(x=>!x.importedFromStatement&&x.source==='card'&&x.cardId===c.id&&x.date===r.date&&stmtCleanTitle(x.title).toLocaleUpperCase('tr-TR')===stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR')&&Math.abs((+(x.actualAmount??x.amount)||0)-signed)<.005);if(manualDup){skipped++;continue}const ord=(seen[base]=(seen[base]||0)+1),ex={id:id(),title:upper(r.title),amount:signed,actualAmount:signed,date:r.date,category:r.category,source:'card',cardId:c.id,recurring:false,memberId:'',attachment:'',importBaseFingerprint:base,importFingerprint:`${base}|#${ord}`,importedFromStatement:true,importedRefund:r.refund,statementImportMonth:month,installmentNo:r.installmentNo||null,installmentCount:r.installmentCount||null,totalAmount:r.installmentTotal||null,baseTitle:r.title};state.expenses.push(ex);added++;if(r.kind==='fee')feeAdded++
   }
   const num=id=>{const v=String(document.getElementById(id)?.value||'').trim();if(v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null};
   const previousBalance=num('stmtSummaryPrevious'),spendingInput=num('stmtSummarySpend'),feesTotal=num('stmtSummaryFees'),paymentsInput=num('stmtSummaryPayments'),debtInput=num('stmtSummaryDebt');
-  const spendingTotal=spendingInput!=null&&spendingInput>=0?spendingInput:selected.filter(x=>!x.payment&&!x.refund).reduce((a,x)=>a+x.amount,0),paymentsTotal=paymentsInput!=null&&paymentsInput>=0?paymentsInput:selected.filter(x=>x.payment).reduce((a,x)=>a+x.amount,0),periodDebt=debtInput!=null&&debtInput>=0?debtInput:null;
-  state.statementImports=Array.isArray(state.statementImports)?state.statementImports:[];state.statementImports=state.statementImports.filter(x=>!(x.cardId===c.id&&x.month===month));state.statementImports.push({id:id(),cardId:c.id,month,start:period.start,end:period.end,previousBalance,spendingTotal,feesTotal:feesTotal||0,paymentsTotal,periodDebt,rowCount:added,paymentRowCount:payAdded,importedAt:iso()});
+  const spendingTotal=spendingInput!=null&&spendingInput>=0?spendingInput:selected.filter(x=>x.kind==='spend').reduce((a,x)=>a+x.amount,0),paymentsTotal=paymentsInput!=null&&paymentsInput>=0?paymentsInput:selected.filter(x=>x.payment).reduce((a,x)=>a+x.amount,0),periodDebt=debtInput!=null&&debtInput>=0?debtInput:null;
+  state.statementImports=Array.isArray(state.statementImports)?state.statementImports:[];state.statementImports=state.statementImports.filter(x=>!(x.cardId===c.id&&x.month===month));state.statementImports.push({id:id(),cardId:c.id,month,start:period.start,end:period.end,previousBalance,spendingTotal,feesTotal:feesTotal||0,paymentsTotal,periodDebt,rowCount:added,paymentRowCount:payAdded,feeRowCount:feeAdded,importedAt:iso()});
   const reconciledRemoved=reconcileImportedStatementMultiplicity(c,period,selected);if(reconciledRemoved)skipped+=reconciledRemoved
   recalculateFinanceCore();const syncDebt=document.getElementById('stmtSyncDebt')?.checked&&periodDebt!=null;
   if(syncDebt){c.balanceAnchorDate=period.end;c.balanceAnchorAmount=periodDebt;c.balance=periodDebt+cardDerivedNet(c.id)}else{const derivedNow=cardDerivedNet(c.id);if(c.balanceAnchorDate&&Number.isFinite(+c.balanceAnchorAmount))c.balanceAnchorAmount=preserveBalance-derivedNow;else c.openingBalance=preserveBalance-derivedNow;c.balance=preserveBalance;}
-  await save();modal=null;render();showToast(`${added} HARCAMA · ${payAdded} ÖDEME EKLENDİ${skipped?` · ${skipped} ATLANDI`:''}`)
+  await save();modal=null;render();showToast(`${Math.max(0,added-feeAdded)} HARCAMA · ${feeAdded} VERGİ/FAİZ · ${payAdded} ÖDEME EKLENDİ${skipped?` · ${skipped} ATLANDI`:''}`)
 
   } finally { statementImportBusy=false }
 }

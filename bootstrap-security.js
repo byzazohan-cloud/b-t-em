@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-51-THEME-TRUE-BINDING';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-53-MULTIBANK-STATEMENT';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

@@ -1903,3 +1903,28 @@ html[data-skin='z'].darkMode .donutC b,
 html[data-skin='z'].darkMode .legend>div:nth-child(3) b,
 html[data-skin='z'].darkMode .money.remain,
 html[data-skin='z'].darkMode .remainColor{color:var(--theme-remain)!important}
+
+
+/* HANE V53 — native select readability fix */
+html.darkMode .field select,
+html[data-skin='z'].darkMode .field select{
+  color:#eef7ff!important;
+  background:linear-gradient(180deg,#0f1822,#0a1016)!important;
+}
+html.darkMode .field select option,
+html.darkMode .field select optgroup,
+html[data-skin='z'].darkMode .field select option,
+html[data-skin='z'].darkMode .field select optgroup{
+  color:#0f1720!important;
+  background:#f2f6fb!important;
+}
+html.darkMode .field select option:checked,
+html[data-skin='z'].darkMode .field select option:checked{
+  color:#0b1220!important;
+  background:#b9d9ff!important;
+}
+html.darkMode .field select option:hover,
+html[data-skin='z'].darkMode .field select option:hover{
+  color:#0b1220!important;
+  background:#d7e8ff!important;
+}
