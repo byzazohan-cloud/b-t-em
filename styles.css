@@ -1849,3 +1849,17 @@ html[data-skin='z'].darkMode .premiumNav{border-color:var(--skin-border)!importa
 html[data-skin='z'].darkMode .v1945Nav button.active .navGlass,
 html[data-skin='z'].darkMode .v1947CleanNav button.active .navIcon{border-color:var(--skin-border-strong)!important;background:linear-gradient(180deg,#173149,#0d1824)!important;box-shadow:0 0 0 3px rgba(71,191,255,.04),0 0 16px var(--skin-glow)!important}
 html[data-skin='z'].darkMode .v1947CleanNav button.active:after{background:var(--z-accent)!important;box-shadow:0 0 8px var(--skin-glow)!important}
+
+
+/* HANE V49 — theme studio actually controls the centralized Z skin + header logo spacing */
+html[data-skin='z'].darkMode body,
+html[data-skin='z'].darkMode{background:radial-gradient(circle at 50% -18%,var(--skin-glow),transparent 28%),linear-gradient(180deg,var(--skin-bg),#030508 100%)!important}
+html[data-skin='z'].darkMode .phone{background:linear-gradient(180deg,var(--skin-bg),#030508 100%)!important}
+html[data-skin='z'].darkMode .top.homeTop{padding-top:calc(9px + var(--safeT))!important;padding-bottom:13px!important}
+html[data-skin='z'].darkMode .homeTop .officialBrand{transform:translateY(-4px)!important;margin-bottom:4px!important;align-self:flex-start!important}
+html[data-skin='z'].darkMode .brandLogo.officialBrand:before{inset:-3px auto auto 50%!important;width:54px!important;height:54px!important;border-radius:17px!important}
+html[data-skin='z'].darkMode .brandLogo .brandMark{width:38px!important;height:38px!important;border-radius:11px!important;filter:saturate(.55) contrast(1.04) brightness(.96)!important}
+html[data-skin='z'].darkMode .top.homeTop{border-bottom-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .themeCard,
+html[data-skin='z'].darkMode .preview{border-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .themeCard:active{border-color:var(--skin-border-strong)!important;box-shadow:0 0 14px var(--skin-glow)!important}
