@@ -1728,21 +1728,49 @@ function stmtUniqueSubsetIndexes(rows,kind,target,maxItems=4){
 }
 function stmtImportGuardStatus(meta,rows,bankId,cardId=''){
   const reasons=[],known=v=>v!==null&&v!==''&&v!==undefined&&Number.isFinite(Number(v)),sum=k=>(rows||[]).filter(r=>r?.kind===k).reduce((a,r)=>a+Math.abs(+r.amount||0),0),diff=(a,b)=>Math.abs(Number(a)-Number(b));
-  const spendSum=sum('spend'),paymentSum=sum('payment'),feeSum=sum('fee'),refundSum=sum('refund');
-  // Halkbank/Paraf ekstrelerinde özet alanlarının adları dönemden döneme değişebiliyor.
-  // Bu yüzden tek tek özet alanlarını zorlamak yerine gerçek muhasebe eşitliğini kullan:
-  // önceki dönem + harcamalar + faiz/ücret - ödemeler - iadeler = hesap bakiyesi.
+  const cents=v=>Math.round((Number(v)||0)*100),spendSum=sum('spend'),paymentSum=sum('payment'),feeSum=sum('fee'),refundSum=sum('refund');
+  // V89: Halkbank uzlaştırması kuruş bazında ve doğrudan işlem toplamları üzerinden yapılır.
+  // PDF'deki Devreden alanı bazı sürümlerde konumsal olarak zor okunabildiği için, banka özetindeki
+  // Harcamalar + Ödemeler + Faiz/Ücret satır toplamları birebir uyuşuyorsa gereksiz blok koyma.
   let halkbankEquationOk=false;
-  if(bankId==='halkbank'&&known(meta?.previousBalance)&&known(meta?.periodDebt)){
-    const calc=Number(meta.previousBalance)+spendSum+feeSum-paymentSum-refundSum;
-    halkbankEquationOk=Math.abs(calc-Number(meta.periodDebt))<.02;
-    meta.halkbankRowEquationTotal=Math.round(calc*100)/100;
+  if(bankId==='halkbank'){
+    const spendMatch=known(meta?.spendingTotal)&&cents(meta.spendingTotal)===cents(spendSum);
+    const payMatch=known(meta?.paymentsTotal)&&cents(meta.paymentsTotal)===cents(paymentSum);
+    const feeMatch=known(meta?.feesTotal)&&cents(meta.feesTotal)===cents(feeSum);
+    const directTotalsOk=spendMatch&&payMatch&&feeMatch;
+    let prev=known(meta?.previousBalance)?Number(meta.previousBalance):null;
+    const debt=known(meta?.periodDebt)?Number(meta.periodDebt):null;
+    // Üç doğrudan banka toplamı doğruysa eksik/bozuk devreden değerini muhasebe denkleminden türet.
+    if(directTotalsOk&&debt!==null&&(prev===null||!Number.isFinite(prev))){
+      prev=Math.round((debt-spendSum-feeSum+paymentSum+refundSum)*100)/100;
+      meta.previousBalance=prev;
+      meta.halkbankDerivedPreviousBalance=true;
+    }
+    let equationOk=false;
+    if(prev!==null&&debt!==null){
+      const calcCents=cents(prev)+cents(spendSum)+cents(feeSum)-cents(paymentSum)-cents(refundSum);
+      equationOk=calcCents===cents(debt);
+      meta.halkbankRowEquationTotal=calcCents/100;
+    }
+    // Doğrudan üç işlem toplamı bankayla birebir eşleşiyorsa güvenlidir; hesap denklemi de varsa ayrıca doğrulanır.
+    halkbankEquationOk=directTotalsOk&&(debt===null||equationOk||!known(meta?.previousBalance));
+    if(directTotalsOk&&debt!==null&&!equationOk){
+      const derived=Math.round((debt-spendSum-feeSum+paymentSum+refundSum)*100)/100;
+      // Devreden özet hücresi yanlış okunmuşsa güvenilir üç toplam + dönem borcundan yeniden kur.
+      meta.previousBalance=derived;
+      meta.halkbankDerivedPreviousBalance=true;
+      const recalc=cents(derived)+cents(spendSum)+cents(feeSum)-cents(paymentSum)-cents(refundSum);
+      equationOk=recalc===cents(debt);
+      meta.halkbankRowEquationTotal=recalc/100;
+      halkbankEquationOk=equationOk;
+    }
     meta.halkbankRowEquationOk=halkbankEquationOk;
+    meta.halkbankDirectTotalsOk=directTotalsOk;
   }
   if(!halkbankEquationOk&&known(meta?.spendingTotal)&&diff(meta.spendingTotal,spendSum)>.02)reasons.push(`Harcama toplamı banka ile uyuşmuyor (${Number(spendSum).toFixed(2)} / ${Number(meta.spendingTotal).toFixed(2)})`);
-  if(!halkbankEquationOk&&known(meta?.paymentsTotal)&&Number(meta.paymentsTotal)>0&&diff(meta.paymentsTotal,paymentSum)>.02)reasons.push(`Ödeme toplamı banka ile uyuşmuyor`);
-  if(!halkbankEquationOk&&known(meta?.feesTotal)&&Number(meta.feesTotal)>0&&diff(meta.feesTotal,feeSum)>.02)reasons.push(`Faiz/ücret toplamı banka ile uyuşmuyor`);
-  if(bankId==='halkbank'&&!halkbankEquationOk&&known(meta?.previousBalance)&&known(meta?.periodDebt))reasons.push(`Halkbank hesap bakiyesi işlem toplamlarıyla uyuşmuyor`);
+  if(!halkbankEquationOk&&known(meta?.paymentsTotal)&&Number(meta.paymentsTotal)>0&&diff(meta.paymentsTotal,paymentSum)>.02)reasons.push(`Ödeme toplamı banka ile uyuşmuyor (${Number(paymentSum).toFixed(2)} / ${Number(meta.paymentsTotal).toFixed(2)})`);
+  if(!halkbankEquationOk&&known(meta?.feesTotal)&&Number(meta.feesTotal)>0&&diff(meta.feesTotal,feeSum)>.02)reasons.push(`Faiz/ücret toplamı banka ile uyuşmuyor (${Number(feeSum).toFixed(2)} / ${Number(meta.feesTotal).toFixed(2)})`);
+  if(bankId==='halkbank'&&!halkbankEquationOk&&known(meta?.periodDebt)&&!reasons.length)reasons.push(`Halkbank hesap bakiyesi işlem toplamlarıyla uyuşmuyor`);
   const card=state?.cards?.find?.(x=>x.id===cardId),cardDetected=stmtDetectBank('',cardId);
   if(bankId&&bankId!=='generic'&&cardDetected.id&&cardDetected.id!=='generic'&&bankId!==cardDetected.id){
     const stmtLabel=STMT_BANK_PROFILES.find(p=>p.id===bankId)?.label||bankId.toLocaleUpperCase('tr-TR');
@@ -1840,9 +1868,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-88-HALKBANK-SUMMARY-COORD';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-89-HALKBANK-RECON-FINAL';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-88-HALKBANK-SUMMARY-COORD';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-89-HALKBANK-RECON-FINAL';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
