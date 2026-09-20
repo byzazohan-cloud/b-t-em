@@ -1633,3 +1633,97 @@ html[data-skin='z'].darkMode .quote{border-color:var(--skin-border)!important;ba
 html[data-skin='z'].darkMode .quote b{color:var(--z-accent)!important;letter-spacing:.08em}
 html[data-skin='z'].darkMode .quote span{color:#e6edf5!important}
 html[data-skin='z'].darkMode .quote:before{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(circle at 85% 18%,rgba(71,191,255,.08),transparent 24%),linear-gradient(90deg,transparent,rgba(71,191,255,.02),transparent);pointer-events:none}
+
+
+/* HANE V47 — centralized icon system */
+html[data-skin='z']{
+  --icon-passive:#96aabc;
+  --icon-active:#6fd4ff;
+  --icon-surface-1:#111a24;
+  --icon-surface-2:#0a1016;
+  --icon-border:rgba(95,198,255,.20);
+  --icon-border-strong:rgba(95,198,255,.50);
+  --icon-glow:rgba(95,198,255,.16);
+  --icon-income:#2bd48e;
+  --icon-expense:#ff616d;
+  --icon-purple:#a87eff;
+}
+html[data-skin='z'].darkMode .premiumTopIcon,
+html[data-skin='z'].darkMode .menuBtn,
+html[data-skin='z'].darkMode .back,
+html[data-skin='z'].darkMode .settingIco,
+html[data-skin='z'].darkMode .item .ico,
+html[data-skin='z'].darkMode .premiumIco,
+html[data-skin='z'].darkMode .detailCatIcon,
+html[data-skin='z'].darkMode .iconEdit,
+html[data-skin='z'].darkMode .navIcon,
+html[data-skin='z'].darkMode .financeDots button,
+html[data-skin='z'].darkMode .monthAction i,
+html[data-skin='z'].darkMode .catGem,
+html[data-skin='z'].darkMode .qIncome,
+html[data-skin='z'].darkMode .qExpense,
+html[data-skin='z'].darkMode .qCard,
+html[data-skin='z'].darkMode .qCalendar,
+html[data-skin='z'].darkMode .qReport,
+html[data-skin='z'].darkMode .nav button i,
+html[data-skin='z'].darkMode .quick button i,
+html[data-skin='z'].darkMode .cardActions .btn i,
+html[data-skin='z'].darkMode .statementCardActions .btn i{
+  color:var(--icon-passive)!important;
+  border-color:var(--icon-border)!important;
+  background:linear-gradient(180deg,var(--icon-surface-1),var(--icon-surface-2))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 0 0 1px rgba(255,255,255,.01),0 6px 16px rgba(0,0,0,.22)!important;
+}
+html[data-skin='z'].darkMode .premiumTopIcon svg,
+html[data-skin='z'].darkMode .menuBtn svg,
+html[data-skin='z'].darkMode .back svg,
+html[data-skin='z'].darkMode .settingIco svg,
+html[data-skin='z'].darkMode .item .ico svg,
+html[data-skin='z'].darkMode .premiumIco svg,
+html[data-skin='z'].darkMode .detailCatIcon svg,
+html[data-skin='z'].darkMode .iconEdit svg,
+html[data-skin='z'].darkMode .navIcon svg,
+html[data-skin='z'].darkMode .financeDots button svg,
+html[data-skin='z'].darkMode .monthAction i svg,
+html[data-skin='z'].darkMode .catGem svg,
+html[data-skin='z'].darkMode .nav button svg,
+html[data-skin='z'].darkMode .quick button svg,
+html[data-skin='z'].darkMode .cardActions .btn svg,
+html[data-skin='z'].darkMode .statementCardActions .btn svg{
+  stroke:currentColor!important;
+  color:inherit!important;
+}
+html[data-skin='z'].darkMode .nav button.active i,
+html[data-skin='z'].darkMode .nav button.active .navIcon,
+html[data-skin='z'].darkMode .premiumNav button.active i,
+html[data-skin='z'].darkMode .premiumNav button.active .navIcon,
+html[data-skin='z'].darkMode .financeTabs button.active i,
+html[data-skin='z'].darkMode .seg button.active i,
+html[data-skin='z'].darkMode .monthToday i,
+html[data-skin='z'].darkMode .premiumTopIcon.active,
+html[data-skin='z'].darkMode .menuBtn.active,
+html[data-skin='z'].darkMode .back.active{
+  color:var(--icon-active)!important;
+  border-color:var(--icon-border-strong)!important;
+  background:linear-gradient(180deg,#173149,#0d1824)!important;
+  box-shadow:inset 0 0 0 1px rgba(111,212,255,.10),0 0 14px var(--icon-glow)!important;
+}
+html[data-skin='z'].darkMode .qIncome, html[data-skin='z'].darkMode .quick button[data-action='addIncome'] i{color:var(--icon-income)!important;border-color:rgba(43,212,142,.28)!important;box-shadow:0 0 14px rgba(43,212,142,.10)!important}
+html[data-skin='z'].darkMode .qExpense, html[data-skin='z'].darkMode .quick button[data-action='addExpense'] i{color:var(--icon-expense)!important;border-color:rgba(255,97,109,.28)!important;box-shadow:0 0 14px rgba(255,97,109,.10)!important}
+html[data-skin='z'].darkMode .qCalendar, html[data-skin='z'].darkMode .quick button[data-tab='calendar'] i,
+html[data-skin='z'].darkMode .quick button[data-action='notes'] i{color:var(--icon-purple)!important;border-color:rgba(168,126,255,.28)!important;box-shadow:0 0 14px rgba(168,126,255,.10)!important}
+html[data-skin='z'].darkMode .qCard, html[data-skin='z'].darkMode .qReport,
+html[data-skin='z'].darkMode .quick button[data-action='goCards'] i,
+html[data-skin='z'].darkMode .quick button[data-action='cardPay'] i,
+html[data-skin='z'].darkMode .quick button[data-tab='reports'] i{color:var(--icon-active)!important}
+html[data-skin='z'].darkMode .menuBtn,
+html[data-skin='z'].darkMode .premiumTopIcon,
+html[data-skin='z'].darkMode .back{color:var(--icon-active)!important}
+html[data-skin='z'].darkMode .settingIco,
+html[data-skin='z'].darkMode .item .ico,
+html[data-skin='z'].darkMode .premiumIco,
+html[data-skin='z'].darkMode .detailCatIcon,
+html[data-skin='z'].darkMode .iconEdit,
+html[data-skin='z'].darkMode .catGem{color:var(--icon-active)!important}
+html[data-skin='z'].darkMode .nav button{color:var(--icon-passive)!important}
+html[data-skin='z'].darkMode .nav button.active{color:var(--icon-active)!important}

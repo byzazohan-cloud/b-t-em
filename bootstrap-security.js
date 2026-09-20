@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-46-Z-FINAL-POLISH';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-47-Z-ICON-SYSTEM';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {
