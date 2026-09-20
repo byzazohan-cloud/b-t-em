@@ -1640,7 +1640,7 @@ function normalizeStatementSummary(text,rows,raw){
     if(finite(hbPay))meta.paymentsTotal=round2(Math.abs(hbPay));
     if(finite(hbDebt))meta.periodDebt=round2(hbDebt);
 
-    // V91: Halkbank PDF'lerinde bazı özet hücreleri PDF.js tarafından 0,00 gibi yanlış eşleşebiliyor.
+    // V92: Halkbank PDF'lerinde bazı özet hücreleri PDF.js tarafından 0,00 gibi yanlış eşleşebiliyor.
     // Gerçek işlem satırları pozitif toplam veriyorsa, bu sahte sıfırlar banka özeti kabul edilmez.
     // İşlem tablosu + dönem borcu birlikte kullanılarak eksik özet alanları güvenli biçimde tamamlanır.
     if(parsedSpend>0&&(!finite(meta.spendingTotal)||+meta.spendingTotal===0)){meta.spendingTotal=parsedSpend;repaired=true;meta.halkbankSpendFromRows=true}
@@ -1747,7 +1747,7 @@ function stmtImportGuardStatus(meta,rows,bankId,cardId=''){
   // Harcamalar + Ödemeler + Faiz/Ücret satır toplamları birebir uyuşuyorsa gereksiz blok koyma.
   let halkbankEquationOk=false;
   if(bankId==='halkbank'){
-    // V91: Özet hücresindeki sahte 0,00 değerleri gerçek pozitif işlem toplamlarının önüne geçemez.
+    // V92: Özet hücresindeki sahte 0,00 değerleri gerçek pozitif işlem toplamlarının önüne geçemez.
     if(spendSum>0&&(!known(meta?.spendingTotal)||cents(meta.spendingTotal)===0)){meta.spendingTotal=Math.round(spendSum*100)/100;meta.halkbankSpendFromRows=true}
     if(paymentSum>0&&(!known(meta?.paymentsTotal)||cents(meta.paymentsTotal)===0)){meta.paymentsTotal=Math.round(paymentSum*100)/100;meta.halkbankPaymentsFromRows=true}
     if(feeSum>0&&(!known(meta?.feesTotal)||cents(meta.feesTotal)===0)){meta.feesTotal=Math.round(feeSum*100)/100;meta.halkbankFeesFromRows=true}
