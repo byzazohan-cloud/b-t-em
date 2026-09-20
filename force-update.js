@@ -13,5 +13,5 @@
       await Promise.all(ks.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)));
     }
   }catch(e){}
-  location.replace('./?v=19.4.8.20260920-LOCAL-DATA-ONLY-73-HALKBANK-FIXED-ROW&fresh='+Date.now());
+  location.replace('./?v=19.4.8.20260920-LOCAL-DATA-ONLY-74-HALKBANK-FOOTER-GUARD&fresh='+Date.now());
 })();

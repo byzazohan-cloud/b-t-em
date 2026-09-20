@@ -1180,10 +1180,17 @@ function stmtParseHalkbankFixedEngine(text,cardId,profile){
     const di=stmtDateInfo(m[1],anchor);if(!di)continue;
     let seg=m[2].trim();
     if(stmtCarryForwardLike(seg))continue;
+    // V74: Halkbank footer/özet tarihleri işlem değildir. PDF metni bazen
+    // "Bir Sonraki Hesap Kesim Tarihi" başlığını önceki satırlara, tarihi ise
+    // tek başına yeni satıra koyar; bu durumda bakiye/toplam tutarı harcama sanılmamalı.
+    const prevCtx=lines.slice(Math.max(0,i-4),i).join(' ').toLocaleUpperCase('tr-TR');
+    if(/BİR\s+SONRAKİ\s+(?:HESAP\s+KESİM|SON\s+ÖDEME)\s+TARİHİ|BIR\s+SONRAKI\s+(?:HESAP\s+KESIM|SON\s+ODEME)\s+TARIHI/.test(prevCtx))continue;
+    if(/^(?:TOPLAM|GENEL\s+TOPLAM|ARA\s+TOPLAM|HESAP\s+BAKİYESİ|HESAP\s+BAKIYESI|DÖNEM\s+BORCU|DONEM\s+BORCU)\b/i.test(seg))continue;
     // Açıklama alt satıra taşmışsa, sonraki tarihli satıra kadar en fazla 2 metin satırını ekle.
     for(let j=i+1;j<Math.min(lines.length,i+3);j++){
       if(/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})\b/.test(lines[j]))break;
       if(stmtCommonIgnoreLine(lines[j])||/TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI|MERSİS|MERSIS|PARAF\.COM\.TR/i.test(lines[j]))break;
+      if(/BİR\s+SONRAKİ\s+(?:HESAP\s+KESİM|SON\s+ÖDEME)\s+TARİHİ|BIR\s+SONRAKI\s+(?:HESAP\s+KESIM|SON\s+ODEME)\s+TARIHI|^(?:TOPLAM|GENEL\s+TOPLAM|ARA\s+TOPLAM|HESAP\s+BAKİYESİ|HESAP\s+BAKIYESI|DÖNEM\s+BORCU|DONEM\s+BORCU)\b/i.test(lines[j]))break;
       // Sadece açıklama devamı veya parasal kolon satırı olabilecek kısa satırları ekle.
       if(lines[j].length<180)seg+=' '+lines[j];
     }
@@ -1723,7 +1730,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-73-HALKBANK-FIXED-ROW';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-74-HALKBANK-FOOTER-GUARD';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
