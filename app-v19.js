@@ -1450,6 +1450,10 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     if((r.kind==='fee'||r.category==='Vergi & Faiz'||feeCue)&&!/^\s*(B[İI]R\s+SONRAK[İI]|HESAP\s+KES[İI]M|SON\s+[ÖO]DEME)/.test(title))return true;
     const footerStart=/^(?:B[İI]R\s+SONRAK[İI](?:\s+HESAP\s+KES[İI]M|\s+SON\s+[ÖO]DEME)?|HESAP\s+KES[İI]M(?:\s+TAR[İI]H[İI])?|SON\s+[ÖO]DEME(?:\s+TAR[İI]H[İI])?|HESAP\s+BAK[İI]YES[İI]|D[ÖO]NEM\s+BORCU|GENEL\s+TOPLAM|ARA\s+TOPLAM|TOPLAM\b)/.test(title);
     const weekday=/\b(PAZARTES[İI]|SALI|[ÇC]AR[ŞS]AMBA|PER[ŞS]EMBE|CUMA|CUMARTES[İI]|PAZAR)\b/.test(own);
+    // V78: Halkbank bazen footer tarihini işlem başlığına yalnızca "Hesap : Perşembe"
+    // şeklinde taşır. Bu, sonraki hesap kesim özetidir ve gerçek hareket değildir.
+    const compactAccountDay=/^HESAP\s*:\s*(?:PAZARTES[İI]|SALI|[ÇC]AR[ŞS]AMBA|PER[ŞS]EMBE|CUMA|CUMARTES[İI]|PAZAR)\b/.test(title);
+    if(compactAccountDay)return false;
     if(footerStart&&(weekday||/^(?:B[İI]R\s+SONRAK[İI]|HESAP\s+KES[İI]M|SON\s+[ÖO]DEME|GENEL\s+TOPLAM|ARA\s+TOPLAM|TOPLAM\b)/.test(title)))return false;
     return true;
   });
@@ -1750,7 +1754,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-77-HALKBANK-FEE-SUMMARY-GUARD';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-78-HALKBANK-COMPACT-FOOTER-GUARD';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
