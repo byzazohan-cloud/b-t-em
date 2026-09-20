@@ -1928,3 +1928,37 @@ html[data-skin='z'].darkMode .field select option:hover{
   color:#0b1220!important;
   background:#d7e8ff!important;
 }
+
+/* HANE V59 — GLOBAL NATIVE DROPDOWN READABILITY
+   Windows/Chromium may render the opened native option menu on a white system surface.
+   Keep the closed select in HANE dark styling, but force every native option/optgroup
+   to high-contrast dark text on a light menu surface. Applies to category, bank,
+   payment source, statement import and every dynamically-created select. */
+html.darkMode select option,
+html.darkMode select optgroup,
+html[data-skin='z'].darkMode select option,
+html[data-skin='z'].darkMode select optgroup,
+.modal select option,
+.modal select optgroup,
+.sheet select option,
+.sheet select optgroup,
+.statementImportRow select option,
+.statementImportRow select optgroup{
+  color:#101820!important;
+  background:#f7f9fc!important;
+  -webkit-text-fill-color:#101820!important;
+}
+html.darkMode select option:checked,
+html[data-skin='z'].darkMode select option:checked,
+.modal select option:checked,
+.sheet select option:checked,
+.statementImportRow select option:checked{
+  color:#07111b!important;
+  background:#a9d6f4!important;
+  -webkit-text-fill-color:#07111b!important;
+}
+/* Non-field selects also keep readable text while closed */
+html[data-skin='z'].darkMode select:not(.hiddenCatSelect),
+html.darkMode select:not(.hiddenCatSelect){
+  color:#eef7ff!important;
+}
