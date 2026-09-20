@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "HANE 19.4.8 V47: Z Tasarım temizlendi; eski sarı/altın görsel kalıntılar kapatıldı ve tüm build/cache etiketleri eşitlendi. Veri, işleyiş ve ekran düzeni değiştirilmedi.",
+  "message": "V48: V47 tam tarandı; manifest sürüm tutarsızlığı giderildi, merkezi Z tema/ikon sistemi eski gold seçicileri kapsayacak şekilde tamamlandı. Veri, finans, PDF, PIN, yedekleme ve ekran düzeni değiştirilmedi.",
   "updateUrl": "",
-  "build": "20260920-LOCAL-DATA-ONLY-44-Z-DESIGN-CLEAN",
-  "version": "19.4.8-LOCAL_DATA_ONLY_47_Z_ICON_SYSTEM"
+  "build": "20260920-LOCAL-DATA-ONLY-48-Z-AUDIT-FIX",
+  "version": "19.4.8-LOCAL_DATA_ONLY_48_Z_AUDIT_FIX"
 }

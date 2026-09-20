@@ -1727,3 +1727,125 @@ html[data-skin='z'].darkMode .iconEdit,
 html[data-skin='z'].darkMode .catGem{color:var(--icon-active)!important}
 html[data-skin='z'].darkMode .nav button{color:var(--icon-passive)!important}
 html[data-skin='z'].darkMode .nav button.active{color:var(--icon-active)!important}
+
+
+/* HANE V48 — audit fixes: authoritative no-gold coverage + metadata consistency.
+   No layout, data model, or business logic changes. */
+html[data-skin='z'].darkMode .goldline,
+html[data-skin='z'].darkMode .reco,
+html[data-skin='z'].darkMode .miniCard,
+html[data-skin='z'].darkMode .forceUpdateBox,
+html[data-skin='z'].darkMode .roadFeeGroupHero,
+html[data-skin='z'].darkMode .statementHero,
+html[data-skin='z'].darkMode .statementReconcileBox,
+html[data-skin='z'].darkMode .statementBankSummary,
+html[data-skin='z'].darkMode .memberDetailSummary,
+html[data-skin='z'].darkMode .paySummaryGrid button{
+  border-color:var(--skin-border)!important;
+  background:linear-gradient(180deg,var(--skin-surface-2),var(--skin-surface))!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+html[data-skin='z'].darkMode .miniCard:after{background:radial-gradient(circle,rgba(71,191,255,.10),transparent 67%)!important}
+html[data-skin='z'].darkMode .field input:focus,
+html[data-skin='z'].darkMode .field select:focus,
+html[data-skin='z'].darkMode .field textarea:focus,
+html[data-skin='z'].darkMode #expenseType{
+  border-color:var(--skin-border-strong)!important;
+  box-shadow:0 0 0 2px rgba(71,191,255,.08)!important;
+}
+html[data-skin='z'].darkMode .premiumKeypad button,
+html[data-skin='z'].darkMode .signatureKeypad button{
+  border-color:var(--skin-border-strong)!important;
+  color:var(--skin-active-text)!important;
+  background:linear-gradient(145deg,#202a32,#0c1116 70%,#111a22)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 7px 18px rgba(0,0,0,.42),0 0 12px rgba(71,191,255,.06)!important;
+}
+html[data-skin='z'].darkMode .cropGuide{border-color:rgba(71,191,255,.60)!important}
+html[data-skin='z'].darkMode .premiumCatBtn.active,
+html[data-skin='z'].darkMode .paySourceSeg button.active,
+html[data-skin='z'].darkMode .reportSeg button.active,
+html[data-skin='z'].darkMode .cardPayTypeSeg button.active,
+html[data-skin='z'].darkMode .active,
+html[data-skin='z'].darkMode .selected,
+html[data-skin='z'].darkMode [aria-selected='true'],
+html[data-skin='z'].darkMode [aria-current='page']{
+  border-color:var(--skin-border-strong)!important;
+  background:linear-gradient(180deg,var(--skin-active-bg-1),var(--skin-active-bg-2))!important;
+  color:var(--skin-active-text)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 1px rgba(71,191,255,.05),0 0 14px var(--skin-glow)!important;
+  text-shadow:none!important;
+}
+html[data-skin='z'].darkMode .reportMoveRight button,
+html[data-skin='z'].darkMode .statementHead button,
+html[data-skin='z'].darkMode .monthNavigator button,
+html[data-skin='z'].darkMode .monthToday{
+  border-color:var(--skin-border)!important;
+  background:linear-gradient(180deg,#111926,#0a1016)!important;
+  color:var(--z-accent)!important;
+}
+html[data-skin='z'].darkMode button:hover,
+html[data-skin='z'].darkMode [data-action]:hover,
+html[data-skin='z'].darkMode [data-tab]:hover,
+html[data-skin='z'].darkMode .item:hover{
+  border-color:var(--skin-border)!important;
+  background-color:rgba(71,191,255,.035)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 8px 24px rgba(0,0,0,.18)!important;
+}
+html[data-skin='z'].darkMode button:active,
+html[data-skin='z'].darkMode [data-action]:active,
+html[data-skin='z'].darkMode [data-tab]:active,
+html[data-skin='z'].darkMode .item:active{
+  border-color:var(--skin-border-strong)!important;
+  background-color:rgba(71,191,255,.08)!important;
+  box-shadow:inset 0 0 0 1px rgba(71,191,255,.05),inset 0 1px 12px rgba(71,191,255,.025)!important;
+}
+html[data-skin='z'].darkMode .roadFeeGroup{border-color:rgba(77,214,199,.22)!important;background:linear-gradient(135deg,rgba(77,214,199,.07),rgba(71,191,255,.025))!important}
+html[data-skin='z'].darkMode .memberSummaryCard .memberAvatar{background:rgba(71,191,255,.08)!important;border-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .catGem,
+html[data-skin='z'].darkMode .premiumIco{--cat-fallback:var(--z-accent);background:linear-gradient(145deg,color-mix(in srgb,var(--cat,var(--cat-fallback)) 16%,#151a20),#070b0f 72%)!important;border-color:color-mix(in srgb,var(--cat,var(--cat-fallback)) 48%,transparent)!important}
+html[data-skin='z'].darkMode .catGem .catSvg,
+html[data-skin='z'].darkMode .premiumIco .catSvg{stroke:var(--cat,var(--z-accent))!important;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--cat,var(--z-accent)) 30%,transparent))!important}
+html[data-skin='z'].darkMode .officialBrand .brandMark,
+html[data-skin='z'].darkMode .setupOfficialLogo .haneFullLogo,
+html[data-skin='z'].darkMode .signatureLogo .haneFullLogo,
+html[data-skin='z'].darkMode .exactV5Lock .haneFullLogo,
+html[data-skin='z'].darkMode .lockV5Logo,
+html[data-skin='z'].darkMode .flexCredit .haneCardBrand img{
+  border-color:var(--skin-border)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.35),0 0 0 1px rgba(71,191,255,.08),0 0 14px rgba(71,191,255,.06)!important;
+}
+html[data-skin='z'].darkMode .portraitFallback{color:var(--z-accent)!important}
+html[data-skin='z'].darkMode .signatureDots i{border-color:var(--skin-border-strong)!important;box-shadow:0 0 10px rgba(71,191,255,.12)!important}
+html[data-skin='z'].darkMode .signatureDots i.on{background:radial-gradient(circle at 35% 30%,#fff,#cdeeff 60%,#57bfff)!important;border-color:#dff5ff!important;box-shadow:0 0 15px rgba(71,191,255,.28)!important}
+html[data-skin='z'].darkMode .signatureFooter span{background:linear-gradient(90deg,transparent,var(--z-accent))!important}
+html[data-skin='z'].darkMode .signatureFooter span:last-child{background:linear-gradient(90deg,var(--z-accent),transparent)!important}
+html[data-skin='z'].darkMode .signatureFooter b{color:#dff6ff!important}
+html[data-skin='z'].darkMode .signatureQuote{border-left-color:var(--skin-border)!important;background:linear-gradient(180deg,#0b1118dd,#020406e8),radial-gradient(circle at 50% 50%,rgba(71,191,255,.06),transparent 55%)!important}
+html[data-skin='z'].darkMode .signatureQuote:after{background:radial-gradient(circle at 70% 50%,rgba(71,191,255,.10),transparent 62%)!important}
+html[data-skin='z'].darkMode .quoteBlock i{background:var(--z-accent)!important}
+html[data-skin='z'].darkMode .hvcPattern:before,
+html[data-skin='z'].darkMode .hvcPattern:after{border-color:rgba(71,191,255,.16)!important}
+html[data-skin='z'].darkMode .hvcBrand img{border-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .hvcBrand strong,
+html[data-skin='z'].darkMode .hvcFooter small{color:#dfefff!important}
+html[data-skin='z'].darkMode .hvcTag i{background:var(--z-accent)!important}
+html[data-skin='z'].darkMode .hvcGrid>div{border-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .haneVerticalCard.green,
+html[data-skin='z'].darkMode .haneVerticalCard.burgundy,
+html[data-skin='z'].darkMode .haneVerticalCard.blue,
+html[data-skin='z'].darkMode .haneVerticalCard.blackgold,
+html[data-skin='z'].darkMode .haneVerticalCard.purple,
+html[data-skin='z'].darkMode .haneVerticalCard.silver{background-image:radial-gradient(circle at 80% 10%,rgba(71,191,255,.07),transparent 21%),var(--card-surface,linear-gradient(160deg,#06090d,#111923 52%,#05070a))!important}
+html[data-skin='z'].darkMode .financeDots button:first-child{border-color:var(--skin-border)!important;color:var(--z-accent)!important;box-shadow:0 0 12px rgba(71,191,255,.08)!important}
+html[data-skin='z'].darkMode .cardPayIcon{background:rgba(71,191,255,.07)!important;color:var(--z-accent)!important;border-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .statementEquation .debt{border-color:var(--skin-border-strong)!important}
+html[data-skin='z'].darkMode .calendarTopTabs button{border-color:var(--skin-border)!important;background:#0b1118!important;color:var(--skin-passive-text)!important}
+html[data-skin='z'].darkMode .calendarTopTabs button.active{background:linear-gradient(180deg,var(--skin-active-bg-1),var(--skin-active-bg-2))!important;box-shadow:0 0 0 1px rgba(71,191,255,.08) inset,0 0 12px var(--skin-glow)!important;color:var(--skin-active-text)!important}
+html[data-skin='z'].darkMode .calDot.fixedPayment{background:var(--z-accent)!important}
+html[data-skin='z'].darkMode .calendarMove.fixedPayment>i{background:var(--z-accent)!important}
+html[data-skin='z'].darkMode .flexLimitBar i{background:linear-gradient(90deg,var(--z-accent),var(--z-accent-soft))!important}
+html[data-skin='z'].darkMode .targetNav,
+html[data-skin='z'].darkMode .premiumNav{border-color:var(--skin-border)!important}
+html[data-skin='z'].darkMode .v1945Nav button.active .navGlass,
+html[data-skin='z'].darkMode .v1947CleanNav button.active .navIcon{border-color:var(--skin-border-strong)!important;background:linear-gradient(180deg,#173149,#0d1824)!important;box-shadow:0 0 0 3px rgba(71,191,255,.04),0 0 16px var(--skin-glow)!important}
+html[data-skin='z'].darkMode .v1947CleanNav button.active:after{background:var(--z-accent)!important;box-shadow:0 0 8px var(--skin-glow)!important}
