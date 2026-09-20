@@ -1614,3 +1614,22 @@ html[data-skin='z'].darkMode .quick button[data-action='addIncome'] i{color:var(
 html[data-skin='z'].darkMode .quick button[data-action='addExpense'] i{color:var(--ge)!important}
 html[data-skin='z'].darkMode .quick button[data-action='goCards'] i,
 html[data-skin='z'].darkMode .quick button[data-action='cardPay'] i{color:var(--z-accent)!important}
+
+
+/* HANE V46 — final polish: adaptive logo shell + quote card aligned to Z skin */
+html[data-skin='z'].darkMode .brandLogo.officialBrand{position:relative;display:flex!important;align-items:center;justify-content:center;min-height:42px}
+html[data-skin='z'].darkMode .brandLogo.officialBrand:before{content:'';position:absolute;inset:-6px auto auto 50%;transform:translateX(-50%);width:58px;height:58px;border-radius:18px;background:linear-gradient(180deg,rgba(15,24,34,.98),rgba(8,12,18,.98));border:1px solid var(--skin-border);box-shadow:0 10px 22px rgba(0,0,0,.30),0 0 0 1px rgba(255,255,255,.03) inset,0 0 16px rgba(71,191,255,.10);z-index:0}
+html[data-skin='z'].darkMode .brandLogo .brandMark{position:relative;z-index:1;width:40px!important;height:40px!important;border-radius:12px;object-fit:cover;filter:saturate(.82) contrast(1.02) brightness(.98);box-shadow:0 0 0 1px rgba(91,204,255,.20),0 8px 18px rgba(0,0,0,.26)}
+html[data-skin='z'].darkMode .ultraTopBrand,
+html[data-skin='z'].darkMode .quoteCardMini,
+html[data-skin='z'].darkMode .haneRecoBrand{position:relative}
+html[data-skin='z'].darkMode .ultraTopBrand:before,
+html[data-skin='z'].darkMode .quoteCardMini:before,
+html[data-skin='z'].darkMode .haneRecoBrand:before{content:'';position:absolute;inset:-5px;border-radius:16px;background:linear-gradient(180deg,rgba(14,22,31,.98),rgba(8,12,18,.98));border:1px solid var(--skin-border);box-shadow:0 8px 20px rgba(0,0,0,.28),0 0 12px rgba(71,191,255,.08);z-index:0}
+html[data-skin='z'].darkMode .ultraBrandLogo,
+html[data-skin='z'].darkMode .quoteMiniLogo,
+html[data-skin='z'].darkMode .recoLogo{position:relative;z-index:1;filter:saturate(.84) contrast(1.02) brightness(.98)}
+html[data-skin='z'].darkMode .quote{border-color:var(--skin-border)!important;background:linear-gradient(180deg,rgba(11,18,26,.98),rgba(8,12,18,.98))!important;box-shadow:0 10px 24px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.03),0 0 14px rgba(71,191,255,.05)!important}
+html[data-skin='z'].darkMode .quote b{color:var(--z-accent)!important;letter-spacing:.08em}
+html[data-skin='z'].darkMode .quote span{color:#e6edf5!important}
+html[data-skin='z'].darkMode .quote:before{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(circle at 85% 18%,rgba(71,191,255,.08),transparent 24%),linear-gradient(90deg,transparent,rgba(71,191,255,.02),transparent);pointer-events:none}

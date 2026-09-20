@@ -72,10 +72,10 @@ const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberForm
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
 function haneLogo(size=54,cls=''){
   const n=Math.max(28,Number(size)||54);
-  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand5" width="${n}" alt="HANE">`;
+  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand6" width="${n}" alt="HANE">`;
 }
 function haneFullLogo(cls=''){
-  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand5" alt="HANE">`;
+  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand6" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
   const p={
@@ -1271,7 +1271,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-45-Z-THEME-CENTER';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-46-Z-FINAL-POLISH';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-44-Z-DESIGN-CLEAN';
 const HANE_ENGINE_PACKAGES=[
