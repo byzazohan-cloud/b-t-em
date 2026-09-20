@@ -13,5 +13,5 @@
       await Promise.all(ks.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)));
     }
   }catch(e){}
-  location.replace('./?v=19.4.8.20260920-LOCAL-DATA-ONLY-44-Z-DESIGN-CLEAN&fresh='+Date.now());
+  location.replace('./?v=19.4.8.20260920-LOCAL-DATA-ONLY-45-Z-THEME-CENTER&fresh='+Date.now());
 })();

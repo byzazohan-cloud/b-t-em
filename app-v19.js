@@ -72,10 +72,10 @@ const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberForm
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
 function haneLogo(size=54,cls=''){
   const n=Math.max(28,Number(size)||54);
-  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand4" width="${n}" alt="HANE">`;
+  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand5" width="${n}" alt="HANE">`;
 }
 function haneFullLogo(cls=''){
-  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand4" alt="HANE">`;
+  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand5" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
   const p={
@@ -301,7 +301,7 @@ async function unlock(p){const m=meta();if(!m)return false;try{
   key=k;state=normalizeV19(st);setLockPreviewSnapshot(state.profile||{});localStorage.setItem(META,JSON.stringify({salt:m.salt}));state.selectedMonth=ym(new Date());calendarMonth=state.selectedMonth;calendarDay='';applyTheme();return true
 }catch{return false}}
 function def(){return{version:19,selectedMonth:ym(new Date()),profile:{name:'',photo:'',motto:'Disiplin, özgürlüğün kapısını açar.'},settings:{lockMinutes:15,leadDays:3,notifications:false,darkMode:true},theme:{bg:'#05080d',accent:'#47bfff',income:'#2bd48e',expense:'#ff616d',remain:'#58c7ff'},incomes:[],expenses:[],cards:[],accounts:[],flexAccounts:[],customCategories:[],categoryMeta:{},cardTransactions:[],cardPayments:[],statementImports:[],statementCategoryRules:{},fixedPayments:[],flexTransactions:[],installments:[],members:[{id:'me',name:'BEN',icon:'👤'}],homeLayout:['summary','quick','quote','chart','month','recommended','monthly'],homeHidden:[]}}
-function applyTheme(){if(!state)return;const t=state.theme||{},dark=state.settings?.darkMode!==false;const z={bg:'#05080d',accent:'#47bfff',income:'#2bd48e',expense:'#ff616d',remain:'#58c7ff'};const legacy=!t||((t.bg||'')==='#000000'&&((t.accent||'')==='#d8ad4f'||(t.accent||'')==='#f0cd77')&&((t.income||'')==='#248ef5')&&((t.expense||'')==='#ff4658')&&((t.remain||'')==='#16d77d'));const a=legacy?z:{bg:t.bg||z.bg,accent:t.accent||z.accent,income:t.income||z.income,expense:t.expense||z.expense,remain:t.remain||z.remain};document.documentElement.classList.toggle('lightMode',!dark);document.documentElement.classList.toggle('darkMode',dark);document.documentElement.style.setProperty('--bg',dark?a.bg:'#f3f1eb');document.documentElement.style.setProperty('--gold',a.accent);document.documentElement.style.setProperty('--gold2',a.accent);document.documentElement.style.setProperty('--gi',a.income);document.documentElement.style.setProperty('--ge',a.expense);document.documentElement.style.setProperty('--gr',a.remain);document.documentElement.style.setProperty('--z-accent',a.accent);document.documentElement.style.setProperty('--z-accent-soft',a.remain)}
+function applyTheme(){if(!state)return;const t=state.theme||{},dark=state.settings?.darkMode!==false;const z={bg:'#05080d',accent:'#47bfff',income:'#2bd48e',expense:'#ff616d',remain:'#58c7ff'};const legacy=!t||((t.bg||'')==='#000000'&&((t.accent||'')==='#d8ad4f'||(t.accent||'')==='#f0cd77')&&((t.income||'')==='#248ef5')&&((t.expense||'')==='#ff4658')&&((t.remain||'')==='#16d77d'));const a=legacy?z:{bg:t.bg||z.bg,accent:t.accent||z.accent,income:t.income||z.income,expense:t.expense||z.expense,remain:t.remain||z.remain};const root=document.documentElement;root.classList.toggle('lightMode',!dark);root.classList.toggle('darkMode',dark);root.dataset.skin='z';root.style.setProperty('--bg',dark?a.bg:'#f3f1eb');root.style.setProperty('--gold',a.accent);root.style.setProperty('--gold2',a.accent);root.style.setProperty('--gi',a.income);root.style.setProperty('--ge',a.expense);root.style.setProperty('--gr',a.remain);root.style.setProperty('--z-accent',a.accent);root.style.setProperty('--z-accent-soft',a.remain);root.style.setProperty('--skin-bg',a.bg);root.style.setProperty('--skin-surface','#0b1118');root.style.setProperty('--skin-surface-2','#0f1720');root.style.setProperty('--skin-text','#eef7ff');root.style.setProperty('--skin-muted','#92a3b5');root.style.setProperty('--skin-border','rgba(95,198,255,.22)');root.style.setProperty('--skin-border-strong','rgba(95,198,255,.52)');root.style.setProperty('--skin-glow','rgba(71,191,255,.18)');root.style.setProperty('--skin-active-bg-1','rgba(25,55,82,.96)');root.style.setProperty('--skin-active-bg-2','rgba(13,25,38,.98)');root.style.setProperty('--skin-active-text','#edf9ff');root.style.setProperty('--skin-passive-bg-1','rgba(13,18,26,.98)');root.style.setProperty('--skin-passive-bg-2','rgba(8,12,17,.98)');root.style.setProperty('--skin-passive-text','#8ea0b4');root.style.setProperty('--skin-purple','#a87eff');root.style.setProperty('--skin-purple-soft','rgba(168,126,255,.14)');}
 function totals(m=state.selectedMonth){const i=state.incomes.filter(x=>String(x.date||'').startsWith(m)).reduce((s,x)=>s+(+x.amount||0),0),e=actualExpenseEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0);return{i,e,r:i-e}}
 function cashFlow(m=state.selectedMonth){
   const actual=actualExpenseEntriesForMonth(m),spent=actual.reduce((a,x)=>a+(+x.amount||0),0);
@@ -1271,7 +1271,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-44-Z-DESIGN-CLEAN';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-45-Z-THEME-CENTER';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-44-Z-DESIGN-CLEAN';
 const HANE_ENGINE_PACKAGES=[

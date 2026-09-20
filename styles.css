@@ -1448,3 +1448,169 @@ input,select,textarea{caret-color:var(--gold2)!important}
 /* restrained purple only for calendar/planned accents */
 .darkMode .calDay.active{border-color:rgba(168,126,255,.42)!important;box-shadow:0 0 0 1px rgba(168,126,255,.08) inset!important}
 .darkMode .calDot.futureflex,.darkMode .calDot.flexSpend{background:var(--z-purple)!important}
+
+
+/* HANE V45 — centralized Z theme tokens.
+   Future visual changes should be made primarily by editing the token values from applyTheme() and the variables below.
+   Goal: one authoritative layer for borders, active states, icon shells and profile/avatar chrome. */
+html[data-skin='z']{
+  --gold:var(--z-accent,var(--skin-active-text));
+  --gold2:var(--z-accent,var(--skin-active-text));
+}
+html[data-skin='z'].darkMode{
+  --line:var(--skin-border);
+  --card:linear-gradient(180deg,var(--skin-surface-2),var(--skin-surface));
+  --text:var(--skin-text);
+  --muted:var(--skin-muted);
+}
+html[data-skin='z'].darkMode .btn,
+html[data-skin='z'].darkMode .smallBtn,
+html[data-skin='z'].darkMode .tinyEdit,
+html[data-skin='z'].darkMode .miniAddBtn,
+html[data-skin='z'].darkMode .monthAction,
+html[data-skin='z'].darkMode .cardActions .btn,
+html[data-skin='z'].darkMode .statementCardActions .btn,
+html[data-skin='z'].darkMode .monthNavigator button,
+html[data-skin='z'].darkMode .financeDots button,
+html[data-skin='z'].darkMode .calendarDayNav button,
+html[data-skin='z'].darkMode .calendarTopTabs button,
+html[data-skin='z'].darkMode .menuBtn,
+html[data-skin='z'].darkMode .back,
+html[data-skin='z'].darkMode .iconEdit,
+html[data-skin='z'].darkMode .profileEditBtn,
+html[data-skin='z'].darkMode .settingIco,
+html[data-skin='z'].darkMode .financeTabs button,
+html[data-skin='z'].darkMode .seg button,
+html[data-skin='z'].darkMode .menuList button,
+html[data-skin='z'].darkMode .monthlyProGrid button,
+html[data-skin='z'].darkMode .categoryReport button,
+html[data-skin='z'].darkMode .paymentDue,
+html[data-skin='z'].darkMode .notice,
+html[data-skin='z'].darkMode .cardPaymentBreakdownRow,
+html[data-skin='z'].darkMode .monthBtn,
+html[data-skin='z'].darkMode .summary .sum,
+html[data-skin='z'].darkMode .setting,
+html[data-skin='z'].darkMode .item,
+html[data-skin='z'].darkMode .card,
+html[data-skin='z'].darkMode .sum,
+html[data-skin='z'].darkMode .themeCard,
+html[data-skin='z'].darkMode .preview,
+html[data-skin='z'].darkMode .field input,
+html[data-skin='z'].darkMode .field select,
+html[data-skin='z'].darkMode .field textarea{
+  border-color:var(--skin-border)!important;
+  background:linear-gradient(180deg,var(--skin-passive-bg-1),var(--skin-passive-bg-2))!important;
+  color:var(--skin-text)!important;
+  box-shadow:0 10px 22px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+html[data-skin='z'].darkMode .btn.gold,
+html[data-skin='z'].darkMode .financeTabs button.active,
+html[data-skin='z'].darkMode .seg button.active,
+html[data-skin='z'].darkMode .calendarTopTabs button.active,
+html[data-skin='z'].darkMode .cardPayTypeSeg button.active,
+html[data-skin='z'].darkMode .monthBtn.active,
+html[data-skin='z'].darkMode .nav button.active,
+html[data-skin='z'].darkMode .premiumNav button.active,
+html[data-skin='z'].darkMode .monthToday,
+html[data-skin='z'].darkMode .miniAddBtn,
+html[data-skin='z'].darkMode .profileEditBtn,
+html[data-skin='z'].darkMode .monthAction.active,
+html[data-skin='z'].darkMode .paidToggle.active{
+  border-color:var(--skin-border-strong)!important;
+  background:linear-gradient(180deg,var(--skin-active-bg-1),var(--skin-active-bg-2))!important;
+  color:var(--skin-active-text)!important;
+  box-shadow:inset 0 0 0 1px rgba(101,215,255,.12),0 0 16px var(--skin-glow)!important;
+}
+html[data-skin='z'].darkMode .premiumNav button.active:before{background:var(--z-accent)!important;box-shadow:0 0 12px var(--skin-glow)!important}
+html[data-skin='z'].darkMode .nav button,
+html[data-skin='z'].darkMode .financeTabs button,
+html[data-skin='z'].darkMode .seg button,
+html[data-skin='z'].darkMode .monthNavigator button,
+html[data-skin='z'].darkMode .menuList button,
+html[data-skin='z'].darkMode .monthToday,
+html[data-skin='z'].darkMode .profileEditBtn{color:var(--skin-passive-text)!important}
+html[data-skin='z'].darkMode .nav button.active,
+html[data-skin='z'].darkMode .financeTabs button.active,
+html[data-skin='z'].darkMode .seg button.active,
+html[data-skin='z'].darkMode .monthToday,
+html[data-skin='z'].darkMode .profileEditBtn,
+html[data-skin='z'].darkMode .miniAddBtn{color:var(--skin-active-text)!important}
+html[data-skin='z'].darkMode .ava,
+html[data-skin='z'].darkMode .profile .ava,
+html[data-skin='z'].darkMode .profileAvatarLarge{
+  border:1px solid var(--skin-border-strong)!important;
+  background:linear-gradient(145deg,#17344c,#0d1926)!important;
+  color:#ecf8ff!important;
+  box-shadow:0 0 0 2px rgba(71,191,255,.08),0 0 18px rgba(71,191,255,.12)!important;
+}
+html[data-skin='z'].darkMode .settingIco,
+html[data-skin='z'].darkMode .premiumIco,
+html[data-skin='z'].darkMode .detailCatIcon,
+html[data-skin='z'].darkMode .catGem,
+html[data-skin='z'].darkMode .item .ico,
+html[data-skin='z'].darkMode .navIcon{
+  border:1px solid var(--skin-border)!important;
+  color:var(--z-accent)!important;
+  background:linear-gradient(180deg,#111c29,#0b1219)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 10px rgba(71,191,255,.05)!important;
+}
+html[data-skin='z'].darkMode .brand,
+html[data-skin='z'].darkMode .section span,
+html[data-skin='z'].darkMode .menuList span,
+html[data-skin='z'].darkMode .monthNavigator .monthToday,
+html[data-skin='z'].darkMode .setting b,
+html[data-skin='z'].darkMode .compactFinanceHead small,
+html[data-skin='z'].darkMode .detailHero small,
+html[data-skin='z'].darkMode .recoHead,
+html[data-skin='z'].darkMode .quote b{color:var(--z-accent)!important}
+html[data-skin='z'].darkMode .luxuryCard,
+html[data-skin='z'].darkMode .credit,
+html[data-skin='z'].darkMode .haneVerticalCard,
+html[data-skin='z'].darkMode .haneFlexVertical,
+html[data-skin='z'].darkMode .flexCredit,
+html[data-skin='z'].darkMode .bankAccount{
+  border-color:var(--skin-border)!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+html[data-skin='z'].darkMode .credit.blackgold,
+html[data-skin='z'].darkMode .haneVerticalCard.blackgold,
+html[data-skin='z'].darkMode .haneFlexVertical,
+html[data-skin='z'].darkMode .flexCredit{
+  background:radial-gradient(circle at 82% 10%,rgba(71,191,255,.08),transparent 20%),linear-gradient(160deg,#05080d 0%,#0f1720 58%,#05070b 100%)!important;
+}
+html[data-skin='z'].darkMode .chip,
+html[data-skin='z'].darkMode .cardTop span,
+html[data-skin='z'].darkMode .cardName,
+html[data-skin='z'].darkMode .hvcTag span,
+html[data-skin='z'].darkMode .hvcFooter small,
+html[data-skin='z'].darkMode .hvcBrand strong,
+html[data-skin='z'].darkMode .hvcBrand small{color:var(--skin-active-text)!important}
+html[data-skin='z'].darkMode .hvcGrid>div,
+html[data-skin='z'].darkMode .flexCredit .grid>div,
+html[data-skin='z'].darkMode .luxuryCard .grid>div{border-color:var(--skin-border)!important;background:rgba(8,13,18,.42)!important}
+html[data-skin='z'].darkMode .monthNavigator,
+html[data-skin='z'].darkMode .calendarDayPanel,
+html[data-skin='z'].darkMode .financeTabs,
+html[data-skin='z'].darkMode .reportSeg{border-color:var(--skin-border)!important;background:linear-gradient(180deg,#0a0f14,#080c11)!important}
+html[data-skin='z'].darkMode .summary .sum[data-action]:active{border-color:var(--skin-border-strong)!important}
+html[data-skin='z'].darkMode .calendarDayNav button,
+html[data-skin='z'].darkMode .calendarTopTabs button,
+html[data-skin='z'].darkMode .monthNavigator button,
+html[data-skin='z'].darkMode .monthNavigator .monthToday{background:linear-gradient(180deg,#111926,#0a1016)!important}
+html[data-skin='z'].darkMode .calendarDayNav button,
+html[data-skin='z'].darkMode .calendarTopTabs button,
+html[data-skin='z'].darkMode .monthNavigator b,
+html[data-skin='z'].darkMode .financeTabs button.active,
+html[data-skin='z'].darkMode .monthToday{color:var(--z-accent)!important}
+html[data-skin='z'].darkMode .nav,
+html[data-skin='z'].darkMode .top{border-color:var(--skin-border)!important;box-shadow:0 -8px 18px rgba(0,0,0,.24),0 0 0 1px rgba(71,191,255,.04) inset!important}
+html[data-skin='z'].darkMode .sum strong[style*='var(--gold2)'],
+html[data-skin='z'].darkMode .reportMoveRight b[style*='var(--gold2)'],
+html[data-skin='z'].darkMode .calendarMove strong[style*='var(--gold2)']{color:var(--z-accent)!important}
+html[data-skin='z'].darkMode input,html[data-skin='z'].darkMode select,html[data-skin='z'].darkMode textarea{caret-color:var(--z-accent)!important}
+html[data-skin='z'].darkMode .quick button[data-tab='calendar'] i,
+html[data-skin='z'].darkMode .quick button[data-action='notes'] i{color:var(--skin-purple)!important}
+html[data-skin='z'].darkMode .quick button[data-action='addIncome'] i{color:var(--gi)!important}
+html[data-skin='z'].darkMode .quick button[data-action='addExpense'] i{color:var(--ge)!important}
+html[data-skin='z'].darkMode .quick button[data-action='goCards'] i,
+html[data-skin='z'].darkMode .quick button[data-action='cardPay'] i{color:var(--z-accent)!important}
