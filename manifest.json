@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.8.20260920-LOCAL-DATA-ONLY-54-HALKBANK-EXACT-PARSER",
+  "start_url": "./?v=19.4.8.20260920-LOCAL-DATA-ONLY-55-UNIFIED-STATEMENT-ENGINE",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",

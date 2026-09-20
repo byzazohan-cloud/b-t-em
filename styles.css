@@ -1905,7 +1905,7 @@ html[data-skin='z'].darkMode .money.remain,
 html[data-skin='z'].darkMode .remainColor{color:var(--theme-remain)!important}
 
 
-/* HANE V54 — native select readability fix */
+/* HANE V55 — native select readability fix */
 html.darkMode .field select,
 html[data-skin='z'].darkMode .field select{
   color:#eef7ff!important;
