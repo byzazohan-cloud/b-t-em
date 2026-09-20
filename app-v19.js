@@ -1185,6 +1185,35 @@ function stmtParseTebFixedEngine(text,cardId,profile){
   }
   return rows
 }
+
+// TEB SADE için tarih segmenti motoru: toplam satırları hiçbir zaman işlem tutarı olamaz.
+function stmtParseTebSegmentEngine(text,cardId,profile){
+  if(profile?.id!=='teb')return[];
+  const anchor=stmtAnchorInfo(text),rows=[],seen={};
+  let flat=String(text||'').replace(/\r/g,' ').replace(/\n/g,' ').replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim();
+  // İşlem tablosundan önceki özet ve işlem tablosundan sonraki toplam/bilgilendirme alanlarını kes.
+  const tablePos=flat.search(/İŞLEM\s+TARİHİ\s+İŞLEM\s+AÇIKLAMASI\s+TUTAR/i);
+  if(tablePos>=0)flat=flat.slice(tablePos);
+  const stopPos=flat.search(/BU\s+KARTINIZLA\s+YAPILAN\s+İŞLEM\s+TOPLAMLARI|GENEL\s+TOPLAM|Kart'a\s+ait\s+MN/i);
+  if(stopPos>=0)flat=flat.slice(0,stopPos);
+  const dateRx=/(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))/g;
+  const hits=[...flat.matchAll(dateRx)];
+  for(let j=0;j<hits.length;j++){
+    const start=hits[j].index,end=j+1<hits.length?hits[j+1].index:flat.length;
+    const dateRaw=hits[j][1],di=stmtDateInfo(dateRaw,anchor);if(!di)continue;
+    let seg=flat.slice(start,end).trim();
+    if(stmtCarryForwardLike(seg))continue;
+    // TEB hareket tutarı, segment içindeki TL. formatlı son parasal değerdir.
+    // Segment sonuna toplam satırları ulaşamaz; yukarıda kesin kesildi.
+    const vals=[...seg.matchAll(/-?\s*(?:TL|TRY|₺)\.?\s*[+-]?\s*(?:(?:\d{1,3}(?:[.]\d{3})+|\d+)(?:,\d{2}|,-)?)/gi)];
+    if(!vals.length)continue;
+    const m=vals.at(-1),raw=m[0],value=stmtMoney(raw);if(!Number.isFinite(value)||value===0)continue;
+    const pick={raw,value,index:m.index||0,currency:'TL',score:1200};
+    const row=stmtMakeRow(cardId,di,seg,pick,start,profile.id,seen,true);if(!row)continue;
+    row.sourceEnd=end;row.physicalKey=`TEBSEG|${start}|${row.semanticKey}`;row.parserStrategy='teb-date-segment';rows.push(row)
+  }
+  return rows
+}
 function stmtParseProfileLayoutEngine(text,cardId,profile){
   if(!['denizbank','teb','isbank'].includes(profile?.id))return[];
   const anchor=stmtAnchorInfo(text),rows=[],seen={},lines=String(text||'').replace(/\r/g,'\n').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
@@ -1320,10 +1349,11 @@ function stmtZiraatPostProcess(text,cardId,rows,profile){
   return out
 }
 function parseStatementText(text,cardId){
-  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile');
+  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),tebSegRows=stmtParseTebSegmentEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile');
   let rows=line,strategy='common-line',best=ls;if(bs>best){rows=block;strategy='common-block';best=bs}if(ps>best){rows=profileRows;strategy='profile-layout';best=ps}
   // DenizBank'ta fiyat yalnızca en sağdaki İşlem Tutarı sütunundan alınır; Bonus/Kalan Borç sütunları yok sayılır.
   if(profile.id==='denizbank'&&denizRows.length>=3){rows=denizRows;strategy='deniz-fixed-right-column'}
+  else if(profile.id==='teb'&&tebSegRows.length>=3){rows=tebSegRows;strategy='teb-date-segment'}
   else if(profile.id==='teb'&&tebRows.length>=3){rows=tebRows;strategy='teb-fixed-final-tl'}
   else if(profile.id==='isbank'&&profileRows.length>=3){rows=profileRows;strategy='profile-layout'}
   if(profile.id==='halkbank')rows=stmtHalkbankPostProcess(text,cardId,rows,profile);
@@ -1535,9 +1565,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-67-TEB-TOTAL-FIX';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-67-TEB-TOTAL-FIX';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},

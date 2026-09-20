@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.8.20260920-LOCAL-DATA-ONLY-67-TEB-TOTAL-FIX",
+  "start_url": "./?v=19.4.8.20260920-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",
