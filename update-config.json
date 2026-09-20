@@ -4,6 +4,6 @@
   "force": true,
   "message": "V56: Tema Stüdyosu merkezi Z tema tokenlarına bağlandı; detay rengi artık aktif durum, border, glow ve ikonlara gerçek olarak uygulanır. Ana logo üst ayırıcı çizgiden ayrıldı. Veri ve işleyiş değiştirilmedi.",
   "updateUrl": "",
-  "build": "20260920-LOCAL-DATA-ONLY-48-Z-AUDIT-FIX",
+  "build": "20260920-LOCAL-DATA-ONLY-60-BANK-DETECT-GUARD",
   "version": "19.4.8-LOCAL_DATA_ONLY_52_SELECT_READABILITY"
 }

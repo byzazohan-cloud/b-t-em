@@ -1962,3 +1962,5 @@ html[data-skin='z'].darkMode select:not(.hiddenCatSelect),
 html.darkMode select:not(.hiddenCatSelect){
   color:#eef7ff!important;
 }
+
+/* HANE V60 — statement-bank detection and selected-card mismatch guard */

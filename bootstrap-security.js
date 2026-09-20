@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-59-BANK-PROFILES-GUARD';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-61-DENIZBANK-RIGHT-COLUMN';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {
