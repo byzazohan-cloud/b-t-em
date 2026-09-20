@@ -1433,6 +1433,18 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
       }
     }
   }catch(_e){}
+  // V75: Halkbank footer/date-summary hard guard.
+  // Gerçek işlem olmayan "Hesap Kesim / Son Ödeme Tarihi" bilgi satırları,
+  // PDF metin sırası bozulsa bile işlem listesine giremez.
+  out=out.filter(r=>{
+    if(!r||r.kind==='payment')return true;
+    const own=`${r.title||''} ${r.rawKey||''}`.toLocaleUpperCase('tr-TR').replace(/\s+/g,' ');
+    const footerInfo=/B[İI]R\s+SONRAK[İI]|HESAP\s+KES[İI]M(?:\s+TAR[İI]H[İI])?|SON\s+[ÖO]DEME(?:\s+TAR[İI]H[İI])?|HESAP\s+BAK[İI]YES[İI]|D[ÖO]NEM\s+BORCU|GENEL\s+TOPLAM|ARA\s+TOPLAM|\bTOPLAM\b/.test(own);
+    const weekday=/\b(PAZARTES[İI]|SALI|[ÇC]AR[ŞS]AMBA|PER[ŞS]EMBE|CUMA|CUMARTES[İI]|PAZAR)\b/.test(own);
+    // "Hesap Kesim: Cumartesi" gibi footer satırlarını kesin çıkar.
+    if(footerInfo&&(weekday||/HESAP\s+KES[İI]M|SON\s+[ÖO]DEME|B[İI]R\s+SONRAK[İI]/.test(own)))return false;
+    return true;
+  });
   out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
   return out
 }
@@ -1730,7 +1742,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-74-HALKBANK-FOOTER-GUARD';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-75-HALKBANK-FOOTER-HARD-GUARD';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
