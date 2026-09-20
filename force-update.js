@@ -13,5 +13,5 @@
       await Promise.all(ks.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)));
     }
   }catch(e){}
-  location.replace('./?v=19.4.8.20260920-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE&fresh='+Date.now());
+  location.replace('./?v=19.4.8.20260920-LOCAL-DATA-ONLY-82-HALKBANK-RECONCILIATION&fresh='+Date.now());
 })();

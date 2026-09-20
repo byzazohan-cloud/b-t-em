@@ -1635,7 +1635,15 @@ function stmtFinalizeSummaryConfidence(meta,rows){
   m.feeRowsMatch=!feeRows.length||!finite(m.feesTotal)||Math.abs((+m.feesTotal)-parsedFees)<.02;
   m.summaryEquationOk=finite(m.previousBalance)&&finite(m.spendingTotal)&&finite(m.feesTotal)&&finite(m.paymentsTotal)&&finite(m.periodDebt)
     ?Math.abs((+m.previousBalance)+(+m.spendingTotal)+(+m.feesTotal)-(+m.paymentsTotal)-(+m.periodDebt))<.02:false;
-  m.summaryTrusted=!!(m.summaryEquationOk&&m.spendingRowsMatch&&m.paymentRowsMatch&&m.feeRowsMatch);
+  const detected=stmtDetectBank('',statementImportCardId||'');
+  if(detected?.id==='halkbank'&&finite(m.previousBalance)&&finite(m.periodDebt)){
+    const refunds=round2((rows||[]).filter(r=>r?.kind==='refund').reduce((a,r)=>a+Math.abs(+r.amount||0),0));
+    const rowDebt=round2((+m.previousBalance)+parsedSpend+parsedFees-parsedPayments-refunds);
+    m.halkbankRowEquationTotal=rowDebt;
+    m.halkbankRowEquationOk=Math.abs(rowDebt-(+m.periodDebt))<.02;
+    if(m.halkbankRowEquationOk)m.summaryTrusted=true;
+  }
+  m.summaryTrusted=!!(m.summaryTrusted||(m.summaryEquationOk&&m.spendingRowsMatch&&m.paymentRowsMatch&&m.feeRowsMatch));
   return m
 }
 function stmtChronologyPenalty(rows,i){
@@ -1659,9 +1667,21 @@ function stmtUniqueSubsetIndexes(rows,kind,target,maxItems=4){
 }
 function stmtImportGuardStatus(meta,rows,bankId,cardId=''){
   const reasons=[],known=v=>v!==null&&v!==''&&v!==undefined&&Number.isFinite(Number(v)),sum=k=>(rows||[]).filter(r=>r?.kind===k).reduce((a,r)=>a+Math.abs(+r.amount||0),0),diff=(a,b)=>Math.abs(Number(a)-Number(b));
-  if(known(meta?.spendingTotal)&&diff(meta.spendingTotal,sum('spend'))>.02)reasons.push(`Harcama toplamı banka ile uyuşmuyor (${Number(sum('spend')).toFixed(2)} / ${Number(meta.spendingTotal).toFixed(2)})`);
-  if(known(meta?.paymentsTotal)&&Number(meta.paymentsTotal)>0&&diff(meta.paymentsTotal,sum('payment'))>.02)reasons.push(`Ödeme toplamı banka ile uyuşmuyor`);
-  if(known(meta?.feesTotal)&&Number(meta.feesTotal)>0&&diff(meta.feesTotal,sum('fee'))>.02)reasons.push(`Faiz/ücret toplamı banka ile uyuşmuyor`);
+  const spendSum=sum('spend'),paymentSum=sum('payment'),feeSum=sum('fee'),refundSum=sum('refund');
+  // Halkbank/Paraf ekstrelerinde özet alanlarının adları dönemden döneme değişebiliyor.
+  // Bu yüzden tek tek özet alanlarını zorlamak yerine gerçek muhasebe eşitliğini kullan:
+  // önceki dönem + harcamalar + faiz/ücret - ödemeler - iadeler = hesap bakiyesi.
+  let halkbankEquationOk=false;
+  if(bankId==='halkbank'&&known(meta?.previousBalance)&&known(meta?.periodDebt)){
+    const calc=Number(meta.previousBalance)+spendSum+feeSum-paymentSum-refundSum;
+    halkbankEquationOk=Math.abs(calc-Number(meta.periodDebt))<.02;
+    meta.halkbankRowEquationTotal=Math.round(calc*100)/100;
+    meta.halkbankRowEquationOk=halkbankEquationOk;
+  }
+  if(!halkbankEquationOk&&known(meta?.spendingTotal)&&diff(meta.spendingTotal,spendSum)>.02)reasons.push(`Harcama toplamı banka ile uyuşmuyor (${Number(spendSum).toFixed(2)} / ${Number(meta.spendingTotal).toFixed(2)})`);
+  if(!halkbankEquationOk&&known(meta?.paymentsTotal)&&Number(meta.paymentsTotal)>0&&diff(meta.paymentsTotal,paymentSum)>.02)reasons.push(`Ödeme toplamı banka ile uyuşmuyor`);
+  if(!halkbankEquationOk&&known(meta?.feesTotal)&&Number(meta.feesTotal)>0&&diff(meta.feesTotal,feeSum)>.02)reasons.push(`Faiz/ücret toplamı banka ile uyuşmuyor`);
+  if(bankId==='halkbank'&&!halkbankEquationOk&&known(meta?.previousBalance)&&known(meta?.periodDebt))reasons.push(`Halkbank hesap bakiyesi işlem toplamlarıyla uyuşmuyor`);
   const card=state?.cards?.find?.(x=>x.id===cardId),cardDetected=stmtDetectBank('',cardId);
   if(bankId&&bankId!=='generic'&&cardDetected.id&&cardDetected.id!=='generic'&&bankId!==cardDetected.id){
     const stmtLabel=STMT_BANK_PROFILES.find(p=>p.id===bankId)?.label||bankId.toLocaleUpperCase('tr-TR');
@@ -1759,7 +1779,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-82-HALKBANK-RECONCILIATION';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE';
 const HANE_ENGINE_PACKAGES=[
