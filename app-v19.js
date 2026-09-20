@@ -1314,6 +1314,32 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     }
     row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(val);row.parserStrategy='halkbank-payment-flat-rescue';out.push(row)
   }
+  // V71: Halkbank summary-backed payment rescue.
+  // Açıklama biçimi değişse bile banka özetindeki Dönemsel Alacak Kayıtları / ödeme toplamı
+  // işlem tablosunda aynı tutarlı, tarihli ve ödeme yönlü (+ / ödeme / tahsilat / aktarım) hareketi doğrular.
+  try{
+    const sm=parseStatementSummary(text);
+    const target=Number(sm?.paymentsTotal);
+    const current=out.filter(r=>r?.kind==='payment').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
+    if(Number.isFinite(target)&&target>0&&Math.abs(current-target)>.02){
+      const anchor2=stmtAnchorInfo(text),src2=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ');
+      const dr=/\b(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\b/g,ds=[];let z;
+      while((z=dr.exec(src2))!==null)ds.push({raw:z[1],index:z.index,end:dr.lastIndex});
+      for(let i=0;i<ds.length;i++){
+        const d=ds[i],n=ds[i+1],di=stmtDateInfo(d.raw,anchor2);if(!di)continue;
+        const seg=src2.slice(d.end,n?n.index:Math.min(src2.length,d.end+700)).replace(/\s+/g,' ').trim();
+        if(!seg)continue;
+        const am=stmtAmountCandidates(seg).filter(a=>Math.abs(Math.abs(+a.value||0)-target)<.02);if(!am.length)continue;
+        const u=seg.toLocaleUpperCase('tr-TR');
+        const payCue=stmtPaymentLike(seg)||/TAHS[İI]LAT|ALACAK|AKTARIM|BOR[ÇC].{0,20}[ÖO]DEME/.test(u)||am.some(a=>/\+/.test(String(a.raw||'')));
+        if(!payCue)continue;
+        const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-target)<.02);if(exists)break;
+        const title='HESAPTAN ÖDEME',baseFp=stmtFingerprint(cardId,di.date,title,-target),semanticKey=`${baseFp}|payment|0/0/0.00`,occ=1;
+        out.push({date:di.date,title,amount:target,category:'Kart Ödemesi',baseFp,semanticKey,rawKey:String(seg).toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim(),physicalKey:`SUM|${d.index}|${semanticKey}`,sourceStart:300000+d.index,sourceEnd:300000+d.index,occurrence:occ,fp:`${semanticKey}|#${occ}`,checked:true,refund:false,payment:true,kind:'payment',installmentNo:null,installmentCount:null,installmentTotal:null,bankProfile:profile.id,parserStrategy:'halkbank-summary-payment-rescue'});
+        break;
+      }
+    }
+  }catch(_e){}
   out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
   return out
 }
@@ -1610,7 +1636,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-70-HALKBANK-CARRY-PAYMENT-FIX';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-71-HALKBANK-SUMMARY-PAYMENT';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
