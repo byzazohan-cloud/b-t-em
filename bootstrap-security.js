@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-76-HALKBANK-FEE-PRESERVE';
+  const BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-77-HALKBANK-FEE-SUMMARY-GUARD';
   const KEY='hane_app_shell_build';
   try {
     if (localStorage.getItem(KEY) !== BUILD) {

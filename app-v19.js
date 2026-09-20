@@ -1441,6 +1441,11 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     const title=String(r.title||'').toLocaleUpperCase('tr-TR').replace(/\s+/g,' ').trim();
     const own=`${r.title||''} ${r.rawKey||''}`.toLocaleUpperCase('tr-TR').replace(/\s+/g,' ');
     const feeCue=/\b(KKDF|BSMV|BSMW)\b|FA[İI]Z|VERG[İI]|[ÜU]CRET|KOM[İI]SYON/.test(title);
+    // V77: Banka özetindeki "Toplam Faiz, Ücret, Vergiler" gerçek hareket değildir.
+    // Bu satır yalnız uzlaştırma toplamıdır; işlem listesine giremez.
+    const feeSummary=/^TOPLAM\s+FA[İI]Z(?:\s*,?\s*[ÜU]CRET)?(?:\s*,?\s*VERG[İI]LER?)?\b/.test(title)
+      ||/TOPLAM\s+FA[İI]Z.{0,40}(?:[ÜU]CRET|VERG[İI])/.test(own);
+    if(feeSummary)return false;
     // Vergi/faiz/ücret işlemi ise footer metni rawKey'e yapışmış olsa da koru.
     if((r.kind==='fee'||r.category==='Vergi & Faiz'||feeCue)&&!/^\s*(B[İI]R\s+SONRAK[İI]|HESAP\s+KES[İI]M|SON\s+[ÖO]DEME)/.test(title))return true;
     const footerStart=/^(?:B[İI]R\s+SONRAK[İI](?:\s+HESAP\s+KES[İI]M|\s+SON\s+[ÖO]DEME)?|HESAP\s+KES[İI]M(?:\s+TAR[İI]H[İI])?|SON\s+[ÖO]DEME(?:\s+TAR[İI]H[İI])?|HESAP\s+BAK[İI]YES[İI]|D[ÖO]NEM\s+BORCU|GENEL\s+TOPLAM|ARA\s+TOPLAM|TOPLAM\b)/.test(title);
@@ -1745,7 +1750,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-76-HALKBANK-FEE-PRESERVE';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-77-HALKBANK-FEE-SUMMARY-GUARD';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
