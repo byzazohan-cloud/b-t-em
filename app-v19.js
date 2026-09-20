@@ -1314,6 +1314,55 @@ function stmtHalkbankPostProcess(text,cardId,rows,profile){
     }
     row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(val);row.parserStrategy='halkbank-payment-flat-rescue';out.push(row)
   }
+  // V72: Halkbank carry-forward first-transaction rescue.
+  // Some Paraf statements place the first real purchase in the same logical PDF block
+  // immediately after "Bir Önceki Dönem Ekstre Borcu". Generic carry-forward filtering
+  // can drop that first dated row. Recover only the first dated non-payment transaction
+  // after the carry-forward marker and keep the carry-forward line itself excluded.
+  try{
+    const srcCarry=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ');
+    const upCarry=srcCarry.toLocaleUpperCase('tr-TR');
+    const carryMatch=upCarry.match(/B[İI]R\s+[ÖO]NCEK[İI]\s+D[ÖO]NEM(?:\s+\([^)]*\))?\s+EKSTRE\s+BORCU|[ÖO]NCEK[İI]\s+D[ÖO]NEM\s+EKSTRE\s+BORCU/);
+    if(carryMatch){
+      const start=(carryMatch.index||0)+carryMatch[0].length;
+      const tail=srcCarry.slice(start,start+2600);
+      const firstDate=tail.match(/(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))/);
+      if(firstDate){
+        const di=stmtDateInfo(firstDate[1],anchor);
+        if(di){
+          const segStart=(firstDate.index||0)+firstDate[0].length;
+          const rest=tail.slice(segStart);
+          const nextDate=rest.match(/\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})/);
+          let seg=rest.slice(0,nextDate?nextDate.index:Math.min(rest.length,700)).replace(/\s+/g,' ').trim();
+          if(seg && !stmtPaymentLike(seg) && !stmtCarryForwardLike(seg)){
+            const amounts=stmtAmountCandidates(seg).sort((a,b)=>a.index-b.index);
+            // Halkbank row usually ends with transaction amount + ParafPara.
+            // Prefer the largest non-zero monetary value to avoid picking 0.05 / 0.00 reward values.
+            const valid=amounts.filter(a=>Number.isFinite(+a.value)&&Math.abs(+a.value)>.004);
+            let pick=null;
+            if(valid.length){
+              pick=valid.reduce((best,a)=>!best||Math.abs(+a.value)>Math.abs(+best.value)?a:best,null);
+            }
+            if(pick){
+              const amount=Math.abs(+pick.value||0);
+              const exists=out.some(r=>r?.date===di.date&&r?.kind!=='payment'&&Math.abs(Math.abs(+r.amount||0)-amount)<.005);
+              if(!exists){
+                const rescueSeen={};
+                let row=stmtMakeRow(cardId,di,seg,pick,400000+start+(firstDate.index||0),profile.id,rescueSeen,false);
+                if(row){
+                  row.parserStrategy='halkbank-carry-first-transaction-rescue';
+                  row.sourceStart=400000+start+(firstDate.index||0);
+                  row.sourceEnd=row.sourceStart;
+                  out.push(row);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }catch(_e){}
+
   // V71: Halkbank summary-backed payment rescue.
   // Açıklama biçimi değişse bile banka özetindeki Dönemsel Alacak Kayıtları / ödeme toplamı
   // işlem tablosunda aynı tutarlı, tarihli ve ödeme yönlü (+ / ödeme / tahsilat / aktarım) hareketi doğrular.
@@ -1636,7 +1685,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-71-HALKBANK-SUMMARY-PAYMENT';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-72-HALKBANK-FIRST-TX-RESCUE';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-68-TEB-TOTAL-ROW-GUARD';
 const HANE_ENGINE_PACKAGES=[
