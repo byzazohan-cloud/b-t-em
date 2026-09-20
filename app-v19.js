@@ -1167,6 +1167,24 @@ function stmtParseDenizBankFixedEngine(text,cardId,profile){
   }
   return rows
 }
+function stmtParseTebFixedEngine(text,cardId,profile){
+  if(profile?.id!=='teb')return[];
+  const anchor=stmtAnchorInfo(text),rows=[],seen={},lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i],m=line.match(/^(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\s+(.+)$/);if(!m)continue;
+    const di=stmtDateInfo(m[1],anchor);if(!di)continue;
+    const rest=m[2].trim();if(stmtCarryForwardLike(rest))continue;
+    // TEB SADE ekstrelerinde gerçek hareket tutarı satırın sonundaki TL. tutarıdır.
+    // Örn: TL.300,- / TL.2.297,40 / -TL.14.826,69. Başka sayıları tutar sayma.
+    const end=rest.match(/([+-]?\s*(?:TL|TRY|₺)\.?\s*[+-]?\s*(?:(?:\d{1,3}(?:[.]\d{3})+|\d+)(?:,\d{2}|,-)?))\s*$/i);
+    if(!end)continue;
+    const raw=end[1],value=stmtMoney(raw);if(!Number.isFinite(value)||value===0)continue;
+    const pick={raw,value,index:Math.max(0,rest.length-end[0].length),currency:'TL',score:1000};
+    const row=stmtMakeRow(cardId,di,rest,pick,i,profile.id,seen,true);if(!row)continue;
+    row.sourceEnd=i;row.physicalKey=`TEB|${i}|${row.semanticKey}`;row.parserStrategy='teb-fixed-final-tl';rows.push(row)
+  }
+  return rows
+}
 function stmtParseProfileLayoutEngine(text,cardId,profile){
   if(!['denizbank','teb','isbank'].includes(profile?.id))return[];
   const anchor=stmtAnchorInfo(text),rows=[],seen={},lines=String(text||'').replace(/\r/g,'\n').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
@@ -1190,26 +1208,37 @@ function stmtStrategyQuality(rows,text,profile,kind){
 
 function stmtHalkbankPostProcess(text,cardId,rows,profile){
   let out=[...(rows||[])];if(profile?.id!=='halkbank')return out;
-  const anchor=stmtAnchorInfo(text),lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean),seen={};
+  const anchor=stmtAnchorInfo(text),rawText=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' '),lines=rawText.split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean),seen={};
+  const addPayment=(di,src,sourceStart,strategy)=>{
+    if(!di||!stmtPaymentLike(src))return;
+    const amounts=stmtAmountCandidates(src).sort((a,b)=>a.index-b.index);if(!amounts.length)return;
+    const pick=stmtPickAmountForProfile(profile,src,amounts);if(!pick)return;
+    const amount=Math.abs(+pick.value||0);if(!Number.isFinite(amount)||amount<=0)return;
+    const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-amount)<.005);if(exists)return;
+    const row=stmtMakeRow(cardId,di,src,pick,sourceStart,profile.id,seen,false);if(!row)return;
+    row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=amount;row.parserStrategy=strategy;out.push(row)
+  };
+  // Tarih aynı satırda ya da tek başına olabilir; sonraki fiziksel satırlar ödeme açıklamasının devamı sayılır.
   for(let i=0;i<lines.length;i++){
-    const m=lines[i].match(/^(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\s+(.+)$/);if(!m)continue;
+    const m=lines[i].match(/^(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))(?:\s+(.+))?$/);if(!m)continue;
     const di=stmtDateInfo(m[1],anchor);if(!di)continue;
-    let parts=[m[2]];
-    for(let j=i+1;j<Math.min(lines.length,i+4);j++){
+    let parts=[];if(m[2])parts.push(m[2]);
+    for(let j=i+1;j<Math.min(lines.length,i+6);j++){
       if(/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})\b/.test(lines[j]))break;
-      if(stmtCarryForwardLike(lines[j]))break;
       if(/TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI|MERSİS|MERSIS|PARAF\.COM\.TR/i.test(lines[j]))break;
       parts.push(lines[j]);
     }
-    const src=parts.join(' ').replace(/\s+/g,' ').trim();
-    if(!stmtPaymentLike(src))continue;
-    const amounts=stmtAmountCandidates(src).sort((a,b)=>a.index-b.index),pick=stmtPickAmountForProfile(profile,src,amounts);if(!pick)continue;
-    const amount=Math.abs(+pick.value||0);if(!Number.isFinite(amount)||amount<=0)continue;
-    const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-amount)<.005);
-    if(exists)continue;
-    const row=stmtMakeRow(cardId,di,src,pick,i,profile.id,seen,false);if(!row)continue;
-    row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(+row.amount||amount);row.parserStrategy='halkbank-payment-supplement';
-    out.push(row)
+    addPayment(di,parts.join(' ').replace(/\s+/g,' ').trim(),i,'halkbank-payment-line-rescue')
+  }
+  // PDF.js bazı Halkbank ekstrelerinde tarihi ve ödeme metnini ayrı bloklara koyar.
+  // Her tarih işaretinden bir sonraki tarihe kadar olan bölümü ayrıca tara.
+  const dateRx=/(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))/g,matches=[];let dm;
+  while((dm=dateRx.exec(rawText))!==null)matches.push({raw:dm[1],index:dm.index,end:dateRx.lastIndex});
+  for(let i=0;i<matches.length;i++){
+    const cur=matches[i],next=matches[i+1],di=stmtDateInfo(cur.raw,anchor);if(!di)continue;
+    const seg=rawText.slice(cur.end,next?next.index:Math.min(rawText.length,cur.end+600)).replace(/\s+/g,' ').trim();
+    if(!seg)continue;
+    addPayment(di,seg,100000+i,'halkbank-payment-segment-rescue')
   }
   out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
   return out
@@ -1291,11 +1320,12 @@ function stmtZiraatPostProcess(text,cardId,rows,profile){
   return out
 }
 function parseStatementText(text,cardId){
-  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile');
+  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile');
   let rows=line,strategy='common-line',best=ls;if(bs>best){rows=block;strategy='common-block';best=bs}if(ps>best){rows=profileRows;strategy='profile-layout';best=ps}
   // DenizBank'ta fiyat yalnızca en sağdaki İşlem Tutarı sütunundan alınır; Bonus/Kalan Borç sütunları yok sayılır.
   if(profile.id==='denizbank'&&denizRows.length>=3){rows=denizRows;strategy='deniz-fixed-right-column'}
-  else if(['teb','isbank'].includes(profile.id)&&profileRows.length>=3){rows=profileRows;strategy='profile-layout'}
+  else if(profile.id==='teb'&&tebRows.length>=3){rows=tebRows;strategy='teb-fixed-final-tl'}
+  else if(profile.id==='isbank'&&profileRows.length>=3){rows=profileRows;strategy='profile-layout'}
   if(profile.id==='halkbank')rows=stmtHalkbankPostProcess(text,cardId,rows,profile);
   if(profile.id==='ziraat')rows=stmtZiraatPostProcess(text,cardId,rows,profile);
   rows.forEach(r=>{r.bankProfile=profile.id;if(!r.parserStrategy)r.parserStrategy=strategy});return rows
@@ -1505,9 +1535,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-65-ZIRAAT-FEE-EXTRA-FIX';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-67-TEB-TOTAL-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-61-DENIZBANK-RIGHT-COLUMN';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-67-TEB-TOTAL-FIX';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
