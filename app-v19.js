@@ -1868,9 +1868,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-89-HALKBANK-RECON-FINAL';
+const HANE_SW_BUILD='19.4.8.20260921-LOCAL-DATA-ONLY-90-PDF-TEXT-FALLBACK';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-89-HALKBANK-RECON-FINAL';
+const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-90-PDF-TEXT-FALLBACK';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -2149,14 +2149,24 @@ async function readStatementFile(file){
       text=halkText;textEval=halkEval;
     }else if(['denizbank','teb','isbank'].includes(layoutBank.id)&&layoutEval.rows.length>=3){text=layoutText;textEval=layoutEval}
     const textChars=text.replace(/\s/g,'').length,dateTokens=(text.match(/\b\d{1,2}[.\/-]\d{1,2}(?:[.\/-](?:20\d{2}|\d{2}))?\b/g)||[]).length;
-    const suspicious=textChars<=80||(dateTokens>=6&&textEval.rows.length<Math.max(3,Math.floor(dateTokens*.35)))||(!textEval.meta.summaryTrusted&&dateTokens>=10);
+    // V90: Metin katmanında yeterli gerçek işlem varsa OCR zorunlu değildir.
+    // summaryTrusted yalnız uzlaştırma kalitesidir; tek başına OCR'a düşürme sebebi olamaz.
+    const minExpected=dateTokens>=6?Math.max(3,Math.floor(dateTokens*.25)):1;
+    const hasUsableText=textChars>80&&textEval.rows.length>=minExpected;
+    const suspicious=!hasUsableText;
     if(!suspicious)return text;
-    // PDF metin katmanı şüpheliyse OCR da değerlendirilir. Seçim satır sayısına değil,
-    // işlem satırları + banka toplamları + muhasebe eşitliği puanına göre yapılır.
-    let ocr='';const w=await getStatementOcrWorker('PDF OCR');for(let n=1;n<=pages.length;n++){statementOcrLabel=`PDF SAYFA ${n}/${pages.length}`;const pg=pages[n-1],vp=pg.getViewport({scale:1.8}),canvas=document.createElement('canvas');canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const r=await w.recognize(canvas);ocr+='\n'+(r.data.text||'')}
-    const ocrEval=ocr.replace(/\s/g,'').length>40?stmtInterpretationScore(ocr,statementImportCardId):{score:-1,rows:[],meta:{}};
-    if(textEval.score<0&&ocrEval.score<0)throw new Error('PDF içindeki işlem satırları okunamadı.');
-    return ocrEval.score>textEval.score?ocr:text;
+    // OCR yalnız metin katmanı gerçekten yetersizse denenir. OCR yüklenemezse mevcut metin
+    // en az bir işlem içeriyorsa HANE dosyayı tamamen reddetmez; metin sonucuyla devam eder.
+    try{
+      let ocr='';const w=await getStatementOcrWorker('PDF OCR');for(let n=1;n<=pages.length;n++){statementOcrLabel=`PDF SAYFA ${n}/${pages.length}`;const pg=pages[n-1],vp=pg.getViewport({scale:1.8}),canvas=document.createElement('canvas');canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;const r=await w.recognize(canvas);ocr+='\n'+(r.data.text||'')}
+      const ocrEval=ocr.replace(/\s/g,'').length>40?stmtInterpretationScore(ocr,statementImportCardId):{score:-1,rows:[],meta:{}};
+      if(textEval.score<0&&ocrEval.score<0)throw new Error('PDF içindeki işlem satırları okunamadı.');
+      return ocrEval.score>textEval.score?ocr:text;
+    }catch(ocrErr){
+      console.warn('OCR yedeği kullanılamadı; PDF metin katmanıyla devam ediliyor.',ocrErr);
+      if(textChars>80&&textEval.rows.length>0)return text;
+      throw ocrErr;
+    }
   }
   const pe=document.getElementById('statementImportProgress');if(pe)pe.textContent='OCR MOTORU HAZIRLANIYOR...';
   const w=await getStatementOcrWorker('FOTOĞRAF OKUNUYOR'),source=await statementImageForOcr(file);const r=await w.recognize(source);return r.data.text||''
