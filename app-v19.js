@@ -1127,7 +1127,7 @@ function stmtParseLineEngine(text,cardId,profile){
     const line=lines[i],u=line.toLocaleUpperCase('tr-TR'),m=line.match(/^\s*(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\b\s*(.*)$/);
     if(started&&/^(?:BİR\s+SONRAKİ|BIR\s+SONRAKI)$/.test(u)){pending=[];break}
     if(!started&&/^(?:İŞLEM|ISLEM)$/.test(u)){started=true;continue}
-    if(!m){if(!started||stmtCommonIgnoreLine(line))continue;const hasLetters=/[A-ZÇĞİÖŞÜa-zçğıöşü]/.test(line),hasMoney=stmtAmountCandidates(line).length>0;if(hasLetters&&!hasMoney)pending.push(line);continue}
+    if(!m){if(stmtCarryForwardLike(line)){pending=[];continue}if(!started||stmtCommonIgnoreLine(line))continue;const hasLetters=/[A-ZÇĞİÖŞÜa-zçğıöşü]/.test(line),hasMoney=stmtAmountCandidates(line).length>0;if(hasLetters&&!hasMoney)pending.push(line);continue}
     started=true;
     const di=stmtDateInfo(m[1],anchor);if(!di)continue;const rest=m[2]||'',amounts=stmtAmountCandidates(rest).sort((a,b)=>a.index-b.index);
     if(!amounts.length){if(!stmtCommonIgnoreLine(rest)&&/[A-ZÇĞİÖŞÜa-zçğıöşü]/.test(rest))pending.push(rest);continue}
@@ -1187,6 +1187,34 @@ function stmtStrategyQuality(rows,text,profile,kind){
   for(let i=1;i<r.length;i++)if(r[i-1].date>r[i].date)score-=8;score-=r.filter(x=>!stmtValidIsoDate(x.date)||!Number.isFinite(+x.amount)||Math.abs(+x.amount)<=0).length*25;if(profile.preferLine&&kind==='line')score+=10;return score
 }
 
+
+function stmtHalkbankPostProcess(text,cardId,rows,profile){
+  let out=[...(rows||[])];if(profile?.id!=='halkbank')return out;
+  const anchor=stmtAnchorInfo(text),lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean),seen={};
+  for(let i=0;i<lines.length;i++){
+    const m=lines[i].match(/^(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\s+(.+)$/);if(!m)continue;
+    const di=stmtDateInfo(m[1],anchor);if(!di)continue;
+    let parts=[m[2]];
+    for(let j=i+1;j<Math.min(lines.length,i+4);j++){
+      if(/^\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2})\b/.test(lines[j]))break;
+      if(stmtCarryForwardLike(lines[j]))break;
+      if(/TÜRKİYE\s+HALK\s+BANKASI|TURKIYE\s+HALK\s+BANKASI|MERSİS|MERSIS|PARAF\.COM\.TR/i.test(lines[j]))break;
+      parts.push(lines[j]);
+    }
+    const src=parts.join(' ').replace(/\s+/g,' ').trim();
+    if(!stmtPaymentLike(src))continue;
+    const amounts=stmtAmountCandidates(src).sort((a,b)=>a.index-b.index),pick=stmtPickAmountForProfile(profile,src,amounts);if(!pick)continue;
+    const amount=Math.abs(+pick.value||0);if(!Number.isFinite(amount)||amount<=0)continue;
+    const exists=out.some(r=>r?.kind==='payment'&&r.date===di.date&&Math.abs(Math.abs(+r.amount||0)-amount)<.005);
+    if(exists)continue;
+    const row=stmtMakeRow(cardId,di,src,pick,i,profile.id,seen,false);if(!row)continue;
+    row.kind='payment';row.payment=true;row.refund=false;row.category='Kart Ödemesi';row.amount=Math.abs(+row.amount||amount);row.parserStrategy='halkbank-payment-supplement';
+    out.push(row)
+  }
+  out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
+  return out
+}
+
 function stmtZiraatPostProcess(text,cardId,rows,profile){
   let out=[...(rows||[])];
   const upper=v=>String(v||'').toLocaleUpperCase('tr-TR');
@@ -1241,16 +1269,23 @@ function stmtZiraatPostProcess(text,cardId,rows,profile){
   out=dedup;
   // Seçilen parser taksit faizi satırını kaçırdıysa, yalnızca açıkça tarih+taksit faizi+tutar içeren
   // Ziraat bloğundan eksik kaydı tamamla. Başlık/özet metninden kayıt üretme.
-  const anchor=stmtAnchorInfo(text),blocks=stmtLogicalBlocks(text,anchor),occSeen={};
-  for(const b of blocks){
-    const src=String((b.lines||[]).join(' ')),u=upper(src);
-    if(!/(?:TAKSİT(?:LENDİRME)?\s+FAİZ|TAKSIT(?:LENDIRME)?\s+FAIZ|PEŞİNE\s+TAKSİT\s+FAİZ|PESINE\s+TAKSIT\s+FAIZ)/.test(u))continue;
-    const amounts=stmtAmountCandidates(src),pick=stmtPickAmountForProfile(profile,src,amounts);if(!pick)continue;
-    const di={date:b.date};if(!stmtValidIsoDate(di.date))continue;
-    const row=stmtMakeRow(cardId,di,src,pick,b.sourceStart,profile.id,occSeen,false);if(!row)continue;
-    row.kind='fee';row.category='Vergi & Faiz';row.refund=false;row.payment=false;row.title='TAKSİT FAİZİ';row.parserStrategy='ziraat-fee-supplement';
-    const exists=out.some(x=>x.date===row.date&&Math.abs(Math.abs(+x.amount||0)-Math.abs(+row.amount||0))<.005&&/(?:TAKSİT|TAKSIT).*(?:FAİZ|FAIZ)/.test(upper(`${x.title||''} ${x.rawKey||''}`)));
-    if(!exists)out.push(row)
+  // Ana parser gerçek bir Taksit Faizi kaydı bulduysa kurtarma katmanı hiç çalışmaz.
+  // Bu, aynı günkü Kredi Faizi tutarının yanlışlıkla ikinci bir Taksit Faizi olarak eklenmesini engeller.
+  const hasInstallmentInterest=out.some(x=>x?.kind==='fee'&&/(?:TAKSİT|TAKSIT).*(?:FAİZ|FAIZ)/.test(upper(`${x.title||''} ${x.rawKey||''}`)));
+  if(!hasInstallmentInterest){
+    const anchor=stmtAnchorInfo(text),blocks=stmtLogicalBlocks(text,anchor),occSeen={};
+    for(const b of blocks){
+      const src=String((b.lines||[]).join(' ')),u=upper(src);
+      if(!/(?:TAKSİT(?:LENDİRME)?\s+FAİZ|TAKSIT(?:LENDIRME)?\s+FAIZ|PEŞİNE\s+TAKSİT\s+FAİZ|PESINE\s+TAKSIT\s+FAIZ)/.test(u))continue;
+      const amounts=stmtAmountCandidates(src),pick=stmtPickAmountForProfile(profile,src,amounts);if(!pick)continue;
+      const di={date:b.date};if(!stmtValidIsoDate(di.date))continue;
+      const row=stmtMakeRow(cardId,di,src,pick,b.sourceStart,profile.id,occSeen,false);if(!row)continue;
+      row.kind='fee';row.category='Vergi & Faiz';row.refund=false;row.payment=false;row.title='TAKSİT FAİZİ';row.parserStrategy='ziraat-fee-supplement';
+      // Kurtarma kaydı, başka bir faiz türünün aynı tarih+tutarını kopyalayamaz.
+      const conflictsOtherFee=out.some(x=>x?.kind==='fee'&&x.date===row.date&&Math.abs(Math.abs(+x.amount||0)-Math.abs(+row.amount||0))<.005&&!/(?:TAKSİT|TAKSIT).*(?:FAİZ|FAIZ)/.test(upper(`${x.title||''} ${x.rawKey||''}`)));
+      if(!conflictsOtherFee)out.push(row)
+      break;
+    }
   }
   out.sort((a,b)=>(a.sourceStart??Number.MAX_SAFE_INTEGER)-(b.sourceStart??Number.MAX_SAFE_INTEGER));
   return out
@@ -1261,6 +1296,7 @@ function parseStatementText(text,cardId){
   // DenizBank'ta fiyat yalnızca en sağdaki İşlem Tutarı sütunundan alınır; Bonus/Kalan Borç sütunları yok sayılır.
   if(profile.id==='denizbank'&&denizRows.length>=3){rows=denizRows;strategy='deniz-fixed-right-column'}
   else if(['teb','isbank'].includes(profile.id)&&profileRows.length>=3){rows=profileRows;strategy='profile-layout'}
+  if(profile.id==='halkbank')rows=stmtHalkbankPostProcess(text,cardId,rows,profile);
   if(profile.id==='ziraat')rows=stmtZiraatPostProcess(text,cardId,rows,profile);
   rows.forEach(r=>{r.bankProfile=profile.id;if(!r.parserStrategy)r.parserStrategy=strategy});return rows
 }
@@ -1469,7 +1505,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-63-ZIRAAT-FEE-NAMES';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-65-ZIRAAT-FEE-EXTRA-FIX';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-61-DENIZBANK-RIGHT-COLUMN';
 const HANE_ENGINE_PACKAGES=[
