@@ -7,7 +7,7 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260920-LOCAL-DATA-ONLY-75-HALKBANK-FOOTER-HARD-GUARD';
+const SW_BUILD = '19.4.8.20260920-LOCAL-DATA-ONLY-76-HALKBANK-FEE-PRESERVE';
 const CACHE_NAME = 'hane-v19-4-8-LOCAL-DATA-ONLY-49-Z-THEME-STUDIO-FIX';
 const HANE_CACHE_PREFIX = 'hane-';
 
