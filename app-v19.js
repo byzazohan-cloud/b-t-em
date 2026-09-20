@@ -1211,6 +1211,35 @@ function stmtParseHalkbankFixedEngine(text,cardId,profile){
   return stmtDropChronologyBreakingDuplicates(rows)
 }
 
+
+// V84: Halkbank coordinate-table final parser.
+// V79 koordinat motorunun ürettiği satırlar zaten fiziksel tablo satırlarıdır.
+// Bunları eski multiline parser'a tekrar sokmak açıklamaların komşu işlemlerle birleşmesine neden oluyordu.
+// Marker varsa her tarihli satır bağımsız ve nihai işlem kabul edilir.
+function stmtParseHalkbankCoordinateEngine(text,cardId,profile){
+  if(profile?.id!=='halkbank'||!String(text||'').includes('__HANE_HALKBANK_TABLE_ENGINE__'))return[];
+  const anchor=stmtAnchorInfo(text),rows=[],seen={};
+  const lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+  for(let i=0;i<lines.length;i++){
+    const m=lines[i].match(/^(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))\s+(.+)$/);if(!m)continue;
+    const di=stmtDateInfo(m[1],anchor);if(!di)continue;
+    const seg=m[2].trim();if(stmtCarryForwardLike(seg))continue;
+    const amounts=stmtAmountCandidates(seg).sort((a,b)=>a.index-b.index);if(!amounts.length)continue;
+    let pick=null;
+    const explicit=amounts.filter(a=>['TL','TRY','₺'].includes(a.currency));
+    if(explicit.length)pick=explicit[0];
+    else if(amounts.length>=2){
+      const last=amounts.at(-1),prev=amounts.at(-2);
+      const rewardLike=Math.abs(+last.value||0)<=5&&Math.abs(+prev.value||0)>=5;
+      pick=rewardLike?prev:amounts[0];
+    }else pick=amounts[0];
+    if(!pick||!Number.isFinite(+pick.value)||Math.abs(+pick.value)<=.004)continue;
+    const row=stmtMakeRow(cardId,di,seg,pick,500000+i,profile.id,seen,true);if(!row)continue;
+    row.sourceEnd=500000+i;row.physicalKey=`HALKCOORD|${i}|${row.semanticKey}`;row.parserStrategy='halkbank-coordinate-final';rows.push(row)
+  }
+  return stmtDropChronologyBreakingDuplicates(rows)
+}
+
 function stmtParseTebFixedEngine(text,cardId,profile){
   if(profile?.id!=='teb')return[];
   const anchor=stmtAnchorInfo(text),rows=[],seen={},lines=String(text||'').replace(/\r/g,'\n').replace(/\u00a0/g,' ').split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
@@ -1537,10 +1566,11 @@ function stmtZiraatPostProcess(text,cardId,rows,profile){
   return out
 }
 function parseStatementText(text,cardId){
-  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),halkRows=stmtParseHalkbankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),tebSegRows=stmtParseTebSegmentEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile'),hs=stmtStrategyQuality(halkRows,text,profile,'halk-fixed');
+  const profile=stmtBankProfile(text,cardId),line=stmtParseLineEngine(text,cardId,profile),block=stmtParseBlockEngine(text,cardId,profile),profileRows=stmtParseProfileLayoutEngine(text,cardId,profile),denizRows=stmtParseDenizBankFixedEngine(text,cardId,profile),halkCoordRows=stmtParseHalkbankCoordinateEngine(text,cardId,profile),halkRows=stmtParseHalkbankFixedEngine(text,cardId,profile),tebRows=stmtParseTebFixedEngine(text,cardId,profile),tebSegRows=stmtParseTebSegmentEngine(text,cardId,profile),ls=stmtStrategyQuality(line,text,profile,'line'),bs=stmtStrategyQuality(block,text,profile,'block'),ps=stmtStrategyQuality(profileRows,text,profile,'profile'),hs=stmtStrategyQuality(halkRows,text,profile,'halk-fixed');
   let rows=line,strategy='common-line',best=ls;if(bs>best){rows=block;strategy='common-block';best=bs}if(ps>best){rows=profileRows;strategy='profile-layout';best=ps}
   // DenizBank'ta fiyat yalnızca en sağdaki İşlem Tutarı sütunundan alınır; Bonus/Kalan Borç sütunları yok sayılır.
   if(profile.id==='denizbank'&&denizRows.length>=3){rows=denizRows;strategy='deniz-fixed-right-column'}
+  else if(profile.id==='halkbank'&&halkCoordRows.length>=1){rows=halkCoordRows;strategy='halkbank-coordinate-final'}
   else if(profile.id==='halkbank'&&halkRows.length>=3&&(halkRows.length>rows.length||hs>=best-2)){rows=halkRows;strategy='halkbank-fixed-row';best=hs}
   else if(profile.id==='teb'&&tebSegRows.length>=3){rows=tebSegRows;strategy='teb-date-segment'}
   else if(profile.id==='teb'&&tebRows.length>=3){rows=tebRows;strategy='teb-fixed-final-tl'}
@@ -1779,7 +1809,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-83-HALKBANK-DESC-ROW-FIX';
+const HANE_SW_BUILD='19.4.8.20260920-LOCAL-DATA-ONLY-84-HALKBANK-COORD-FINAL';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-LOCAL-DATA-ONLY-81-VISIBLE-COUNT-SOURCE';
 const HANE_ENGINE_PACKAGES=[
@@ -1963,7 +1993,7 @@ async function stmtPdfPageTexts(pg){
       tx.push(`${date} ${desc} ${amt}${reward?' '+reward:''}`);
     }
     // Table sayfasında sadece koordinatla doğrulanmış gerçek hareketleri bırak.
-    halkLayout=['İşlem Tarihi Açıklama TUTAR(TL) ParafPara',...tx].join('\n');
+    halkLayout=['__HANE_HALKBANK_TABLE_ENGINE__','İşlem Tarihi Açıklama TUTAR(TL) ParafPara',...tx].join('\n');
   }
   return{raw,layout,halkLayout,hasHalkTable}
 }
