@@ -1863,3 +1863,19 @@ html[data-skin='z'].darkMode .top.homeTop{border-bottom-color:var(--skin-border)
 html[data-skin='z'].darkMode .themeCard,
 html[data-skin='z'].darkMode .preview{border-color:var(--skin-border)!important}
 html[data-skin='z'].darkMode .themeCard:active{border-color:var(--skin-border-strong)!important;box-shadow:0 0 14px var(--skin-glow)!important}
+
+
+/* HANE V50 — Theme Studio semantic color binding */
+html[data-skin='z'].darkMode .summary .sum[data-kind='income'] strong,
+html[data-skin='z'].darkMode .compactFinanceValues button[data-kind='income'] b,
+html[data-skin='z'].darkMode .monthlyProGrid button[data-kind='income'] b{color:var(--gi)!important}
+html[data-skin='z'].darkMode .summary .sum[data-kind='expense'] strong,
+html[data-skin='z'].darkMode .compactFinanceValues button[data-kind='expense'] b,
+html[data-skin='z'].darkMode .monthlyProGrid button[data-kind='expense'] b{color:var(--ge)!important}
+html[data-skin='z'].darkMode .summary .sum[data-kind='remain'] strong,
+html[data-skin='z'].darkMode .compactFinanceValues button[data-kind='remain'] b,
+html[data-skin='z'].darkMode .monthlyProGrid button[data-kind='remain'] b,
+html[data-skin='z'].darkMode .donutC b{color:var(--gr)!important}
+html[data-skin='z'].darkMode .legend>div:nth-child(1) b{color:var(--gi)!important}
+html[data-skin='z'].darkMode .legend>div:nth-child(2) b{color:var(--ge)!important}
+html[data-skin='z'].darkMode .legend>div:nth-child(3) b{color:var(--gr)!important}
