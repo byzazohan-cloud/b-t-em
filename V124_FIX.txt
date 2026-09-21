@@ -1,0 +1,1 @@
+V124: Sabit, normal gider ve alt menü için ayrı yazısız 320px PNG assetler. Buton isimleri HTML'de tek kez. Veri/finans/ekstre mantığı değiştirilmedi.
