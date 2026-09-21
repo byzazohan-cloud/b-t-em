@@ -1,1 +1,0 @@
-V120: Gider Ekle > Sabit Gider kategori kutulari catPremiumIcon/catGem yerine 3D PNG dosyalarini dogrudan render eder. Veri ve finans mantigi degistirilmedi.
