@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.8",
-  "minimumVersion": "19.4.8",
+  "latestVersion": "19.4.8-V98-FORCED-HOME",
+  "minimumVersion": "19.4.8-V98-FORCED-HOME",
   "force": true,
-  "message": "V97: Seçilen premium tasarıma göre Ana Ekran ve Kimlik Kartı yenilendi. V96 otomatik güncelleme ve tüm veri işleyişi korunur.",
+  "message": "V98: Premium ana ekran dosyaları benzersiz adlarla zorunlu yenilendi.",
   "updateUrl": "",
-  "build": "20260921-V97-HOME-PREMIUM",
-  "version": "19.4.8-V97-HOME-PREMIUM"
+  "build": "20260921-V98-FORCED-HOME",
+  "version": "19.4.8-V98-FORCED-HOME"
 }
