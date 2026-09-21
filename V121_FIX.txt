@@ -1,0 +1,4 @@
+HANE V121
+Critical fix: HANE_SW_BUILD updated from stale V113 to V121.
+Direct 3D fixed-expense category render from V120 preserved.
+No localStorage/data deletion.
