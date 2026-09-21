@@ -1,4 +1,4 @@
-# HANE V115 — MERKEZİ KATEGORİ + İKON MOTORU
+# HANE V116 — MERKEZİ KATEGORİ + İKON MOTORU
 
 - V113 giriş düzeltmeleri korunur.
 - Ekstre kategori tanıma genişletildi ve tek merkezde tutuldu.

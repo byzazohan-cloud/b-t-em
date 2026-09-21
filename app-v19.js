@@ -36,40 +36,36 @@ function categoryCanonical(cat){const v=String(cat||'').trim();return CATEGORY_I
 function categoryId(cat){return 'cat_'+categoryCanonical(cat).toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}
 const I={Kira:'🏠',Aidat:'🏢',Market:'🛒',Manav:'🍎',Fırın:'🥖',Harçlık:'💵',Kafe:'☕',Yemek:'🍽️',Restoran:'🍴',Giyim:'👕',Akaryakıt:'⛽',Faturalar:'🧾',İnternet:'📡',Elektrik:'⚡',Su:'💧',Doğalgaz:'🔥','Cep Telefonu':'📱',Ulaşım:'◆',Sağlık:'✚',Eğitim:'✎',Ev:'⌂',Temizlik:'✦',Çocuk:'★','Evcil Hayvan':'♣','Kişisel Bakım':'✧',Abonelik:'◎',Eğlence:'♪',Tatil:'☀',Hediye:'🎁',Sigorta:'◇',Vergi:'▤','Vergi & Faiz':'▤',Diğer:'●'};
 const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957',Fırın:'#e5a85b',Harçlık:'#d9b44a',Kafe:'#c58a52',Yemek:'#ff8b5c',Restoran:'#ff6f61',Giyim:'#c084fc','Online Alışveriş':'#8b5cf6',Elektronik:'#38bdf8',Mobilya:'#c4a484','Ev Bakım':'#f59e0b',Kırtasiye:'#60a5fa',Kitap:'#818cf8',Kozmetik:'#f472b6','Kişisel Bakım':'#ec4899',Spor:'#22c55e',Oyun:'#a78bfa',Abonelik:'#6366f1',Akaryakıt:'#f59e0b',Otopark:'#64748b','Otoyol/Köprü':'#94a3b8','Araç Bakım':'#f97316',Ulaşım:'#4dd6c7',Kuyumculuk:'#e0b341',Kargo:'#06b6d4',Sağlık:'#ff5f78',Eğitim:'#60a5fa',Çocuk:'#fb7185','Evcil Hayvan':'#34d399',Ev:'#d8ad4f',Temizlik:'#22d3ee',Eğlence:'#f06dad',Tatil:'#fbbf24',Konaklama:'#eab308',Uçak:'#0ea5e9',Hediye:'#e879f9',Bağış:'#14b8a6',Sigorta:'#38bdf8','Vergi & Faiz':'#f59e0b',Vergi:'#94a3b8','Banka Masrafı':'#a3a3a3',Faiz:'#ef4444',Faturalar:'#ff8c42','İnternet':'#6ed4ff',Elektrik:'#ffd84d',Su:'#3fa9ff','Doğalgaz':'#ff6b45','Cep Telefonu':'#b879ff',Diğer:'#9ca3af'};
-function categoryIconSvg(cat,size=22){
+function categoryIconSvg(cat,size=30){
+  const k=categoryCanonical(cat);
+  const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Kişisel Bakım','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Vergi & Faiz':'Vergi','Banka Masrafı':'Vergi','Faiz':'Vergi'};
+  const n=alias[k]||k;
   const P={
-    'Kira':'<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10"/><path d="M10 20v-6h4v6"/>',
-    'Aidat':'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h2m2 0h2M9 11h2m2 0h2M9 15h2m2 0h2M10 21v-3h4v3"/>',
-    'Market':'<path d="M3 5h2l2.2 10h10.7l2-7H6"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>',
-    'Manav':'<path d="M12 8c-5-2-8 2-6.5 7.5C7 20 12 21 12 21s5-1 6.5-5.5C20 11 17 6 12 8Z"/><path d="M12 8c0-3 2-5 5-5M12 7c-2-2-4-2-6-1"/>',
-    'Fırın':'<path d="M5 18c1-5 4-10 7-13 3 3 6 8 7 13-4 2-10 2-14 0Z"/><path d="M9 10l6 2M8 14l8 2"/>',
-    'Harçlık':'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 9h1M17 15h1"/>',
-    'Kafe':'<path d="M5 8h11v7a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5V8Z"/><path d="M16 10h2a3 3 0 0 1 0 6h-2M8 4c0 1 1 1 1 2M12 4c0 1 1 1 1 2"/>',
-    'Yemek':'<path d="M7 3v8m-3-8v5a3 3 0 0 0 6 0V3M7 11v10M16 3v18M16 3c3 2 4 6 0 9"/>',
-    'Restoran':'<path d="M6 3v18M3 3v5a3 3 0 0 0 6 0V3M17 3v18M14 3c4 1 6 5 3 9"/>',
-    'Giyim':'<path d="m8 5-4 3 3 4 2-1v10h6V11l2 1 3-4-4-3c-1 2-7 2-8 0Z"/>',
-    'Akaryakıt':'<path d="M5 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M3 21h15M8 7h5v4H8z"/><path d="M16 8h2l2 3v6a2 2 0 0 1-4 0v-2"/>',
-    'Ulaşım':'<rect x="4" y="5" width="16" height="13" rx="3"/><path d="M7 18v2m10-2v2M7 9h10M8 14h.1M16 14h.1"/>',
-    'Sağlık':'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
-    'Eğitim':'<path d="m3 9 9-5 9 5-9 5-9-5Z"/><path d="M7 12v5c3 2 7 2 10 0v-5M21 9v7"/>',
-    'Ev':'<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10M9 15h6"/>',
-    'Temizlik':'<path d="M7 20h10M9 20l1-9h4l1 9M10 8h4M12 3v5"/><path d="M5 6h2M17 6h2M6 3l1 1M18 3l-1 1"/>',
-    'Eğlence':'<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',
-    'Faturalar':'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
-    'İnternet':'<path d="M4 9a12 12 0 0 1 16 0M7 13a8 8 0 0 1 10 0M10 17a3 3 0 0 1 4 0"/><circle cx="12" cy="20" r="1"/>',
-    'Elektrik':'<path d="m13 2-7 11h6l-1 9 7-12h-6z"/>',
-    'Su':'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11Z"/><path d="M9 15c.5 1.5 1.5 2 3 2"/>',
-    'Doğalgaz':'<path d="M13 2c1 5-4 6-2 10 1-2 3-3 4-5 3 3 4 6 3 9-1 4-5 6-8 5-4-1-6-5-4-9 1-3 3-5 5-7 0 3 1 4 2 5 1-2 1-5 0-8Z"/>',
-    'Cep Telefonu':'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 5h4M11 19h2"/>',
-    'Diğer':'<circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="16" cy="12" r="1"/>'
+    'Kira':'<path class="icoFill" d="M3.2 11.2 12 3.4l8.8 7.8-1.8 2-7-6.1-7 6.1z"/><path class="icoFill soft" d="M6.2 11.4h11.6v9.2H6.2z"/><path d="M9.7 20.6v-6.2h4.6v6.2"/>',
+    'Aidat':'<rect class="icoFill soft" x="5" y="2.8" width="14" height="18.4" rx="2.5"/><path d="M8.5 6.7h2m3 0h2m-7 4h2m3 0h2m-7 4h2m3 0h2M9.5 21v-3.4h5V21"/>',
+    'Faturalar':'<path class="icoFill soft" d="M5 2.8h14v18.4l-3.5-2-3.5 2-3.5-2-3.5 2z"/><path d="M8.5 7.5h7M8.5 11.5h7M8.5 15.5h4.8"/>',
+    'İnternet':'<path class="icoGlow" d="M3.5 9.2a13 13 0 0 1 17 0M6.6 13a8.5 8.5 0 0 1 10.8 0M9.8 16.8a3.5 3.5 0 0 1 4.4 0"/><circle class="icoFill" cx="12" cy="20" r="1.7"/>',
+    'Elektrik':'<path class="icoFill" d="M13.5 1.8 5.8 13h5.6l-1 9.2 8-12.2h-5.8z"/>',
+    'Su':'<path class="icoFill soft" d="M12 2.4s6.5 7.6 6.5 12a6.5 6.5 0 0 1-13 0c0-4.4 6.5-12 6.5-12Z"/><path d="M8.8 14.7c.4 2 1.7 3.1 3.7 3.3"/>',
+    'Doğalgaz':'<path class="icoFill soft" d="M13.2 2c1.2 4.6-3.8 6-1.6 10.1 1.1-2.1 3-3.2 4.1-5.2 3.3 3.2 4.3 6.6 2.8 9.8-1.6 3.7-5.7 5.5-9.1 3.9-3.8-1.8-5.2-6-3.1-9.7 1.1-2 2.8-3.8 4.5-5.5-.1 2.7.8 4.1 2 5.1 1.2-2.3 1.5-5.6.4-8.5Z"/>',
+    'Cep Telefonu':'<rect class="icoFill soft" x="6.7" y="2" width="10.6" height="20" rx="2.6"/><path d="M9.8 5h4.4M10.5 18.8h3"/>',
+    'Sigorta':'<path class="icoFill soft" d="M12 2.6 20 5.7v5.7c0 5.1-3.2 8.4-8 10-4.8-1.6-8-4.9-8-10V5.7z"/><path d="m8.4 12 2.2 2.2 5-5"/>',
+    'Vergi':'<path class="icoFill soft" d="M4 6.5 12 2l8 4.5v2H4zM5.5 10h13v8h-13zM3.5 20h17"/><path d="M8 10v8m4-8v8m4-8v8"/>',
+    'Market':'<path class="icoFill soft" d="M5.5 7h15l-2.1 8.4H8z"/><path d="M3 4.5h2.4L8 16.8h10.5"/><circle class="icoFill" cx="9.2" cy="20" r="1.6"/><circle class="icoFill" cx="17.2" cy="20" r="1.6"/>',
+    'Ulaşım':'<rect class="icoFill soft" x="3.5" y="5" width="17" height="13" rx="3.5"/><path d="M6.5 9h11M7 14.2h.2m9.6 0h.2M7 18v2m10-2v2"/>',
+    'Sağlık':'<path class="icoFill" d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+    'Eğitim':'<path class="icoFill soft" d="m2.5 8.8 9.5-5.2 9.5 5.2-9.5 5.3z"/><path d="M6.5 12v5c3.4 2.4 7.6 2.4 11 0v-5M21.5 9v7"/>',
+    'Akaryakıt':'<path class="icoFill soft" d="M4.5 21V5.5A2.5 2.5 0 0 1 7 3h7a2.5 2.5 0 0 1 2.5 2.5V21z"/><path d="M7.5 6.5h6v4.5h-6zM16.5 8h2l2 3v6.2a2 2 0 0 1-4 0V15"/>',
+    'Harçlık':'<rect class="icoFill soft" x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="3.2"/><path d="M5.5 9h1M17.5 15h1"/>',
+    'Eğlence':'<path d="M9 18V6l10-2v12"/><circle class="icoFill" cx="6" cy="18" r="3"/><circle class="icoFill" cx="16" cy="16" r="3"/>',
+    'Diğer':'<circle class="icoFill soft" cx="12" cy="12" r="9.2"/><circle class="icoFill" cx="8" cy="12" r="1.3"/><circle class="icoFill" cx="12" cy="12" r="1.3"/><circle class="icoFill" cx="16" cy="12" r="1.3"/>'
   };
-  const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Kişisel Bakım','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Sigorta':'Faturalar','Vergi & Faiz':'Faturalar','Vergi':'Faturalar','Banka Masrafı':'Faturalar','Faiz':'Faturalar'};
-  const path=P[cat]||P[alias[cat]]||P['Diğer'];
-  return `<svg class="catSvg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${path}</svg>`;
+  const path=P[n]||P['Diğer'];
+  return `<svg class="catSvg catSvgNew" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${path}</svg>`;
 }
-function catIcon(cat){return categoryIconSvg(cat,22)}
+function catIcon(cat){return categoryIconSvg(cat,30)}
 function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]||'#d8ad4f'}
-function catPremiumIcon(cat){return `<span class="catGem" style="--cat:${catColor(cat)}">${categoryIconSvg(cat,22)}</span>`}
+function catPremiumIcon(cat){return `<span class="catGem catGemNew" style="--cat:${catColor(cat)}">${categoryIconSvg(cat,30)}</span>`}
 function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id===x.cardId);return c?`KART · ${esc(c.bank)} ${esc(c.name)}`:'KART'}return 'NAKİT'}
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>{const x=d instanceof Date?d:new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')},ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',minimumFractionDigits:2,maximumFractionDigits:2}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

@@ -2206,3 +2206,17 @@ html[data-skin='z'] .monthlyProGrid button b{
 .premiumTopIcon:has(.premiumSvg){color:#79dcff!important;text-shadow:none!important}
 .premiumTopIcon .premiumSvg{filter:drop-shadow(0 0 5px currentColor)}
 .premiumSvg-income{color:#45e3a1}.premiumSvg-expense{color:#ff6573}.premiumSvg-cards,.premiumSvg-finance{color:#5fd8ff}.premiumSvg-calendar{color:#4d9fff}.premiumSvg-report{color:#45e3a1}.premiumSvg-bell{color:#ff75cb}.premiumSvg-note{color:#ffc65c}.premiumSvg-settings{color:#a9d8ff}.premiumSvg-backup{color:#42d8ff}.premiumSvg-category{color:#55e7dc}
+
+/* V116 — gerçek yeni ikon gövdeleri: eski ince ikonlar kullanılmaz */
+.catGemNew{width:52px!important;height:52px!important;border-radius:16px!important;overflow:hidden!important;background:radial-gradient(circle at 32% 18%,color-mix(in srgb,var(--cat) 34%,white 5%),transparent 42%),linear-gradient(145deg,#15212c 0%,#070b10 68%,#020406 100%)!important;border:1px solid color-mix(in srgb,var(--cat) 58%,#dff7ff 12%)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -10px 22px rgba(0,0,0,.42),0 8px 18px rgba(0,0,0,.5),0 0 18px color-mix(in srgb,var(--cat) 24%,transparent)!important}
+.catGemNew:before{content:'';position:absolute;inset:4px 7px auto;height:1px;border-radius:50%;background:rgba(255,255,255,.58);filter:blur(.35px)}
+.catSvgNew{overflow:visible;stroke:color-mix(in srgb,var(--cat) 86%,white 14%)!important;stroke-width:1.65!important;filter:drop-shadow(0 1px 0 rgba(255,255,255,.35)) drop-shadow(0 0 5px var(--cat)) drop-shadow(0 0 10px color-mix(in srgb,var(--cat) 45%,transparent))!important}
+.catSvgNew .icoFill{fill:color-mix(in srgb,var(--cat) 78%,white 12%);stroke:color-mix(in srgb,var(--cat) 72%,white 28%)}
+.catSvgNew .icoFill.soft{fill:color-mix(in srgb,var(--cat) 34%,transparent)}
+.catSvgNew .icoGlow{stroke-width:2.25}
+.fixedCategoryGrid .catGemNew,.categoryManage .catGemNew{width:48px!important;height:48px!important}
+.fixedCategoryGrid button,.categoryManage button{min-height:74px!important}
+.fixedCategoryGrid button .catSvgNew,.categoryManage button .catSvgNew{width:29px!important;height:29px!important}
+/* Genel HANE ikonlarını da daha tok ve parlak yap */
+.premiumSvg{stroke-width:2.65!important;filter:drop-shadow(0 1px 0 rgba(255,255,255,.35)) drop-shadow(0 0 5px currentColor)!important}
+.navIcon,.menuList i,.quick button i,.homeQuick button i{transform:translateZ(0);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -10px 20px rgba(0,0,0,.38),0 8px 18px rgba(0,0,0,.48),0 0 17px color-mix(in srgb,currentColor 18%,transparent)!important}
