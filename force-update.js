@@ -13,5 +13,5 @@
       await Promise.all(ks.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)));
     }
   }catch(e){}
-  location.replace('./?v=19.4.8.20260921-V129-AUDIT-FIX&fresh='+Date.now());
+  location.replace('./?v=19.4.8.20260921-V100-NAV-QUICK-NOTES&fresh='+Date.now());
 })();
