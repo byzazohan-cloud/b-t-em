@@ -425,10 +425,11 @@ function monthlyAccountPreview(limit=4){
   const rows=all.slice(0,limit).map(x=>`<div class="monthlyPreviewRow"><span>${esc(x.displayTitle||'ÖDEME')}</span><b>${money(x.amount)}</b></div>`).join('');
   return `<button type="button" class="monthlyPreviewHead" data-tab="monthPaid"><span><small>${monthLabel(m)}</small><b>AYLIK HESAP</b></span><em>TÜMÜ ›</em></button><div class="monthlyPreviewRows">${rows||'<div class="monthlyPreviewEmpty">BU AY ÖDEME KAYDI YOK.</div>'}</div><button type="button" class="monthlyPreviewTotal" data-tab="monthPaid"><span>AY TOPLAMI</span><strong>${money(total)}</strong></button>`;
 }
-function home(){const T=totals();return`<div class="homeHero">
+function home(){const T=totals();return`<button type="button" class="homeHero homeIdentityButton" data-action="editProfile" aria-label="Kimlik / Profil">
   <div class="homeHeroAvatar ava">${state.profile.photo?`<img src="${state.profile.photo}">`:esc((state.profile.name||'H')[0])}</div>
-  <div class="homeHeroText"><small>MERHABA</small><h2>${esc(state.profile.name||'HANE')}</h2><div class="date">${new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'long'})}</div></div>
-</div>
+  <div class="homeHeroText"><small>KİMLİK · PROFİL</small><h2>${esc(state.profile.name||'HANE')}</h2><div class="date">${new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'long'})}</div></div>
+  <span class="identityChevron">›</span>
+</button>
 <div class="homeFinancePanel"><div class="homeFinanceMonth">${monthLabel(state.selectedMonth)}</div><div class="homeSummaryNav"><button class="sum" data-action="homeSummaryNav" data-kind="income"><label>Gelir</label><strong style="color:var(--green)">${money(T.i)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="expense"><label>Gider</label><strong style="color:var(--red)">${money(T.e)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="remain"><label>Kalan</label><strong style="color:var(--gr)">${money(T.r)}</strong><span>›</span></button></div></div>
 <div class="homePrimaryActions"><button data-action="addIncome">${premiumIcon('income',25)}<span>GELİR EKLE</span></button><button data-action="addExpense">${premiumIcon('expense',25)}<span>GİDER EKLE</span></button></div>
 <div class="section cleanHomeTitle"><b>HIZLI ERİŞİM</b><span></span></div><div class="card quick premiumQuick v1947Quick cleanQuick"><button data-tab="monthPaid"><i>${premiumIcon("report",27)}</i>AYLIK HESAP</button><button data-tab="fixed"><i>${premiumIcon("fixed",27)}</i>SABİT GİDERLER</button><button data-tab="alerts"><i>${premiumIcon("bell",27)}</i>HATIRLATMALAR</button><button data-action="quickCards"><i>${premiumIcon("cards",27)}</i>KARTLAR</button><button data-tab="notes"><i>${premiumIcon("note",27)}</i>NOTLAR</button></div>
@@ -1899,6 +1900,36 @@ function statementRowsMonthBreakdown(rows){
   const counts={};for(const r of rows||[]){if(!stmtValidIsoDate(r.date))continue;const m=r.date.slice(0,7);counts[m]=(counts[m]||0)+1}
   return Object.entries(counts).sort().map(([m,n])=>{const [y,mo]=m.split('-').map(Number),label=new Date(y,mo-1,1,12).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR');return`${label}: ${n}`}).join(' • ')
 }
+
+function stmtDayDistance(a,b){
+  const x=new Date(String(a||'')+'T12:00:00'),y=new Date(String(b||'')+'T12:00:00');
+  if(Number.isNaN(x.getTime())||Number.isNaN(y.getTime()))return 999;
+  return Math.abs(Math.round((x-y)/86400000))
+}
+function stmtWords(v){return new Set(stmtCleanTitle(v||'').toLocaleUpperCase('tr-TR').replace(/[^A-ZÇĞİÖŞÜ0-9 ]/g,' ').split(/\s+/).filter(x=>x.length>2))}
+function stmtTitleScore(a,b){const A=stmtWords(a),B=stmtWords(b);if(!A.size||!B.size)return 0;let n=0;A.forEach(x=>{if(B.has(x))n++});return n/Math.max(1,Math.min(A.size,B.size))}
+function stmtExistingMatches(cardId,r){
+  if(!r||r.payment)return[];
+  const out=[],amt=Math.abs(+r.amount||0),m=String(r.date||'').slice(0,7);
+  for(const x of (state.expenses||[])){
+    if(x.recurring||x.importedFromStatement)continue;
+    const xa=Math.abs(+(x.actualAmount??x.amount)||0),days=stmtDayDistance(x.date,r.date),sameCard=x.source==='card'&&x.cardId===cardId,ts=stmtTitleScore(x.title,r.title);
+    if(days<=5&&Math.abs(xa-amt)<.02&&(sameCard||ts>=.5))out.push({kind:'expense',id:x.id,score:100-days+ts*10,label:`MEVCUT GİDER · ${x.date} · ${x.title} · ${money(xa)}`})
+  }
+  for(const p of (state.fixedPayments||[])){
+    const ex=(state.expenses||[]).find(x=>x.id===p.expenseId);if(!ex)continue;
+    const sameMonth=String(p.month||p.date||'').slice(0,7)===m,days=stmtDayDistance(p.date,r.date),sameCard=(p.cardId===cardId)||(ex.cardId===cardId),ts=Math.max(stmtTitleScore(p.title||ex.title,r.title),stmtTitleScore(ex.category,r.category));
+    // Sabit faturada beklenen tutar farklı olabilir; ay + kart + başlık/kategori benzerliği esas alınır.
+    if(sameMonth&&days<=12&&sameCard&&(ts>=.25||ex.category===r.category))out.push({kind:'fixed',id:p.id,score:120-days+ts*10,label:`SABİT ÖDEME · ${p.date} · ${p.title||ex.title} · ${money(+(p.actualAmount??p.amount)||0)}`})
+  }
+  return out.sort((a,b)=>b.score-a.score).slice(0,4)
+}
+function stmtMatchSelect(cardId,r,i){
+  if(r.payment)return'';
+  const ms=stmtExistingMatches(cardId,r);if(!ms.length)return`<select data-stmt-match="${i}"><option value="">YENİ GİDER OLARAK EKLE</option></select>`;
+  return `<select data-stmt-match="${i}" class="stmtMatchSelect"><option value="">YENİ GİDER OLARAK EKLE</option>${ms.map((m,k)=>`<option value="${m.kind}:${m.id}" ${k===0?'selected':''}>EŞLEŞTİR · ${esc(m.label)}</option>`).join('')}</select><small class="stmtMatchHint">Mevcut kayıt bulundu. Eşleştirirsen ikinci gider oluşmaz; ekstre tutarı/tarihi mevcut kayda işlenir.</small>`
+}
+
 function statementPreview(cardId,rows){
   const orderedRows=[...(rows||[])].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||((Number.isFinite(a.sourceStart)?a.sourceStart:Number.MAX_SAFE_INTEGER)-(Number.isFinite(b.sourceStart)?b.sourceStart:Number.MAX_SAFE_INTEGER))||((a.occurrence||0)-(b.occurrence||0)));
   // Önizleme, sayaç ve içe aktarma aynı son doğrulanmış hareket kümesini kullanır.
@@ -1923,7 +1954,7 @@ function statementPreview(cardId,rows){
     ${existingImported?`<label class="form-check"><input id="stmtReplacePeriod" type="checkbox" checked> <span>Bu ekstre dönemindeki önceki içe aktarmayı yenileriyle değiştir</span></label>`:''}
   </div>
   ${monthBreakdown?`<div class="notice statementMonthCheck"><b>İŞLEM TARİHLERİ</b><br>${esc(monthBreakdown)}</div>`:''}
-  <div class="statementImportList">${usable.length?usable.map((r,i)=>`<div class="statementImportRow"><input type="checkbox" data-stmt-check="${i}" checked><div class="stmtEditGrid"><input type="date" data-stmt-date="${i}" value="${esc(r.date)}"><input type="text" data-stmt-title="${i}" value="${esc(r.title)}" maxlength="100"><input type="number" step="0.01" data-stmt-amount="${i}" value="${Number(r.amount).toFixed(2)}" ${r.payment?'readonly':''}><select data-stmt-category="${i}" ${r.payment?'disabled':''}>${r.payment?`<option value="Kart Ödemesi" selected>Kart Ödemesi</option>`:C.map(cat=>`<option value="${esc(cat)}" ${cat===r.category?'selected':''}>${esc(cat)}</option>`).join('')}</select></div><small class="stmtRowType">${r.payment?'KART ÖDEMESİ':r.refund?'İADE':r.kind==='fee'?'VERGİ / FAİZ':r.installmentCount?`TAKSİT ${r.installmentNo||'?'} / ${r.installmentCount}${r.installmentTotal?` · TOPLAM ${money(r.installmentTotal)}`:''}`:'HARCAMA'}</small></div>`).join(''):'<div class="notice">EKLENECEK YENİ HAREKET BULUNMADI.</div>'}</div>${usable.length&&!statementImportMeta.importBlocked?'<button class="btn gold" style="width:100%;margin-top:12px" data-action="statementImportConfirm">SEÇİLENLERİ EKLE</button>':usable.length?'<button class="btn" style="width:100%;margin-top:12px;opacity:.55" disabled>BANKA TOPLAMLARI UYUŞMUYOR</button>':''}`
+  <div class="statementImportList">${usable.length?usable.map((r,i)=>`<div class="statementImportRow"><input type="checkbox" data-stmt-check="${i}" checked><div class="stmtEditGrid"><input type="date" data-stmt-date="${i}" value="${esc(r.date)}"><input type="text" data-stmt-title="${i}" value="${esc(r.title)}" maxlength="100"><input type="number" step="0.01" data-stmt-amount="${i}" value="${Number(r.amount).toFixed(2)}" ${r.payment?'readonly':''}><select data-stmt-category="${i}" ${r.payment?'disabled':''}>${r.payment?`<option value="Kart Ödemesi" selected>Kart Ödemesi</option>`:C.map(cat=>`<option value="${esc(cat)}" ${cat===r.category?'selected':''}>${esc(cat)}</option>`).join('')}</select>${stmtMatchSelect(cardId,r,i)}</div><small class="stmtRowType">${r.payment?'KART ÖDEMESİ':r.refund?'İADE':r.kind==='fee'?'VERGİ / FAİZ':r.installmentCount?`TAKSİT ${r.installmentNo||'?'} / ${r.installmentCount}${r.installmentTotal?` · TOPLAM ${money(r.installmentTotal)}`:''}`:'HARCAMA'}</small></div>`).join(''):'<div class="notice">EKLENECEK YENİ HAREKET BULUNMADI.</div>'}</div>${usable.length&&!statementImportMeta.importBlocked?'<button class="btn gold" style="width:100%;margin-top:12px" data-action="statementImportConfirm">SEÇİLENLERİ EKLE</button>':usable.length?'<button class="btn" style="width:100%;margin-top:12px;opacity:.55" disabled>BANKA TOPLAMLARI UYUŞMUYOR</button>':''}`
 }
 
 const HANE_OCR_SCRIPT='./__hane_engine__/tesseract/tesseract.min.js';
@@ -1932,9 +1963,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260921-V113-PROFILE-FUNCTION-RESTORE';
+const HANE_SW_BUILD='19.4.8.20260921-V135-MATCH-KIMLIK';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-v19-4-8-V113-PROFILE-FUNCTION-RESTORE';
+const HANE_ENGINE_CACHE='hane-v19-4-8-V135-MATCH-KIMLIK';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
@@ -2269,7 +2300,7 @@ async function confirmStatementImport(){
   try{
   const c=state.cards.find(x=>x.id===statementImportCardId);if(!c)throw new Error('Seçilen kart artık bulunamadı.');
   const checks=[...document.querySelectorAll('[data-stmt-check]')],selected=[];let skipped=0;
-  for(const el of checks){if(!el.checked)continue;const i=+el.dataset.stmtCheck,r=statementImportRows[i];if(!r)continue;const date=document.querySelector(`[data-stmt-date="${i}"]`)?.value||r.date,title=stmtCleanTitle(document.querySelector(`[data-stmt-title="${i}"]`)?.value||r.title),amount=Number(document.querySelector(`[data-stmt-amount="${i}"]`)?.value),categoryRaw=document.querySelector(`[data-stmt-category="${i}"]`)?.value||r.category,category=r.payment?'Kart Ödemesi':C.includes(categoryRaw)?categoryRaw:'Diğer';if(!stmtValidIsoDate(date)||!title||!Number.isFinite(amount)||amount===0){skipped++;continue}selected.push({...r,date,title,amount:Math.abs(amount),category})}
+  for(const el of checks){if(!el.checked)continue;const i=+el.dataset.stmtCheck,r=statementImportRows[i];if(!r)continue;const date=document.querySelector(`[data-stmt-date="${i}"]`)?.value||r.date,title=stmtCleanTitle(document.querySelector(`[data-stmt-title="${i}"]`)?.value||r.title),amount=Number(document.querySelector(`[data-stmt-amount="${i}"]`)?.value),categoryRaw=document.querySelector(`[data-stmt-category="${i}"]`)?.value||r.category,category=r.payment?'Kart Ödemesi':C.includes(categoryRaw)?categoryRaw:'Diğer';if(!stmtValidIsoDate(date)||!title||!Number.isFinite(amount)||amount===0){skipped++;continue}const match=document.querySelector(`[data-stmt-match="${i}"]`)?.value||'';selected.push({...r,date,title,amount:Math.abs(amount),category,existingMatch:match})}
   if(!selected.length)throw new Error('Eklenecek geçerli hareket seçilmedi.');
   // Kayıt öncesi yalnızca aynı fiziksel parser bloğunun tekrarını kaldır.
   // Semantik olarak aynı olan gerçek tekrarları (örn. aynı gün 3 x 45,50 TL toplu taşıma) koru.
@@ -2284,7 +2315,18 @@ async function confirmStatementImport(){
   for(const p of (state.cardPayments||[])){const k=[p.cardId,p.date,stmtCleanTitle(p.title||'KART ÖDEMESİ').toLocaleUpperCase('tr-TR'),Number(+p.amount||0).toFixed(2)].join('|');payExisting[k]=(payExisting[k]||0)+1}
   for(const r of selected){
     if(r.payment){const pk=[c.id,r.date,stmtCleanTitle(r.title||'KART ÖDEMESİ').toLocaleUpperCase('tr-TR'),Number(r.amount).toFixed(2)].join('|'),ord=(paySeen[pk]=(paySeen[pk]||0)+1);if(ord<=(payExisting[pk]||0)){skipped++;continue}state.cardPayments.push({id:id(),cardId:c.id,amount:r.amount,date:r.date,title:upper(r.title||'KART ÖDEMESİ'),importedFromStatement:true,statementImportMonth:month});payAdded++;continue}
-    const signed=r.refund?-Math.abs(r.amount):Math.abs(r.amount),base=stmtFingerprint(c.id,r.date,r.title,signed),manualDup=(state.expenses||[]).some(x=>!x.importedFromStatement&&x.source==='card'&&x.cardId===c.id&&x.date===r.date&&stmtCleanTitle(x.title).toLocaleUpperCase('tr-TR')===stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR')&&Math.abs((+(x.actualAmount??x.amount)||0)-signed)<.005);if(manualDup){skipped++;continue}const ord=(seen[base]=(seen[base]||0)+1),ex={id:id(),title:upper(r.title),amount:signed,actualAmount:signed,date:r.date,category:r.category,source:'card',cardId:c.id,recurring:false,memberId:'',attachment:'',importBaseFingerprint:base,importFingerprint:`${base}|#${ord}`,importedFromStatement:true,importedRefund:r.refund,statementImportMonth:month,installmentNo:r.installmentNo||null,installmentCount:r.installmentCount||null,totalAmount:r.installmentTotal||null,baseTitle:r.title};state.expenses.push(ex);added++;if(r.kind==='fee')feeAdded++
+    const signed=r.refund?-Math.abs(r.amount):Math.abs(r.amount);
+    if(r.existingMatch){
+      const [mk,mid]=String(r.existingMatch).split(':');
+      if(mk==='expense'){
+        const x=(state.expenses||[]).find(z=>z.id===mid);
+        if(x){x.title=upper(r.title);x.amount=signed;x.actualAmount=signed;x.date=r.date;x.category=r.category;x.source='card';x.cardId=c.id;x.importedFromStatement=false;x.statementLinked=true;x.statementVerifiedAt=iso();x.statementImportMonth=month;x.importBaseFingerprint=stmtFingerprint(c.id,r.date,r.title,signed);added++;continue}
+      }else if(mk==='fixed'){
+        const p=(state.fixedPayments||[]).find(z=>z.id===mid),ex=p?(state.expenses||[]).find(z=>z.id===p.expenseId):null;
+        if(p&&ex){p.amount=Math.abs(signed);p.actualAmount=Math.abs(signed);p.difference=Math.abs(signed)-fixedBillAmount(ex);p.date=r.date;p.category=r.category||ex.category;p.source='card';p.cardId=c.id;p.title=upper(r.title);p.statementLinked=true;p.statementVerifiedAt=iso();p.statementImportMonth=month;ex.paidMonths=Array.isArray(ex.paidMonths)?ex.paidMonths:[];if(!ex.paidMonths.includes(p.month))ex.paidMonths.push(p.month);added++;continue}
+      }
+    }
+    const base=stmtFingerprint(c.id,r.date,r.title,signed),manualDup=(state.expenses||[]).some(x=>!x.importedFromStatement&&x.source==='card'&&x.cardId===c.id&&x.date===r.date&&stmtCleanTitle(x.title).toLocaleUpperCase('tr-TR')===stmtCleanTitle(r.title).toLocaleUpperCase('tr-TR')&&Math.abs((+(x.actualAmount??x.amount)||0)-signed)<.005);if(manualDup){skipped++;continue}const ord=(seen[base]=(seen[base]||0)+1),ex={id:id(),title:upper(r.title),amount:signed,actualAmount:signed,date:r.date,category:r.category,source:'card',cardId:c.id,recurring:false,memberId:'',attachment:'',importBaseFingerprint:base,importFingerprint:`${base}|#${ord}`,importedFromStatement:true,importedRefund:r.refund,statementImportMonth:month,installmentNo:r.installmentNo||null,installmentCount:r.installmentCount||null,totalAmount:r.installmentTotal||null,baseTitle:r.title};state.expenses.push(ex);added++;if(r.kind==='fee')feeAdded++
   }
   const num=id=>{const v=String(document.getElementById(id)?.value||'').trim();if(v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null};
   const previousBalance=num('stmtSummaryPrevious'),spendingInput=num('stmtSummarySpend'),feesTotal=num('stmtSummaryFees'),paymentsInput=num('stmtSummaryPayments'),debtInput=num('stmtSummaryDebt');
