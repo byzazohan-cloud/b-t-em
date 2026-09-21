@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V56: Tema Stüdyosu merkezi Z tema tokenlarına bağlandı; detay rengi artık aktif durum, border, glow ve ikonlara gerçek olarak uygulanır. Ana logo üst ayırıcı çizgiden ayrıldı. Veri ve işleyiş değiştirilmedi.",
+  "message": "V96: Otomatik güncelleme sistemi. Uygulama açılışta, tekrar öne geldiğinde ve açık kaldığı sürece saatlik yeni sürüm kontrolü yapar; yeni service worker devreye girince uygulama bir kez otomatik yenilenir. Kullanıcı verileri korunur.",
   "updateUrl": "",
-  "build": "20260920-LOCAL-DATA-ONLY-60-BANK-DETECT-GUARD",
-  "version": "19.4.8-V95-AUDIT-FIX"
+  "build": "20260921-V96-AUTO-UPDATE",
+  "version": "19.4.8-V96-AUTO-UPDATE"
 }

@@ -7,8 +7,8 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260921-V95-AUDIT-FIX';
-const CACHE_NAME = 'hane-v19-4-8-V95-AUDIT-FIX';
+const SW_BUILD = '19.4.8.20260921-V96-AUTO-UPDATE';
+const CACHE_NAME = 'hane-v19-4-8-V96-AUTO-UPDATE';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
@@ -227,6 +227,23 @@ self.addEventListener('fetch',event=>{
       return blocked(503,'Verified HANE engine is unavailable. Keep internet on and try Ekstre Okut again.');
     }
     const canonical=isRootNav?'./index.html':appRel;
+
+    // Her uygulama açılışında ana belgeyi ağdan kontrol et. Yeni build varsa
+    // yeni bootstrap dosyası service worker güncellemesini otomatik başlatır.
+    // İnternet yoksa son doğrulanmış yerel kopya çalışmaya devam eder.
+    if(isRootNav){
+      try{
+        const fresh=await fetch(new Request(new URL('index.html',SCOPE).href,{method:'GET',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'}));
+        if(fresh&&fresh.ok){
+          await cache.put('./index.html',fresh.clone());
+          return fresh;
+        }
+      }catch(_){ }
+      const offline=await cache.match('./index.html');
+      if(offline)return offline;
+      return blocked(503,'HANE çevrimdışı kopyası bulunamadı. İnternete bağlanıp tekrar açın.');
+    }
+
     let hit=await cache.match(canonical);
     if(hit)return hit;
     try{
