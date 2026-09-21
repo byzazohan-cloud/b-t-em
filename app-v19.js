@@ -39,7 +39,7 @@ const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957
 function categoryIconSvg(cat,size=30){
   const k=categoryCanonical(cat);
   const fixed3d={'Kira':'kira','Aidat':'aidat','Faturalar':'faturalar','İnternet':'internet','Elektrik':'elektrik','Su':'su','Doğalgaz':'dogalgaz','Cep Telefonu':'cep-telefonu','Abonelik':'abonelik','Sigorta':'sigorta','Vergi':'vergi','Vergi & Faiz':'vergi'};
-  if(fixed3d[k])return `<img class="cat3dAsset" src="icons/fixed3d_v124/${fixed3d[k]}.png?v=V126" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  if(fixed3d[k])return `<img class="cat3dAsset" src="icons/fixed3d_v124/${fixed3d[k]}.png?v=V127" width="${size}" height="${size}" alt="" aria-hidden="true">`;
   const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Kişisel Bakım','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Vergi & Faiz':'Vergi','Banka Masrafı':'Vergi','Faiz':'Vergi'};
   const n=alias[k]||k;
   const P={
@@ -67,7 +67,7 @@ function categoryIconSvg(cat,size=30){
 }
 function catIcon(cat){return categoryIconSvg(cat,30)}
 function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]||'#d8ad4f'}
-function catPremiumIcon(cat){return `<span class="catGem catGemNew" style="--cat:${catColor(cat)}">${categoryIconSvg(cat,30)}</span>`}
+function catPremiumIcon(cat){return `<span class="cat3dOnlyV127">${categoryIconSvg(cat,34)}</span>`}
 function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id===x.cardId);return c?`KART · ${esc(c.bank)} ${esc(c.name)}`:'KART'}return 'NAKİT'}
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>{const x=d instanceof Date?d:new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')},ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',minimumFractionDigits:2,maximumFractionDigits:2}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -79,32 +79,7 @@ function haneLogo(size=54,cls=''){
 function haneFullLogo(cls=''){
   return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand9" alt="HANE">`;
 }
-function premiumIcon(name,size=26){
-  const p={
-home:`<path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10v10h11V10"/><path d="M10 20v-6h4v6"/>`,
-transactions:`<path d="M6 5h12M6 10h12M6 15h8M6 20h10"/><circle cx="3" cy="5" r="1"/><circle cx="3" cy="10" r="1"/><circle cx="3" cy="15" r="1"/><circle cx="3" cy="20" r="1"/>`,
-fixed:`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/>`,
-cards:`<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 9h18M7 15h5"/>`,
-profile:`<circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.3-6.5 7.5-6.5s6.7 2.3 7.5 6.5"/>`,
-settings:`<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.1M12 19.1v2.1M2.8 12h2.1M19.1 12h2.1M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/><path d="M8.3 4.3 9 2.5h6l.7 1.8 1.7.7 1.8-.8 2.6 2.6-.8 1.8.7 1.7 1.8.7v3.7l-1.8.7-.7 1.7.8 1.8-2.6 2.6-1.8-.8-1.7.7-.7 1.8H9l-.7-1.8-1.7-.7-1.8.8-2.6-2.6.8-1.8-.7-1.7-1.8-.7V11l1.8-.7L3 8.6l-.8-1.8 2.6-2.6 1.8.8z"/>`,
-income:`<path d="M12 20V5m-5 5 5-5 5 5M5 20h14"/>`,
-expense:`<path d="M12 4v15m-5-5 5 5 5-5M5 4h14"/>`,
-report:`<path d="M5 20V10M10 20V5M15 20v-8M20 20V8M3 20h19"/>`,
-pluscard:`<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M12 13v5M9.5 15.5h5"/>`,
-bell:`<path d="M6 17h12l-1.5-2.5V10a4.5 4.5 0 0 0-9 0v4.5zM10 20h4"/>`,
-lock:`<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1"/>`,
-palette:`<path d="M12 3a9 9 0 0 0 0 18h2a2 2 0 0 0 0-4h-1a1.5 1.5 0 0 1 0-3h2a6 6 0 0 0-3-11Z"/><circle cx="7.5" cy="9" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7.5" r="1"/>`,
-backup:`<path d="M6 16a4 4 0 0 1 .5-8A6 6 0 0 1 18 9a3.5 3.5 0 0 1 0 7M12 11v9m-3.5-5 3.5-4 3.5 4"/>`,
-info:`<circle cx="12" cy="12" r="9"/><path d="M12 10v6"/><circle cx="12" cy="7" r=".8"/>`,
-trash:`<path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/>`,
-globe:`<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>`,
-note:`<path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>`,
-calendar:`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M12 14h2M16 14h1M8 17h2M12 17h2"/>`,
-finance:`<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h5"/>`,
-category:`<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>`
-  };
-  return `<svg class="premiumSvg premiumSvg-${name}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${p[name]||p.home}</svg>`;
-}
+function premiumIcon(name,size=26){const map={home:'home',transactions:'transactions',expense:'expense',finance:'finance',calendar:'calendar',report:'report',income:'income',cards:'cards',bell:'bell',settings:'settings',fixed:'fixed',note:'note',lock:'lock',palette:'palette',backup:'backup',info:'info',trash:'trash'};const k=map[name]||'info';return `<img class="system3dIconV127" src="icons/system3d_v127/${k}.png?v=V127" alt="" style="width:${size}px;height:${size}px" aria-hidden="true">`}
 function normalizeV19(st){
   st.cardPayments=Array.isArray(st.cardPayments)?st.cardPayments:[];
   st.fixedPayments=Array.isArray(st.fixedPayments)?st.fixedPayments:[];
@@ -377,11 +352,11 @@ function cardPaymentInfo(c,base=new Date()){
 }
 function rec(){const t=new Date();let best=null;state.cards.forEach(c=>{const info=cardPaymentInfo(c,t),u=(+c.balance||0)/Math.max(1,+c.limit||1),score=info.days-(u>.8?20:u>.6?8:0);if(!best||score>best.score)best={...c,...info,score}});return best}
 function buildTopBar(){
-  if(current==='home')return`<div class="top homeTop v126HomeTop"><button class="ib premiumTopIcon menuBtn" data-action="openMenu" aria-label="Menü">☰</button><div class="v126MainLogo"><img src="icons/hane-main-logo-v126.png" alt="HANE"></div><div class="topRight"><button class="ib premiumTopIcon" data-tab="alerts" aria-label="Hatırlatmalar">${premiumIcon('bell',30)}</button><button class="ib premiumTopIcon homeIdentityBtn" data-tab="profile" aria-label="Kimlik Kartım">${state.profile.photo?`<img src="${state.profile.photo}" alt="Profil">`:`<span>${esc((state.profile.name||'H')[0])}</span>`}</button></div></div>`;
+  if(current==='home')return`<div class="top homeTop v126HomeTop"><button class="ib premiumTopIcon menuBtn" data-action="openMenu" aria-label="Menü">${premiumIcon('menu',30)}</button><div class="v126MainLogo"><img src="icons/hane-main-logo-v126.png" alt="HANE"></div><div class="topRight"><button class="ib premiumTopIcon" data-tab="alerts" aria-label="Hatırlatmalar">${premiumIcon('bell',30)}</button><button class="ib premiumTopIcon homeIdentityBtn" data-tab="profile" aria-label="Kimlik Kartım">${state.profile.photo?`<img src="${state.profile.photo}" alt="Profil">`:`<span>${esc((state.profile.name||'H')[0])}</span>`}</button></div></div>`;
   const t={transactions:'HAREKETLER',fixed:'GİDERLER',cards:'FİNANS',calendar:'TAKVİM',reports:'RAPORLAR',profile:'PROFİL',backup:'YEDEKLEME',settings:'AYARLAR',members:'HANE ÜYELERİ',homeEdit:'ANA SAYFAYI DÜZENLE',categories:'KATEGORİLER',theme:'TEMA STÜDYOSU',alerts:'HATIRLATMALAR',about:'HAKKINDA',monthSpent:'BU AY HARCANAN',monthPaid:'AYLIK HESAP',notes:'NOTLAR'};
   return`<div class="top"><button class="back" data-action="back">‹</button><div class="brand">${t[current]||'HANE'}</div><div class="topRight"><button class="ib premiumTopIcon" data-tab="alerts">${premiumIcon('bell',28)}</button><button class="ib premiumTopIcon" data-tab="settings">${premiumIcon('settings',28)}</button></div></div>`
 }
-function nav(){const items=[['home','home','ANA SAYFA'],['transactions','transactions','HAREKETLER'],['fixed','expenses','GİDERLER'],['cards','finance','FİNANS'],['calendar','calendar','TAKVİM'],['reports','reports','RAPORLAR']];return`<nav class="nav premiumNav v1947CleanNav v124Menu3d">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon"><img class="menu3dIconV124" src="icons/menu3d_v124/${x[1]}.png?v=V126" alt=""></span><span>${x[2]}</span></button>`).join('')}</nav>`}
+function nav(){const items=[['home','home','ANA SAYFA'],['transactions','transactions','HAREKETLER'],['fixed','expenses','GİDERLER'],['cards','finance','FİNANS'],['calendar','calendar','TAKVİM'],['reports','reports','RAPORLAR']];return`<nav class="nav premiumNav v1947CleanNav v124Menu3d">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon"><img class="menu3dIconV124" src="icons/menu3d_v124/${x[1]}.png?v=V127" alt=""></span><span>${x[2]}</span></button>`).join('')}</nav>`}
 function menuBody(){const a=[['home','home','ANA EKRAN'],['transactions','transactions','HAREKETLER'],['fixed','expense','GİDERLER'],['cards','cards','KARTLAR / ESNEK HESAP'],['calendar','calendar','TAKVİM'],['reports','report','RAPORLAR'],['alerts','bell','HATIRLATMALAR'],['notes','note','NOTLAR'],['categories','category','KATEGORİLER'],['members','profile','HANE ÜYELERİ'],['profile','profile','PROFİL / KİMLİK'],['settings','settings','AYARLAR']];return `<div class="menuList">${a.map(x=>`<button data-action="menuGo" data-go="${x[0]}"><i>${premiumIcon(x[1],24)}</i><b>${x[2]}</b><span>›</span></button>`).join('')}</div>`}
 
 function monthLabel(m=state.selectedMonth){const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR')}
@@ -638,7 +613,7 @@ function expenseForm(x={}){
   const source=x.source==='card'?'card':'cash',cards=state.cards||[];
   const normal3dFileV124=c=>({'Market':'market','Manav':'manav','Fırın':'firin','Kafe':'restoran','Yemek':'restoran','Restoran':'restoran','Online Alışveriş':'alisveris','Kuyumculuk':'alisveris','Ulaşım':'ulasim','Otopark':'ulasim','Otoyol/Köprü':'ulasim','Araç Bakım':'ulasim','Akaryakıt':'akaryakit','Sağlık':'saglik','Eğitim':'egitim','Kırtasiye':'egitim','Giyim':'giyim','Kozmetik':'kisisel-bakim','Kişisel Bakım':'kisisel-bakim','Spor':'spor','Oyun':'eglence','Eğlence':'eglence','Tatil':'seyahat','Konaklama':'seyahat','Uçak':'seyahat','Hediye':'hediye','Evcil Hayvan':'evcil-hayvan','Ev Bakım':'ev-bakim','Temizlik':'ev-bakim','Ev':'ev-esyasi','Mobilya':'ev-esyasi','Çocuk':'bebek','Kitap':'kitap','Elektronik':'teknoloji','Diğer':'ev-esyasi'}[c]||'');
   const fixed3dFile=c=>({'Kira':'kira','Aidat':'aidat','Faturalar':'faturalar','İnternet':'internet','Elektrik':'elektrik','Su':'su','Doğalgaz':'dogalgaz','Cep Telefonu':'cep-telefonu','Abonelik':'abonelik','Sigorta':'sigorta','Vergi':'vergi','Vergi & Faiz':'vergi'}[c]||'');
-  const catTiles=(cats,name)=>`<div class="premiumCatGrid ${name==='fixedCategory'?'fixed3dDirectGrid':''}" data-select-name="${name}">${cats.map(c=>{const ff=fixed3dFile(c),nf=normal3dFileV124(c),f=ff||nf;return `<button type="button" class="premiumCatBtn ${f?'fixed3dDirectBtn':''} ${c===currentCat?'active':''}" data-cat="${esc(c)}" style="--cat:${catColor(c)}">${f?`<img class="fixed3dDirectImg" src="${ff?'icons/fixed3d_v124/':'icons/normal3d_v124/'}${f}.png?v=V126" alt="${esc(c)}">`:catPremiumIcon(c)}<b class="${f?'fixed3dDirectLabel':''}">${esc(c)}</b></button>`}).join('')}</div><select class="hiddenCatSelect" name="${name}">${cats.map(c=>`<option ${c===currentCat?'selected':''}>${esc(c)}</option>`).join('')}</select>`;
+  const catTiles=(cats,name)=>`<div class="premiumCatGrid ${name==='fixedCategory'?'fixed3dDirectGrid':''}" data-select-name="${name}">${cats.map(c=>{const ff=fixed3dFile(c),nf=normal3dFileV124(c),f=ff||nf;return `<button type="button" class="premiumCatBtn ${f?'fixed3dDirectBtn':''} ${c===currentCat?'active':''}" data-cat="${esc(c)}" style="--cat:${catColor(c)}">${f?`<img class="fixed3dDirectImg" src="${ff?'icons/fixed3d_v124/':'icons/normal3d_v124/'}${f}.png?v=V127" alt="${esc(c)}">`:catPremiumIcon(c)}<b class="${f?'fixed3dDirectLabel':''}">${esc(c)}</b></button>`}).join('')}</div><select class="hiddenCatSelect" name="${name}">${cats.map(c=>`<option ${c===currentCat?'selected':''}>${esc(c)}</option>`).join('')}</select>`;
   return`<form class="form" id="expenseForm"><div class="field"><label>Gider Türü</label><select name="expenseType" id="expenseType"><option value="normal" ${!isFixed?'selected':''}>Normal Gider</option><option value="fixed" ${isFixed?'selected':''}>Sabit Gider</option></select></div>${input('title','Açıklama',x.title||'')}${input('amount',isRefund?'İade Tutarı':(isFixed?'Fatura Tutarı':'Tutar'),isRefund?Math.abs(+(x.actualAmount??x.amount)||0):(x.billAmount??x.amount??0),'number','step="0.01" min="0"')}${isRefund?'<input type="hidden" name="importedRefund" value="true">':''}<div class="field" id="normalCategoryWrap" style="${isFixed?'display:none':''}"><label>Kategori</label>${catTiles(normalCats,'normalCategory')}<div id="customCategoryWrap" style="${currentCat==='Diğer'?'':'display:none'};margin-top:10px">${input('customCategory','Diğer Kategori Adı',isCustomNormal?x.category:'')}</div></div><div class="field" id="fixedCategoryWrap" style="${isFixed?'':'display:none'}"><label>Sabit Gider Kategorisi</label>${catTiles(FIXED_C,'fixedCategory')}</div><div class="field"><label>Ödeme Kaynağı</label><div class="paySourceSeg"><button type="button" data-pay-source="cash" class="${source==='cash'?'active':''}">NAKİT</button><button type="button" data-pay-source="card" class="${source==='card'?'active':''}">KART</button></div><input type="hidden" name="source" id="expenseSource" value="${source}"></div><div class="field" id="expenseCardWrap" style="${source==='card'?'':'display:none'}"><label>Hangi Kart?</label><select name="cardId" id="expenseCardId"><option value="">Kart seç</option>${cards.map(c=>`<option value="${c.id}" ${c.id===x.cardId?'selected':''}>${esc(c.bank)} · ${esc(c.name)} · •••• ${esc(c.last4)}</option>`).join('')}</select>${!cards.length?'<small class="fieldHint">Önce KARTLAR bölümünden bir kart eklemelisin.</small>':''}</div><div id="normalDateWrap" style="${isFixed?'display:none':''}">${input('date','Harcama Tarihi',x.date||iso(),'date')}</div><div id="fixedDueWrap" style="${isFixed?'':'display:none'}">${input('dueDate','Son Ödeme Tarihi',x.dueDate||x.date||iso(),'date')}</div>${memberSelect(x.memberId||'')}<div class="notice" id="expenseHelp">${isFixed?'AYNI KATEGORİDEN BİRDEN FAZLA SABİT GİDER EKLEYEBİLİRSİN.':'NORMAL GİDERDE HARCAMA TARİHİ VE ÖDEME KAYNAĞI KAYDEDİLİR.'}</div><button type="button" class="btn" id="expenseReceiptBtn" data-action="attachReceipt">📷 FİŞ / FOTOĞRAF</button><small id="expenseReceiptStatus" class="fieldHint" style="display:${(modal?.attachment||x.attachment)?'block':'none'}">✓ FİŞ / FOTOĞRAF HAZIR</small><button class="btn gold" type="submit">KAYDET</button>${x.id?`<button type="button" class="btn" data-action="delExpense" data-id="${x.id}">SİL</button>`:''}</form>`
 }
 function cardForm(c={}){
@@ -1981,7 +1956,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260921-V126-HOME-FINANCE';
+const HANE_SW_BUILD='19.4.8.20260921-V127-3D-ICON-ENGINE';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-V113-VIEW-FUNCTIONS-RESTORE';
 const HANE_ENGINE_PACKAGES=[
