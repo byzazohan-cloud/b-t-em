@@ -39,7 +39,7 @@ const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957
 function categoryIconSvg(cat,size=30){
   const k=categoryCanonical(cat);
   const fixed3d={'Kira':'kira','Aidat':'aidat','Faturalar':'faturalar','İnternet':'internet','Elektrik':'elektrik','Su':'su','Doğalgaz':'dogalgaz','Cep Telefonu':'cep-telefonu','Abonelik':'abonelik','Sigorta':'sigorta','Vergi':'vergi','Vergi & Faiz':'vergi'};
-  if(fixed3d[k])return `<img class="cat3dAsset" src="icons/categories3d/${fixed3d[k]}.png" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  if(fixed3d[k])return `<img class="cat3dAsset" src="icons/categories3d/${fixed3d[k]}.png?v=V118" width="${size}" height="${size}" alt="" aria-hidden="true">`;
   const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Kişisel Bakım','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Vergi & Faiz':'Vergi','Banka Masrafı':'Vergi','Faiz':'Vergi'};
   const n=alias[k]||k;
   const P={

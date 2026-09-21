@@ -7,14 +7,15 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260921-V117-CATEGORY-ENGINE';
-const CACHE_NAME = 'hane-v19-4-8-V117-CATEGORY-ENGINE';
+const SW_BUILD = '19.4.8.20260921-V118-3D-ASSET-FIX';
+const CACHE_NAME = 'hane-v19-4-8-V118-3D-ASSET-FIX';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
 const APP_SHELL=[
   './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
+  './icons/categories3d/kira.png','./icons/categories3d/aidat.png','./icons/categories3d/faturalar.png','./icons/categories3d/internet.png','./icons/categories3d/elektrik.png','./icons/categories3d/su.png','./icons/categories3d/dogalgaz.png','./icons/categories3d/cep-telefonu.png','./icons/categories3d/abonelik.png','./icons/categories3d/sigorta.png','./icons/categories3d/vergi.png',
   './vendor/tesseract/lang/tur.traineddata.gz','./vendor/tesseract/lang/eng.traineddata.gz'
 ];
 
