@@ -2220,3 +2220,12 @@ html[data-skin='z'] .monthlyProGrid button b{
 /* Genel HANE ikonlarını da daha tok ve parlak yap */
 .premiumSvg{stroke-width:2.65!important;filter:drop-shadow(0 1px 0 rgba(255,255,255,.35)) drop-shadow(0 0 5px currentColor)!important}
 .navIcon,.menuList i,.quick button i,.homeQuick button i{transform:translateZ(0);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -10px 20px rgba(0,0,0,.38),0 8px 18px rgba(0,0,0,.48),0 0 17px color-mix(in srgb,currentColor 18%,transparent)!important}
+
+/* V117 — gerçek 3D kategori assetleri; onaylı görsel stile göre */
+.catGemNew:has(.cat3dAsset){background:linear-gradient(145deg,#101923,#04070b)!important;overflow:visible!important}
+.cat3dAsset{display:block!important;width:38px!important;height:38px!important;object-fit:contain!important;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55)) saturate(1.12) contrast(1.05)!important;transform:scale(1.18);transform-origin:center}
+.premiumCatBtn .catGemNew:has(.cat3dAsset){width:54px!important;height:54px!important}
+.premiumCatBtn .cat3dAsset{width:42px!important;height:42px!important;transform:scale(1.20)}
+.fixedCategoryGrid .catGemNew:has(.cat3dAsset){width:52px!important;height:52px!important}
+.fixedCategoryGrid .cat3dAsset{width:41px!important;height:41px!important;transform:scale(1.20)}
+@media(max-width:390px){.premiumCatBtn .cat3dAsset,.fixedCategoryGrid .cat3dAsset{transform:scale(1.16)}}
