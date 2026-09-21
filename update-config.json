@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V103: Giderler merkezi Normal + Sabit olarak yenilendi. Ana Sayfa ve V101 Hareketler korunuyor.",
+  "message": "V104: Finans merkezi Kartlar + Hesaplar + Borçlar olarak yenilendi. Dikey kart tasarımı ve ekstre/PDF motoru korunuyor; kartla eklenen giderler aynı kayıt üzerinden kart ekstresine yansıyor. Ana Sayfa, Hareketler ve Giderler kilitli yapıları korunuyor.",
   "updateUrl": "",
-  "build": "20260921-V103-EXPENSES",
-  "version": "19.4.8-V103-EXPENSES"
+  "build": "20260921-V104-FINANCE",
+  "version": "19.4.8-V104-FINANCE"
 }
