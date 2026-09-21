@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V107: Tüm sabit giderlerde Ödedim akışı gerçek ödenen tutarı sorar; normal tutara göre ek masraf veya düşük ödeme farkını hesaplar. Gerçek tutar gider hesabına alınır. Önceki kilitli ekranlar korunur.",
+  "message": "V108: Tüm sabit giderlerde Ödedim akışı gerçek ödenen tutarı sorar; normal tutara göre ek masraf veya düşük ödeme farkını hesaplar. Gerçek tutar gider hesabına alınır. Önceki kilitli ekranlar korunur.",
   "updateUrl": "",
-  "build": "20260921-V107-FIXED-ACTUAL-PAY",
-  "version": "19.4.8-V107-FIXED-ACTUAL-PAY"
+  "build": "20260921-V108-FIXED-ACTUAL-PAY",
+  "version": "19.4.8-V108-FIXED-ACTUAL-PAY"
 }
