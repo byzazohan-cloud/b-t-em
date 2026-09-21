@@ -7,8 +7,8 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260921-V130-AUDIT-FIX';
-const CACHE_NAME = 'hane-v19-4-8-V130-AUDIT-FIX';
+const SW_BUILD = '19.4.8.20260921-V132-AUDIT-FIX';
+const CACHE_NAME = 'hane-v19-4-8-V132-AUDIT-FIX';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
@@ -91,7 +91,8 @@ const APP_SHELL=[
   './icons/system3d_v127/transactions.png',
   './icons/system3d_v127/trash.png',
   './vendor/tesseract/lang/eng.traineddata.gz',
-  './vendor/tesseract/lang/tur.traineddata.gz'
+  './vendor/tesseract/lang/tur.traineddata.gz',
+  './icons/normal3d-v132-sprite.png'
 ];
 
 const PACKAGES=[

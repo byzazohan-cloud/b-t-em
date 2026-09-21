@@ -2366,3 +2366,8 @@ html[data-skin='z'] .monthlyProGrid button b{
  .fixed3dDirectImg{width:78px!important;height:78px!important}
  .menu3dIconV124{width:44px!important;height:44px!important}
 }
+
+/* V131 — complete normal expense icon set */
+.normal3dV131{width:82px!important;height:82px!important;max-width:94%!important;object-fit:contain!important;transform:none!important}
+
+.normal3dSpriteV132{display:block;background:url('icons/normal3d-v132-sprite.png?v=V132') no-repeat;background-size:800% 600%;background-position:calc(var(--ix)*100%/7) calc(var(--iy)*100%/5);width:82px!important;height:82px!important;flex:0 0 82px}

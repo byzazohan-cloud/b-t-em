@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V130: sürüm bütünlüğü, PWA kaynak listesi, 3D ikon motoru, parola ekranı, finans kart seçimi ve eksik aksiyonlar denetlendi/düzeltildi. Kullanıcı verileri korunur.",
+  "message": "V132: sürüm bütünlüğü, PWA kaynak listesi, 3D ikon motoru, parola ekranı, finans kart seçimi ve eksik aksiyonlar denetlendi/düzeltildi. Kullanıcı verileri korunur.",
   "updateUrl": "",
-  "build": "20260921-V130-AUDIT-FIX",
-  "version": "19.4.8-V130-AUDIT-FIX"
+  "build": "20260921-V132-AUDIT-FIX",
+  "version": "19.4.8-V132-AUDIT-FIX"
 }
