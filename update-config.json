@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V106: Takvim premium tek ekran yapısına geçirildi. Ay takvimi, renk noktaları, seçili gün özeti, günlük kayıt akışı ve kayıt ekleme birleştirildi. Önceki kilitli ekranlar ve ekstre motoru korunuyor.",
+  "message": "V107: Tüm sabit giderlerde Ödedim akışı gerçek ödenen tutarı sorar; normal tutara göre ek masraf veya düşük ödeme farkını hesaplar. Gerçek tutar gider hesabına alınır. Önceki kilitli ekranlar korunur.",
   "updateUrl": "",
-  "build": "20260921-V106-CALENDAR-PREMIUM",
-  "version": "19.4.8-V106-CALENDAR-PREMIUM"
+  "build": "20260921-V107-FIXED-ACTUAL-PAY",
+  "version": "19.4.8-V107-FIXED-ACTUAL-PAY"
 }

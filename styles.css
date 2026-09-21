@@ -2167,3 +2167,10 @@ html[data-skin='z'] .monthlyProGrid button b{
 .calendarAddMain{width:100%;height:44px;margin-top:10px;border-radius:13px;border:1px solid #35c8ff;background:linear-gradient(180deg,#0d2638,#091620);color:#eaf9ff;font-weight:900;letter-spacing:.04em;box-shadow:0 0 14px rgba(53,200,255,.12)}
 .calendarPremium .calendarSwipeHint{font-size:8px;margin-top:7px;color:#70879a}
 .calendarAddChoices{display:grid;gap:8px}.calendarAddChoices .btn{width:100%;min-height:44px}
+
+/* V107 — Sabit gider gerçek ödeme / fark özeti */
+.fixedPayCompare{display:grid;gap:5px;text-align:center}
+.fixedPayCompare small{font-size:10px;letter-spacing:.08em;color:var(--muted)}
+.fixedPayCompare>b{font-size:22px;color:var(--text)}
+#fixedPayDiff{margin-top:4px;padding-top:8px;border-top:1px solid rgba(106,205,255,.16);font-size:11px;color:var(--muted)}
+#fixedPayDiff b{color:var(--accent)}
