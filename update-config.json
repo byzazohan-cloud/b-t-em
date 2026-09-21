@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V104: Finans merkezi Kartlar + Hesaplar + Borçlar olarak yenilendi. Dikey kart tasarımı ve ekstre/PDF motoru korunuyor; kartla eklenen giderler aynı kayıt üzerinden kart ekstresine yansıyor. Ana Sayfa, Hareketler ve Giderler kilitli yapıları korunuyor.",
+  "message": "V105: Finans kart ekranı sadeleştirildi. Tek Finans seçim butonu, kompakt dikey kart, yana kaydırma + alttan kart listesi ve ekstre ekranında simetrik 2x2 işlemler. Önceki kilitli ekranlar korunuyor.",
   "updateUrl": "",
-  "build": "20260921-V104-FINANCE",
-  "version": "19.4.8-V104-FINANCE"
+  "build": "20260921-V105-FINANCE-REFINE",
+  "version": "19.4.8-V105-FINANCE-REFINE"
 }
