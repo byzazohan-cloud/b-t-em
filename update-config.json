@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V108: Tüm sabit giderlerde Ödedim akışı gerçek ödenen tutarı sorar; normal tutara göre ek masraf veya düşük ödeme farkını hesaplar. Gerçek tutar gider hesabına alınır. Önceki kilitli ekranlar korunur.",
+  "message": "V110: Açılış/parola sonrası yükleme zincirindeki sürüm uyuşmazlıkları giderildi. Service Worker, bootstrap, uygulama ve cache tek build kimliğine alındı. Kullanıcı verileri ve mevcut ekranlar korunur.",
   "updateUrl": "",
-  "build": "20260921-V108-FIXED-ACTUAL-PAY",
-  "version": "19.4.8-V108-FIXED-ACTUAL-PAY"
+  "build": "20260921-V110-BOOT-COHERENCE",
+  "version": "19.4.8-V110-BOOT-COHERENCE"
 }
