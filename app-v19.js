@@ -1932,7 +1932,7 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='19.4.8.20260921-V110-BOOT-COHERENCE';
+const HANE_SW_BUILD='19.4.8.20260921-V111-UNLOCK-TRACE';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
 const HANE_ENGINE_CACHE='hane-v19-4-8-V110-BOOT-COHERENCE';
 const HANE_ENGINE_PACKAGES=[
@@ -2387,7 +2387,28 @@ function renderSetup(){$('#app').innerHTML=`<div class="setup premiumSetup"><div
 function renderLock(){if(!meta()){renderSetup();return}pin='';const preview=state?.profile||getLockPreview()||{},photo=(preview.photo||''),initial=esc(((preview.name||'H')+'').trim()[0]||'H');$('#app').innerHTML=`<div class="lock haneUltraLock"><div class="ultraLeftRails"></div><div class="ultraCenter"><div class="ultraTopBrand">${haneFullLogo("ultraBrandLogo")}</div><div class="ultraPortraitWrap"><div class="ultraPortraitInner">${photo?`<div class="portraitFallback" style="display:none">${initial}</div><img src="${photo}" alt="Profil" onerror="this.style.display='none'; if(this.previousElementSibling) this.previousElementSibling.style.display='grid'">`:`<div class="portraitFallback">${initial}</div>`}</div></div><div class="ultraWelcome">HOŞ GELDİN</div><div class="ultraSub">HANE SENİNLE DAHA GÜÇLÜ</div><div class="ultraName">${esc(preview.name||'PROFİL ADI')}</div><div class="pinDots signatureDots ultraDots">${[0,1,2,3].map(i=>`<i data-dot="${i}"></i>`).join('')}</div><div class="keypad signatureKeypad ultraKeypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button type="button" data-key="${n}">${n}</button>`).join('')}<button type="button" class="bioKey" data-key="bio">⌁</button><button type="button" data-key="0">0</button><button type="button" class="del" data-key="del">⌫</button></div><div class="signatureFooter ultraFooter"><span></span><b>PLANLA, UYGULA, BAŞAR</b><span></span></div></div><aside class="ultraQuote"><div class="quoteCardMini">${haneLogo(58,'quoteMiniLogo')}</div><div class="quoteColumn"><strong>DAHA İYİ<br>BİR SEN<br>HER GÜN<br>BAŞLAR.</strong><i></i><b>PLANLA<br>UYGULA<br>BAŞAR</b><i></i><b>HEDEFİNE<br>HER GÜN<br>BİR ADIM<br>DAHA YAKLAŞ.</b></div></aside><div class="ultraRightRails"></div></div>`;$$('[data-key]').forEach(b=>b.onclick=()=>{if(b.dataset.key==='bio'){showToast('Biyometrik giriş yakında');return}pinKey(b.dataset.key)});installPinKeyboard()}
 async function pinKey(k){if(k==='del')pin=pin.slice(0,-1);else if(/^\d$/.test(String(k))&&pin.length<4)pin+=String(k);$$('[data-dot]').forEach((d,i)=>d.classList.toggle('on',i<pin.length));if(pin.length===4)setTimeout(()=>confirmPin(),140)}
 function installPinKeyboard(){if(window.__hanePinKeyboardInstalled)return;window.__hanePinKeyboardInstalled=true;document.addEventListener('keydown',e=>{if(state||!document.querySelector('.haneSignatureLock, .haneUltraLock'))return;const k=e.key;if(/^\d$/.test(k)){e.preventDefault();pinKey(k);return}if(k==='Backspace'||k==='Delete'){e.preventDefault();pinKey('del');return}if(k==='Enter'||k==='NumpadEnter'){e.preventDefault();if(pin.length===4)confirmPin()}})}
-async function confirmPin(){if(pin.length!==4){alert('4 HANELİ PIN GİR');return}if(await unlock(pin)){pin='';render();schedule();return}pin='';$$('[data-dot]').forEach(d=>d.classList.remove('on'));alert('PIN YANLIŞ')}
+async function confirmPin(){
+  if(pin.length!==4){alert('4 HANELİ PIN GİR');return}
+  const entered=pin;
+  try{
+    const ok=await unlock(entered);
+    if(!ok){pin='';$$('[data-dot]').forEach(d=>d.classList.remove('on'));alert('PIN YANLIŞ');return}
+    pin='';
+    // Kilit açıldıktan sonra eski veriden kalan eksik alanları bir kez daha güvenli biçimde tamamla.
+    state=normalizeV19(state||def());
+    recalculateFinanceCore();
+    current='home';modal=null;navHistory=[];
+    render();
+    schedule();
+  }catch(err){
+    console.error('HANE unlock/render error',err);
+    pin='';
+    // PIN doğrulandıysa kullanıcıyı kilit ekranında bırakma. Hata ayrıntısını veri silmeden görünür kıl.
+    const app=document.getElementById('app');
+    if(app)app.innerHTML=`<main class="phone"><div class="content"><div class="notice" style="margin:24px"><b>HANE AÇILIŞ HATASI</b><br><br>${esc(String(err?.message||err))}<br><br><button class="btn gold" id="haneRetryAfterUnlock">TEKRAR DENE</button></div></div></main>`;
+    document.getElementById('haneRetryAfterUnlock')?.addEventListener('click',()=>{try{current='home';modal=null;render();schedule()}catch(e){console.error(e)}});
+  }
+}
 function modalWrap(){return modal?`<div class="modal"><div class="sheet"><div class="sheetHead"><b>${esc(modal.title)}</b><button class="close" data-action="close">×</button></div>${modal.body}</div></div>`:''}
 function render(){captureModalFormDraft();if(state)initBrowserNav();applyTheme();$('#app').innerHTML=`<main class="phone">${buildTopBar()}<div class="content">${view()}</div>${nav()}</main>${modalWrap()}`;bind();restoreModalFormDraft();if(returnScrollTop!=null){const y=returnScrollTop;returnScrollTop=null;requestAnimationFrame(()=>{const c=document.querySelector('.content');if(c)c.scrollTop=y})}if(current==='reports')requestAnimationFrame(drawChart)}
 

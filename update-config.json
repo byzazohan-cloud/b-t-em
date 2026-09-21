@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V110: Açılış/parola sonrası yükleme zincirindeki sürüm uyuşmazlıkları giderildi. Service Worker, bootstrap, uygulama ve cache tek build kimliğine alındı. Kullanıcı verileri ve mevcut ekranlar korunur.",
+  "message": "V111: Açılış/parola sonrası yükleme zincirindeki sürüm uyuşmazlıkları giderildi. Service Worker, bootstrap, uygulama ve cache tek build kimliğine alındı. Kullanıcı verileri ve mevcut ekranlar korunur.",
   "updateUrl": "",
-  "build": "20260921-V110-BOOT-COHERENCE",
-  "version": "19.4.8-V110-BOOT-COHERENCE"
+  "build": "20260921-V111-BOOT-COHERENCE",
+  "version": "19.4.8-V111-BOOT-COHERENCE"
 }
