@@ -100,9 +100,12 @@ backup:`<path d="M6 16a4 4 0 0 1 .5-8A6 6 0 0 1 18 9a3.5 3.5 0 0 1 0 7M12 11v9m-
 info:`<circle cx="12" cy="12" r="9"/><path d="M12 10v6"/><circle cx="12" cy="7" r=".8"/>`,
 trash:`<path d="M5 7h14M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/>`,
 globe:`<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>`,
-note:`<path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>`
+note:`<path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>`,
+calendar:`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h2M12 14h2M16 14h1M8 17h2M12 17h2"/>`,
+finance:`<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h5"/>`,
+category:`<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>`
   };
-  return `<svg class="premiumSvg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${p[name]||p.home}</svg>`;
+  return `<svg class="premiumSvg premiumSvg-${name}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${p[name]||p.home}</svg>`;
 }
 function normalizeV19(st){
   st.cardPayments=Array.isArray(st.cardPayments)?st.cardPayments:[];
@@ -380,8 +383,8 @@ function buildTopBar(){
   const t={transactions:'HAREKETLER',fixed:'GİDERLER',cards:'FİNANS',calendar:'TAKVİM',reports:'RAPORLAR',profile:'PROFİL',backup:'YEDEKLEME',settings:'AYARLAR',members:'HANE ÜYELERİ',homeEdit:'ANA SAYFAYI DÜZENLE',categories:'KATEGORİLER',theme:'TEMA STÜDYOSU',alerts:'HATIRLATMALAR',about:'HAKKINDA',monthSpent:'BU AY HARCANAN',monthPaid:'AYLIK HESAP',notes:'NOTLAR'};
   return`<div class="top"><button class="back" data-action="back">‹</button><div class="brand">${t[current]||'HANE'}</div><div class="topRight"><button class="ib premiumTopIcon" data-tab="alerts">${premiumIcon('bell',28)}</button><button class="ib premiumTopIcon" data-tab="settings">${premiumIcon('settings',28)}</button></div></div>`
 }
-function nav(){const items=[['home','home','ANA SAYFA'],['transactions','transactions','HAREKETLER'],['fixed','fixed','GİDERLER'],['cards','cards','FİNANS'],['calendar','fixed','TAKVİM'],['reports','report','RAPORLAR']];return`<nav class="nav premiumNav v1947CleanNav">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon">${premiumIcon(x[1],30)}</span><span>${x[2]}</span></button>`).join('')}</nav>`}
-function menuBody(){const a=[['home','home','ANA EKRAN'],['transactions','transactions','HAREKETLER'],['fixed','expense','GİDERLER'],['cards','cards','KARTLAR / ESNEK HESAP'],['calendar','fixed','TAKVİM'],['reports','report','RAPORLAR'],['alerts','bell','HATIRLATMALAR'],['notes','note','NOTLAR'],['categories','fixed','KATEGORİLER'],['members','profile','HANE ÜYELERİ'],['profile','profile','PROFİL / KİMLİK'],['settings','settings','AYARLAR']];return `<div class="menuList">${a.map(x=>`<button data-action="menuGo" data-go="${x[0]}"><i>${premiumIcon(x[1],24)}</i><b>${x[2]}</b><span>›</span></button>`).join('')}</div>`}
+function nav(){const items=[['home','home','ANA SAYFA'],['transactions','transactions','HAREKETLER'],['fixed','fixed','GİDERLER'],['cards','cards','FİNANS'],['calendar','calendar','TAKVİM'],['reports','report','RAPORLAR']];return`<nav class="nav premiumNav v1947CleanNav">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon">${premiumIcon(x[1],30)}</span><span>${x[2]}</span></button>`).join('')}</nav>`}
+function menuBody(){const a=[['home','home','ANA EKRAN'],['transactions','transactions','HAREKETLER'],['fixed','expense','GİDERLER'],['cards','cards','KARTLAR / ESNEK HESAP'],['calendar','calendar','TAKVİM'],['reports','report','RAPORLAR'],['alerts','bell','HATIRLATMALAR'],['notes','note','NOTLAR'],['categories','category','KATEGORİLER'],['members','profile','HANE ÜYELERİ'],['profile','profile','PROFİL / KİMLİK'],['settings','settings','AYARLAR']];return `<div class="menuList">${a.map(x=>`<button data-action="menuGo" data-go="${x[0]}"><i>${premiumIcon(x[1],24)}</i><b>${x[2]}</b><span>›</span></button>`).join('')}</div>`}
 
 function monthLabel(m=state.selectedMonth){const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR')}
 function monthShiftValue(m,delta){const [y,mo]=String(m||ym(new Date())).split('-').map(Number),d=new Date(y,mo-1+delta,1);return ym(d)}
