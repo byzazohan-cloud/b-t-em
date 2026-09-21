@@ -1,11 +1,7 @@
-# HANE V19.4.8 – V36 READ FIX
+# HANE V112 — PROFILE RESTORE
 
-Ekstre dosyası seçildikten sonra `MAX_STATEMENT_FILE_BYTES` tanımsızlığı nedeniyle okumanın başlamamasına yol açan kritik runtime hatası düzeltildi. Mevcut parser, 66 harcama + 3 ödeme uzlaştırması ve güvenli motor yapısı korundu.
-
-
-## V38 SAFE STORAGE LOCK düzeltmeleri
-- Şifreli normal kayıtlar sıra kuyruğuna alındı; hızlı peş peşe işlemlerde eski kaydın yeni kaydın üstüne yazma riski giderildi.
-- PIN değiştirme ve yedek geri yükleme işlemlerine kesinti güvenli işlem günlüğü eklendi. Yarım yazma algılanırsa önceki şifreli veri/meta çifti geri yüklenir.
-- OCR hazırlığı Service Worker controller zorunluluğundan çıkarıldı; PDF gibi doğrulanmış paketleri sayfa tarafında hazırlar.
-- Kredi kartında fazla ödeme/iade sonucu oluşan alacak bakiyesi artık 0 TL'ye zorlanmaz.
-- PDF sayfa sınırı değiştirilmedi; mevcut parser davranışı korunmuştur.
+- V108 rapor tasarımı sırasında yanlışlıkla silinen `profile()` görünüm fonksiyonu geri getirildi.
+- `view()` nesnesi artık `profile` referansını güvenle çözebiliyor; PIN sonrası `PROFILE IS NOT DEFINED` açılış hatası giderildi.
+- Service Worker, bootstrap, uygulama ve asset sürüm kimlikleri V112 altında eşitlendi.
+- Kullanıcı verisi / localStorage silinmez.
+- Raporlar, sabit gider gerçek ödeme, Finans ve Takvim işlevleri korunmuştur.

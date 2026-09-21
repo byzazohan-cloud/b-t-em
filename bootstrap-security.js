@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260921-V111-UNLOCK-TRACE';
+  const BUILD='19.4.8.20260921-V112-PROFILE-RESTORE';
   const KEY='hane_app_shell_build';
   const RELOAD_KEY='hane_auto_update_reload';
   const CHECK_MS=60*60*1000;
