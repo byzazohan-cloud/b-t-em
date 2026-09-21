@@ -2141,3 +2141,29 @@ html[data-skin='z'] .monthlyProGrid button b{
 .financeCardList{display:flex;flex-direction:column;gap:8px;margin-top:4px}.financeCardListRow{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;text-align:left;padding:12px 13px;border-radius:15px;border:1px solid rgba(71,191,255,.16);background:linear-gradient(145deg,rgba(16,26,38,.94),rgba(6,12,18,.96));color:#eefaff}.financeCardListRow span{min-width:0}.financeCardListRow b,.financeCardListRow small{display:block}.financeCardListRow small{opacity:.62;margin-top:3px;font-size:10px}.financeCardListRow strong{white-space:nowrap;font-size:12px}.financeCardListRow i{font-style:normal;color:var(--z-cyan);font-size:18px}
 .statementCardActions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;width:100%!important;margin:12px 0 14px!important}.statementCardActions .btn{grid-column:auto!important;min-height:44px!important;padding:8px!important;font-size:9px!important;border-radius:13px!important}
 @media(max-width:390px){.financeCarousel>.haneVerticalCard{min-width:68vw!important;width:68vw!important;height:390px!important;min-height:390px!important}.hvcDebt b{font-size:21px}.statementCardActions .btn{min-height:42px!important;font-size:8px!important}}
+
+/* V106 — Takvim Premium: tek ekran, sade günler, günlük akış */
+.calendarPremium{padding:10px!important;border-radius:0!important;border:0!important;box-shadow:none!important;background:transparent!important}
+.calendarPremium .calendarHead{display:grid;grid-template-columns:42px 1fr 42px 58px;gap:7px;align-items:center;margin:0 0 12px}
+.calendarPremium .calendarHead b{text-align:center;font-size:14px;letter-spacing:.05em}
+.calendarPremium .calendarHead button{height:38px;border-radius:12px;border:1px solid var(--z-line-strong)!important;background:#0b131c!important;color:#63cfff!important;font-size:20px}
+.calendarPremium .calendarHead .calendarTodayBtn{font-size:9px;font-weight:900;letter-spacing:.04em;color:#d9f4ff!important}
+.calendarPremium .calWeek,.calendarPremium .calGrid{gap:4px}
+.calendarPremium .calWeek span{font-size:9px;padding:2px 0 5px;color:#8fa1b4}
+.calendarPremium .calBlank{min-height:43px}
+.calendarPremium .calDay{min-height:43px;border-radius:11px;padding:5px 2px;background:#0a1017!important;border:1px solid rgba(93,170,219,.17)!important;box-shadow:none!important}
+.calendarPremium .calDay b{font-size:12px}
+.calendarPremium .calDay.active{background:linear-gradient(180deg,#173b57,#0b2030)!important;border-color:#35c8ff!important;box-shadow:0 0 0 1px rgba(53,200,255,.15) inset,0 0 13px rgba(53,200,255,.22)!important}
+.calendarPremium .calDots{gap:2px}.calendarPremium .calDot{width:5px;height:5px}
+.calendarPremium .calLegend{justify-content:space-between;gap:5px;margin:9px 1px 12px;font-size:8px;flex-wrap:nowrap}
+.calendarPremium .calendarDayPanel{margin-top:0!important;border-radius:17px!important;padding:10px!important;border:1px solid rgba(75,184,245,.24)!important;background:linear-gradient(180deg,#0b131c,#080d13)!important}
+.calendarPremium .calendarDayNav{grid-template-columns:38px 1fr 38px;margin-bottom:9px}
+.calendarPremium .calendarDayNav button{height:38px!important;border-radius:11px!important}
+.calendarPremium .calendarDayNav div{text-align:center}.calendarPremium .calendarDayNav b{display:block;font-size:13px}.calendarPremium .calendarDayNav small{margin-top:2px;font-size:9px;color:#8fa4b7}
+.calendarPremium .calendarSummary2{grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
+.calendarPremium .calendarSummary2>div{padding:10px 12px!important;border-radius:13px!important}.calendarPremium .calendarSummary2 b{font-size:15px}.calendarPremium .calendarSummary2 .calIncome b{color:var(--gi)!important}.calendarPremium .calendarSummary2 .calExpense b{color:var(--ge)!important}
+.calendarPremium .calendarMoves{gap:6px}.calendarPremium .calendarMove{width:100%;grid-template-columns:5px 1fr auto 14px;gap:8px;padding:10px;text-align:left;color:#fff;border-radius:12px!important;cursor:pointer}
+.calendarPremium button.calendarMove{font:inherit}.calendarPremium .calendarMove>i{height:32px}.calendarPremium .calendarMove b{font-size:11px}.calendarPremium .calendarMove small{font-size:8px}.calendarPremium .calendarMove strong{font-size:11px;white-space:nowrap}.calendarChevron{font-size:22px;color:#78a8c6;line-height:1}
+.calendarAddMain{width:100%;height:44px;margin-top:10px;border-radius:13px;border:1px solid #35c8ff;background:linear-gradient(180deg,#0d2638,#091620);color:#eaf9ff;font-weight:900;letter-spacing:.04em;box-shadow:0 0 14px rgba(53,200,255,.12)}
+.calendarPremium .calendarSwipeHint{font-size:8px;margin-top:7px;color:#70879a}
+.calendarAddChoices{display:grid;gap:8px}.calendarAddChoices .btn{width:100%;min-height:44px}

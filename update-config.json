@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V105: Finans kart ekranı sadeleştirildi. Tek Finans seçim butonu, kompakt dikey kart, yana kaydırma + alttan kart listesi ve ekstre ekranında simetrik 2x2 işlemler. Önceki kilitli ekranlar korunuyor.",
+  "message": "V106: Takvim premium tek ekran yapısına geçirildi. Ay takvimi, renk noktaları, seçili gün özeti, günlük kayıt akışı ve kayıt ekleme birleştirildi. Önceki kilitli ekranlar ve ekstre motoru korunuyor.",
   "updateUrl": "",
-  "build": "20260921-V105-FINANCE-REFINE",
-  "version": "19.4.8-V105-FINANCE-REFINE"
+  "build": "20260921-V106-CALENDAR-PREMIUM",
+  "version": "19.4.8-V106-CALENDAR-PREMIUM"
 }
