@@ -2105,3 +2105,25 @@ html[data-skin='z'] .monthlyProGrid button b{
 .notesList .noteItem{width:100%;text-align:left}
 .noteItem>div:nth-child(2){min-width:0}.noteItem>div:nth-child(2) small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 @media(max-width:390px){.premiumNav .navIcon{width:34px!important;height:34px!important}.premiumNav .premiumSvg{width:22px!important;height:22px!important}.premiumNav button>span:last-child{font-size:6.8px!important}}
+/* V101 · Hareketler — tek merkezli ekran düzeni */
+.movementSearchRow{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px;align-items:center;margin-bottom:10px}
+.movementSearchRow .premiumMovementSearch{margin:0!important}
+.txAdvancedBtn{height:48px;width:48px;border-radius:15px;border:1px solid rgba(71,191,255,.22);background:rgba(8,18,29,.88);color:#aebdca;display:grid;place-items:center;padding:0}
+.txAdvancedBtn.active{color:var(--accent);border-color:rgba(71,191,255,.58);box-shadow:0 0 0 1px rgba(71,191,255,.08) inset}
+.txAdvancedFilterForm .txAmountRange{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.movementDay .movementList{overflow:hidden;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(7,14,23,.62)}
+.movementDay .movementRow{margin:0!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.055)!important;border-radius:0!important;background:transparent!important}
+.movementDay .movementRow:last-child{border-bottom:0!important}
+.movementMain{min-width:0}.movementMain>b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.movementMain>small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.movementAmount{min-width:112px;text-align:right}.movementAmount>b{font-variant-numeric:tabular-nums}.movementAmount small{display:block}
+@media(max-width:390px){.movementAmount{min-width:96px}.movementMain>small{font-size:9px!important}.movementSeg{gap:5px!important}.movementSeg button{font-size:11px!important}}
+
+/* V102 — locked Home restoration. V101 Transactions remains untouched. */
+.homeIdentityBtn{overflow:hidden;padding:0!important;border-radius:13px!important}.homeIdentityBtn img{width:100%;height:100%;object-fit:cover;display:block}.homeIdentityBtn>span{width:100%;height:100%;display:grid;place-items:center;font-weight:900;font-size:16px;color:var(--accent)}
+.homeFinancePanel{margin:2px 0 12px;padding:12px 10px 10px;border:1px solid rgba(73,189,255,.20);border-radius:20px;background:linear-gradient(155deg,rgba(17,24,32,.94),rgba(5,9,14,.98));box-shadow:0 14px 34px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)}
+.homeFinanceMonth{text-align:center;font-size:11px;font-weight:900;letter-spacing:.12em;color:#b8c3cd;margin:0 0 8px;text-transform:uppercase}
+.homeFinancePanel .homeSummaryNav{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.homeFinancePanel .homeSummaryNav .sum{min-width:0!important;min-height:76px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:9px 5px!important;display:grid!important;grid-template-rows:auto 1fr auto!important;place-items:center!important;gap:4px!important}
+.homeFinancePanel .homeSummaryNav .sum+ .sum{border-left:1px solid rgba(255,255,255,.08)!important}.homeFinancePanel .homeSummaryNav .sum:before{display:none!important}.homeFinancePanel .homeSummaryNav label{font-size:9px!important;letter-spacing:.09em!important}.homeFinancePanel .homeSummaryNav strong{font-size:clamp(15px,4.2vw,20px)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.homeFinancePanel .homeSummaryNav span{font-size:17px!important;color:var(--accent)!important}
+.homePrimaryActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0 0 14px}.homePrimaryActions button{min-height:54px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(155deg,#10151b,#070a0e);color:var(--text);display:flex;align-items:center;justify-content:center;gap:9px;font-size:11px;font-weight:900;letter-spacing:.05em}.homePrimaryActions button:first-child{border-color:rgba(43,212,142,.34);color:var(--green)}.homePrimaryActions button:last-child{border-color:rgba(255,97,109,.34);color:var(--red)}.homePrimaryActions button:active{transform:scale(.98)}
+@media(max-width:390px){.homeFinancePanel{padding-inline:7px}.homeFinancePanel .homeSummaryNav .sum{padding-inline:3px!important}.homePrimaryActions{gap:7px}.homePrimaryActions button{font-size:10px}}

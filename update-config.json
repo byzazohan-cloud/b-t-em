@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V100: Alt menü 6 ana bölüm (Ana Sayfa, Hareketler, Giderler, Finans, Takvim, Raporlar). Ana sayfa hızlı erişim: Aylık Hesap, Sabit Giderler, Hatırlatmalar, Kartlar, Notlar. Profil, Hane Üyeleri ve Kategoriler menüde.",
+  "message": "V102: Ana ekran kilit düzeni geri yüklendi; tek Gelir/Gider/Kalan paneli, Gelir/Gider Ekle ve sağ üst Kimlik Kartı. V101 Hareketler korunuyor.",
   "updateUrl": "",
-  "build": "20260921-V100-NAV-QUICK-NOTES",
-  "version": "19.4.8-V100-NAV-QUICK-NOTES"
+  "build": "20260921-V102-HOME-LOCK",
+  "version": "19.4.8-V102-HOME-LOCK"
 }
