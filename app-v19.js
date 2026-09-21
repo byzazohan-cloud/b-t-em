@@ -39,7 +39,7 @@ const CAT_COLORS={Kira:'#d8ad4f',Aidat:'#a86ef7',Market:'#19d77d',Manav:'#7ed957
 function categoryIconSvg(cat,size=30){
   const k=categoryCanonical(cat);
   const fixed3d={'Kira':'kira','Aidat':'aidat','Faturalar':'faturalar','İnternet':'internet','Elektrik':'elektrik','Su':'su','Doğalgaz':'dogalgaz','Cep Telefonu':'cep-telefonu','Abonelik':'abonelik','Sigorta':'sigorta','Vergi':'vergi','Vergi & Faiz':'vergi'};
-  if(fixed3d[k])return `<img class="cat3dAsset" src="icons/categories3d/${fixed3d[k]}.png?v=V118" width="${size}" height="${size}" alt="" aria-hidden="true">`;
+  if(fixed3d[k])return `<img class="cat3dAsset" src="icons/categories3d/${fixed3d[k]}.png?v=V119" width="${size}" height="${size}" alt="" aria-hidden="true">`;
   const alias={'Online Alışveriş':'Market','Elektronik':'Cep Telefonu','Mobilya':'Ev','Ev Bakım':'Ev','Kırtasiye':'Eğitim','Kitap':'Eğitim','Kozmetik':'Kişisel Bakım','Kişisel Bakım':'Sağlık','Spor':'Sağlık','Oyun':'Eğlence','Abonelik':'Faturalar','Otopark':'Ulaşım','Otoyol/Köprü':'Ulaşım','Araç Bakım':'Akaryakıt','Kuyumculuk':'Hediye','Kargo':'Ulaşım','Çocuk':'Harçlık','Evcil Hayvan':'Sağlık','Tatil':'Eğlence','Konaklama':'Ev','Uçak':'Ulaşım','Hediye':'Harçlık','Bağış':'Harçlık','Vergi & Faiz':'Vergi','Banka Masrafı':'Vergi','Faiz':'Vergi'};
   const n=alias[k]||k;
   const P={
@@ -67,7 +67,12 @@ function categoryIconSvg(cat,size=30){
 }
 function catIcon(cat){return categoryIconSvg(cat,30)}
 function catColor(cat){return state?.categoryMeta?.[cat]?.color||CAT_COLORS[cat]||'#d8ad4f'}
-function catPremiumIcon(cat){return `<span class="catGem catGemNew" style="--cat:${catColor(cat)}">${categoryIconSvg(cat,30)}</span>`}
+function catPremiumIcon(cat){
+  const k=categoryCanonical(cat);
+  const fixed3d={'Kira':'kira','Aidat':'aidat','Faturalar':'faturalar','İnternet':'internet','Elektrik':'elektrik','Su':'su','Doğalgaz':'dogalgaz','Cep Telefonu':'cep-telefonu','Abonelik':'abonelik','Sigorta':'sigorta','Vergi':'vergi','Vergi & Faiz':'vergi'};
+  if(fixed3d[k])return `<span class="cat3dDirect" style="--cat:${catColor(cat)}"><img src="icons/categories3d/${fixed3d[k]}.png?v=V119" alt="" aria-hidden="true"></span>`;
+  return `<span class="catGem catGemNew" style="--cat:${catColor(cat)}">${categoryIconSvg(cat,30)}</span>`
+}
 function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id===x.cardId);return c?`KART · ${esc(c.bank)} ${esc(c.name)}`:'KART'}return 'NAKİT'}
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>{const x=d instanceof Date?d:new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')},ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',minimumFractionDigits:2,maximumFractionDigits:2}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
