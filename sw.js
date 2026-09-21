@@ -7,13 +7,13 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '19.4.8.20260921-V98-FORCED-HOME';
-const CACHE_NAME = 'hane-v19-4-8-V98-FORCED-HOME';
+const SW_BUILD = '19.4.8.20260921-V100-NAV-QUICK-NOTES';
+const CACHE_NAME = 'hane-v19-4-8-V100-NAV-QUICK-NOTES';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
 const APP_SHELL=[
-  './','./index.html','./styles-v98.css','./bootstrap-security.js','./app-v98.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
+  './','./index.html','./styles.css','./bootstrap-security.js','./app-v19.js','./manifest.json','./update-config.json','./force-update.html','./force-update.js',
   './icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png','./icons/hane-app-icon.png',
   './vendor/tesseract/lang/tur.traineddata.gz','./vendor/tesseract/lang/eng.traineddata.gz'
 ];

@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.8-V98-FORCED-HOME",
-  "minimumVersion": "19.4.8-V98-FORCED-HOME",
+  "latestVersion": "19.4.8",
+  "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V98: Premium ana ekran dosyaları benzersiz adlarla zorunlu yenilendi.",
+  "message": "V100: Alt menü 6 ana bölüm (Ana Sayfa, Hareketler, Giderler, Finans, Takvim, Raporlar). Ana sayfa hızlı erişim: Aylık Hesap, Sabit Giderler, Hatırlatmalar, Kartlar, Notlar. Profil, Hane Üyeleri ve Kategoriler menüde.",
   "updateUrl": "",
-  "build": "20260921-V98-FORCED-HOME",
-  "version": "19.4.8-V98-FORCED-HOME"
+  "build": "20260921-V100-NAV-QUICK-NOTES",
+  "version": "19.4.8-V100-NAV-QUICK-NOTES"
 }
