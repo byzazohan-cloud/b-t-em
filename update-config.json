@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V96: Otomatik güncelleme sistemi. Uygulama açılışta, tekrar öne geldiğinde ve açık kaldığı sürece saatlik yeni sürüm kontrolü yapar; yeni service worker devreye girince uygulama bir kez otomatik yenilenir. Kullanıcı verileri korunur.",
+  "message": "V97: Seçilen premium tasarıma göre Ana Ekran ve Kimlik Kartı yenilendi. V96 otomatik güncelleme ve tüm veri işleyişi korunur.",
   "updateUrl": "",
-  "build": "20260921-V96-AUTO-UPDATE",
-  "version": "19.4.8-V96-AUTO-UPDATE"
+  "build": "20260921-V97-HOME-PREMIUM",
+  "version": "19.4.8-V97-HOME-PREMIUM"
 }
