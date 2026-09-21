@@ -1,0 +1,9 @@
+{
+  "latestVersion": "19.4.8",
+  "minimumVersion": "19.4.8",
+  "force": true,
+  "message": "V118: 3D kategori ikon dosyaları çevrimdışı uygulama paketine dahil edildi ve tüm build/cache kimlikleri eşitlendi. Kullanıcı verileri korunur.",
+  "updateUrl": "",
+  "build": "20260921-V120-DIRECT-FIXED-3D",
+  "version": "19.4.8-V120-DIRECT-FIXED-3D"
+}
