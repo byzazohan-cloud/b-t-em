@@ -2245,3 +2245,61 @@ html[data-skin='z'] .monthlyProGrid button b{
 .v124Menu3d .navIcon{width:39px!important;height:39px!important;display:flex!important;align-items:center!important;justify-content:center!important}
 .menu3dIconV124{display:block!important;width:39px!important;height:39px!important;object-fit:contain!important;image-rendering:auto!important;filter:drop-shadow(0 3px 6px rgba(0,0,0,.55))!important}
 .v124Menu3d button.active .menu3dIconV124{transform:scale(1.08)}
+
+/* V125 — ICON SCALE FIX
+   Buton ölçüsü korunur; ikon sembolü alanın %70-75'ini kullanır.
+   PNG oranı ve görüntü kalitesi korunur. */
+.fixed3dDirectBtn{
+  min-height:106px!important;
+  padding:4px 5px 7px!important;
+  overflow:hidden!important;
+}
+.fixed3dDirectImg{
+  display:block!important;
+  width:96px!important;
+  height:82px!important;
+  max-width:96%!important;
+  max-height:78%!important;
+  margin:0 auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  image-rendering:auto!important;
+  transform:none!important;
+  border-radius:10px!important;
+  filter:drop-shadow(0 6px 9px rgba(0,0,0,.55)) saturate(1.10)!important;
+}
+.fixed3dDirectLabel{
+  display:block!important;
+  margin-top:1px!important;
+  font-size:10px!important;
+  line-height:1.05!important;
+  position:relative!important;
+  z-index:3!important;
+}
+.v124Menu3d .navIcon{
+  width:46px!important;
+  height:43px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+}
+.menu3dIconV124{
+  display:block!important;
+  width:44px!important;
+  height:44px!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  image-rendering:auto!important;
+  transform:none!important;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.58)) saturate(1.10)!important;
+}
+.v124Menu3d button.active .menu3dIconV124{
+  transform:scale(1.10)!important;
+  filter:drop-shadow(0 0 7px rgba(28,190,255,.48)) saturate(1.12)!important;
+}
+@media(max-width:390px){
+ .fixed3dDirectImg{width:90px!important;height:78px!important}
+ .v124Menu3d .navIcon{width:42px!important;height:40px!important}
+ .menu3dIconV124{width:40px!important;height:40px!important}
+}

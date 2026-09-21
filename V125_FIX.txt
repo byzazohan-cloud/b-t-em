@@ -1,0 +1,7 @@
+V125 ICON SCALE
+- Temiz V124C (54 dosya) baz alındı.
+- Sabit/normal gider 3D ikonları buton içinde yaklaşık %70-75 görsel alan kullanacak şekilde büyütüldü.
+- Alt menü ikonları belirgin şekilde büyütüldü.
+- Buton/kart ölçüleri değiştirilmedi.
+- object-fit:contain + image-rendering:auto ile oran ve kalite korunur.
+- Veri, finans, ekstre ve PDF işleyişi değiştirilmedi.
