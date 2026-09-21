@@ -1,0 +1,5 @@
+V122 KÖK NEDEN:
+V120/V121 yalnız name==='fixedCategory' olduğunda 3D PNG kullanıyordu.
+Gider Ekle ilk açıldığında aktif alan Normal Gider / normalCategory olduğu için Kira, Aidat vb. aynı kategoriler eski catPremiumIcon/SVG yolundan çiziliyordu.
+V122 mevcut 3D PNG bulunan kategorileri kategori adı üzerinden hem normalCategory hem fixedCategory gridinde doğrudan PNG olarak render eder.
+Finans/veri/ekstre mantığı değiştirilmedi.
