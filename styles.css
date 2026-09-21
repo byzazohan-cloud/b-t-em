@@ -2371,3 +2371,63 @@ html[data-skin='z'] .monthlyProGrid button b{
 .normal3dV131{width:82px!important;height:82px!important;max-width:94%!important;object-fit:contain!important;transform:none!important}
 
 .normal3dSpriteV132{display:block;background:url('icons/normal3d-v132-sprite.png?v=V132') no-repeat;background-size:800% 600%;background-position:calc(var(--ix)*100%/7) calc(var(--iy)*100%/5);width:82px!important;height:82px!important;flex:0 0 82px}
+
+/* V133 — ANA SAYFA LOCK RESTORE
+   Category sprite rules must not alter Home action / quick access / bottom navigation. */
+
+/* GELİR EKLE / GİDER EKLE */
+.homeActions,.home-actions,.quickActions,.quick-actions{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;
+}
+.homeActions button,.home-actions button,.quickActions>button,.quick-actions>button{
+  min-height:58px!important;padding:10px 14px!important;border-radius:16px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:10px!important;font-weight:800!important;
+}
+.homeActions .system3dIconV127,.home-actions .system3dIconV127,
+.quickActions>button .system3dIconV127,.quick-actions>button .system3dIconV127{
+  width:30px!important;height:30px!important;flex:0 0 30px!important;
+  transform:none!important;filter:none!important;margin:0!important;
+}
+/* common direct action selectors used by HANE */
+[data-action="addIncome"] .system3dIconV127,[data-action="addExpense"] .system3dIconV127,
+[data-tab="income"] .system3dIconV127,[data-tab="expense"] .system3dIconV127{
+  width:30px!important;height:30px!important;max-width:30px!important;max-height:30px!important;
+  transform:none!important;margin:0 8px 0 0!important;
+}
+
+/* HIZLI ERİŞİM — same premium tile language, not category sprites */
+.homeQuick,.home-quick,.quickGrid,.quick-grid,.quickAccess,.quick-access{
+  align-items:stretch!important;
+}
+.homeQuick button,.home-quick button,.quickGrid button,.quick-grid button,
+.quickAccess button,.quick-access button{
+  min-height:70px!important;padding:8px 5px!important;
+}
+.homeQuick .system3dIconV127,.home-quick .system3dIconV127,
+.quickGrid .system3dIconV127,.quick-grid .system3dIconV127,
+.quickAccess .system3dIconV127,.quick-access .system3dIconV127{
+  width:34px!important;height:34px!important;max-width:34px!important;max-height:34px!important;
+  margin:0 auto 5px!important;transform:none!important;filter:none!important;
+}
+
+/* BOTTOM NAV — restore compact locked proportions */
+.bottomNav,.bottom-nav,.nav.bottom,.appNav{
+  align-items:center!important;
+}
+.bottomNav button,.bottom-nav button,.appNav button{
+  padding:5px 2px 4px!important;min-height:54px!important;
+}
+.bottomNav .menu3dIconV124,.bottom-nav .menu3dIconV124,.appNav .menu3dIconV124{
+  width:30px!important;height:30px!important;max-width:30px!important;max-height:30px!important;
+  margin:0 auto 2px!important;transform:none!important;filter:none!important;
+}
+.bottomNav .system3dIconV127,.bottom-nav .system3dIconV127,.appNav .system3dIconV127{
+  width:28px!important;height:28px!important;max-width:28px!important;max-height:28px!important;
+  margin:0 auto 2px!important;transform:none!important;filter:none!important;
+}
+
+/* Category icons stay large ONLY inside expense category tiles */
+.fixed3dDirectBtn .normal3dSpriteV132,.fixed3dDirectBtn .fixed3dDirectImg{
+  width:82px!important;height:82px!important;max-width:94%!important;max-height:82px!important;
+}
