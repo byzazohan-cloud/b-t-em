@@ -111,6 +111,8 @@ function normalizeV19(st){
   st.expenses=Array.isArray(st.expenses)?st.expenses:[];
   st.incomes=Array.isArray(st.incomes)?st.incomes:[];
   st.cards=Array.isArray(st.cards)?st.cards:[];
+  // S1: Kart ortak-limit alanları geriye uyumlu biçimde normalize edilir.
+  st.cards.forEach(c=>{if(c.sharedLimitGroup==null)c.sharedLimitGroup='';if(c.sharedLimit==null)c.sharedLimit=0});
   st.accounts=Array.isArray(st.accounts)?st.accounts:[];st.flexAccounts=Array.isArray(st.flexAccounts)?st.flexAccounts:[];st.categoryMeta=st.categoryMeta||{};st.customCategories=Array.isArray(st.customCategories)?st.customCategories:[];
   // V10: Toplu Taşıma ayrı kategori değil; tüm yol/toplu taşıma giderleri Ulaşım altında birleşir.
   if(!st.settings)st.settings={};
@@ -508,8 +510,16 @@ function cards(){
   const panel=financeTab==='accounts'?accountsPanel():financeTab==='debts'?debtsPanel():cardsPanel();
   return `<div class="financeHub"><button class="financeModeButton" data-action="financePicker"><span>${label}</span><b>⌄</b></button>${panel}</div>`
 }
-function cardsPanel(){return `<div class="section financeSectionHead"><b>KARTLARIM</b><button class="miniAddBtn" data-action="addCard">+ KART EKLE</button></div><div class="financeCarousel">${state.cards.map(credit).join('')||'<div class="notice">HENÜZ KREDİ KARTI EKLENMEDİ.</div>'}</div><div class="financeCardList">${state.cards.map((c,i)=>`<button class="financeCardListRow" data-action="scrollCard" data-index="${i}"><span><b>${esc(c.bank)}</b><small>${esc(c.name||'KREDİ KARTI')}</small></span><strong>${money(c.balance)}</strong><i>›</i></button>`).join('')}</div>`}
-function credit(c){const pi=cardPaymentInfo(c),network=esc(c.network||'VISA');return `<div class="credit card luxuryCard clickableCredit haneVerticalCard ${c.style||'blackgold'}" data-action="cardStatement" data-id="${c.id}" data-card-id="${c.id}" role="button" tabindex="0"><div class="hvcGlow"></div><div class="hvcPattern"></div><div class="hvcTop"><div class="hvcBrand"><img src="icons/hane-app-icon.png" alt="HANE"><div><strong>HANE</strong><small>DAHA DÜZENLİ BİR YAŞAM</small></div></div></div><div class="hvcBankRow"><div class="hvcBank"><b>${esc(c.bank)}</b><small>${esc(c.name||'KREDİ KARTI')}</small></div><span class="hvcNetwork">${network}</span></div><div class="hvcChip"></div><div class="hvcDebt"><small>GÜNCEL BORÇ</small><b>${money(c.balance)}</b></div><div class="hvcGrid compact"><div class="statementBox"><small>HESAP KESİM TARİHİ</small><b>${pi.statementDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}).toLocaleUpperCase('tr-TR')}</b></div><div class="dueBox"><small>SON ÖDEME TARİHİ</small><b>${pi.dueDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}).toLocaleUpperCase('tr-TR')}</b></div></div><div class="hvcFooter"><span>${esc(c.bank)}</span><small>DOKUN · EKSTRE</small></div></div>`}
+function cardsPanel(){return `<div class="section financeSectionHead"><b>KARTLARIM</b><button class="miniAddBtn" data-action="addCard">+ KART EKLE</button></div><div class="financeCarousel">${state.cards.map(credit).join('')||'<div class="notice">HENÜZ KREDİ KARTI EKLENMEDİ.</div>'}</div><div class="financeCardList">${state.cards.map((c,i)=>`<button class="financeCardListRow" data-action="scrollCard" data-index="${i}"><span><b>${esc(c.bank)}</b><small>${esc(c.name||'KREDİ KARTI')}</small></span><strong>${money(c.balance)}${sharedCardLimitInfo(c)?`<small>ORTAK KALAN ${money(sharedCardLimitInfo(c).available)}</small>`:''}</strong><i>›</i></button>`).join('')}</div>`}
+function sharedCardLimitInfo(c){
+  const group=String(c?.sharedLimitGroup||'').trim();
+  if(!group)return null;
+  const members=(state.cards||[]).filter(x=>String(x.sharedLimitGroup||'').trim()===group);
+  const total=Math.max(0,...members.map(x=>+x.sharedLimit||0));
+  const used=members.reduce((n,x)=>n+Math.max(0,+x.balance||0),0);
+  return{group,total,used,available:Math.max(0,total-used),count:members.length};
+}
+function credit(c){const pi=cardPaymentInfo(c),network=esc(c.network||'VISA');return `<div class="credit card luxuryCard clickableCredit haneVerticalCard ${c.style||'blackgold'}" data-action="cardStatement" data-id="${c.id}" data-card-id="${c.id}" role="button" tabindex="0"><div class="hvcGlow"></div><div class="hvcPattern"></div><div class="hvcTop"><div class="hvcBrand"><img src="icons/hane-app-icon.png" alt="HANE"><div><strong>HANE</strong><small>DAHA DÜZENLİ BİR YAŞAM</small></div></div></div><div class="hvcBankRow"><div class="hvcBank"><b>${esc(c.bank)}</b><small>${esc(c.name||'KREDİ KARTI')}</small></div><span class="hvcNetwork">${network}</span></div><div class="hvcChip"></div><div class="hvcDebt"><small>GÜNCEL BORÇ</small><b>${money(c.balance)}</b>${sharedCardLimitInfo(c)?`<small>ORTAK LİMİT · ${esc(sharedCardLimitInfo(c).group)} · KALAN ${money(sharedCardLimitInfo(c).available)}</small>`:""}</div><div class="hvcGrid compact"><div class="statementBox"><small>HESAP KESİM TARİHİ</small><b>${pi.statementDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}).toLocaleUpperCase('tr-TR')}</b></div><div class="dueBox"><small>SON ÖDEME TARİHİ</small><b>${pi.dueDate.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}).toLocaleUpperCase('tr-TR')}</b></div></div><div class="hvcFooter"><span>${esc(c.bank)}</span><small>DOKUN · EKSTRE</small></div></div>`}
 function accountsPanel(){return `<div class="section financeSectionHead"><b>HESAPLAR</b><button class="miniAddBtn" data-action="addAccount">+ HESAP EKLE</button></div><div class="financeAccountList">${state.accounts.map(a=>`<div class="financeAccountRow" data-action="editAccount" data-id="${a.id}"><div class="financeAccountIcon">${premiumIcon('finance',22)}</div><div><b>${esc(a.bank)}</b><small>${esc(a.name)} · •••• ${esc(a.last4||'0000')}</small></div><strong>${money(a.balance)}</strong><span>›</span></div>`).join('')||'<div class="notice">HENÜZ HESAP EKLENMEDİ.</div>'}</div>`}
 function debtsPanel(){
   const cards=(state.cards||[]).map(c=>({kind:'card',id:c.id,title:`${c.bank} · ${c.name||'KREDİ KARTI'}`,last4:c.last4,amount:+c.balance||0,due:cardPaymentInfo(c).dueDate,action:'cardStatement'}));
@@ -642,7 +652,9 @@ function cardForm(c={}){
     ${input('bank','Banka',c.bank||'')}
     ${input('name','Kart Adı',c.name||'')}
     ${input('last4','Son 4 Hane',c.last4||'','text','maxlength="4" inputmode="numeric"')}
-    <div class="row2">${input('limit','Limit',c.limit||0,'number')}${input('balance','Güncel Borç',c.balance||0,'number')}</div>
+    <div class="row2">${input('limit','Kart Limiti',c.limit||0,'number')}${input('balance','Güncel Borç',c.balance||0,'number')}</div>
+    <div class="row2">${input('sharedLimitGroup','Ortak Limit Grubu',c.sharedLimitGroup||'','text','placeholder="Örn: ZİRAAT AİLE"')}${input('sharedLimit','Ortak Limit Toplamı',c.sharedLimit||0,'number','step="0.01" min="0"')}</div>
+    <div class="notice">AYNI LİMİTİ PAYLAŞAN KARTLARA AYNI "ORTAK LİMİT GRUBU" ADINI VE AYNI TOPLAM LİMİTİ YAZ. BOŞ BIRAKIRSAN KART BAĞIMSIZ ÇALIŞIR.</div>
     <div class="row2">${input('statementDate','Hesap Kesim Tarihi',statementDate,'date')}${input('dueDate','Son Ödeme Tarihi',dueDate,'date')}</div>
     ${select('style','Kart Stili',['blackgold','titanium','blue','burgundy','green','purple','silver'],c.style||'blackgold')}
     <div class="notice">TARİHLERİ TAKVİMDEN SEÇ. HANE SONRAKİ AYLARDA AYNI GÜNLERİ OTOMATİK İLERİ TAŞIR.</div>
@@ -2340,7 +2352,8 @@ async function saveCard(d,i){
   if(Number.isNaN(sdate.getTime())||Number.isNaN(ddate.getTime()))throw new Error('KART TARİHLERİ GEÇERSİZ');
   if(ddate<=sdate)throw new Error('SON ÖDEME TARİHİ HESAP KESİM TARİHİNDEN SONRA OLMALI');
   const existing=i?state.cards.find(z=>z.id===i):null,requestedBalance=Number(String(d.balance||'0').replace(',','.'))||0,derived=existing?cardDerivedNet(existing.id):0;
-  const x={id:i||id(),bank:upper(d.bank||'BANKA'),name:upper(d.name||'KART'),last4:(d.last4||'0000').replace(/\D/g,'').slice(-4).padStart(4,'0'),limit:+d.limit||0,balance:requestedBalance,openingBalance:requestedBalance-derived,statementDate:sd,dueDate:dd,statementDay:sdate.getDate(),dueDay:ddate.getDate(),style:d.style||'blackgold',network:'VISA'};
+  const sharedLimitGroup=upper(String(d.sharedLimitGroup||'').trim()),sharedLimit=Math.max(0,Number(String(d.sharedLimit||'0').replace(',','.'))||0);
+  const x={id:i||id(),bank:upper(d.bank||'BANKA'),name:upper(d.name||'KART'),last4:(d.last4||'0000').replace(/\D/g,'').slice(-4).padStart(4,'0'),limit:+d.limit||0,sharedLimitGroup,sharedLimit:sharedLimitGroup?sharedLimit:0,balance:requestedBalance,openingBalance:requestedBalance-derived,statementDate:sd,dueDate:dd,statementDay:sdate.getDate(),dueDay:ddate.getDate(),style:d.style||'blackgold',network:'VISA'};
   if(existing?.balanceAnchorDate&&Number.isFinite(+existing.balanceAnchorAmount)){x.balanceAnchorDate=existing.balanceAnchorDate;x.balanceAnchorAmount=requestedBalance-derived;x.openingBalance=existing.openingBalance}
   if(i){const n=state.cards.findIndex(z=>z.id===i);state.cards[n]={...state.cards[n],...x}}else state.cards.push(x);
   await save();modal=null;render()

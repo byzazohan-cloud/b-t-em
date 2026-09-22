@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V111: Açılış/parola sonrası yükleme zincirindeki sürüm uyuşmazlıkları giderildi. Service Worker, bootstrap, uygulama ve cache tek build kimliğine alındı. Kullanıcı verileri ve mevcut ekranlar korunur.",
+  "message": "V113 S1: Kart ortak limit altyapısı ve veri güvenli geçişi eklendi. Mevcut kullanıcı verileri korunur.",
   "updateUrl": "",
-  "build": "20260921-V111-BOOT-COHERENCE",
-  "version": "19.4.8-V111-BOOT-COHERENCE"
+  "build": "20260922-V113-S1-CARD-SHARED-LIMIT",
+  "version": "19.4.8-V113-S1-CARD-SHARED-LIMIT"
 }
