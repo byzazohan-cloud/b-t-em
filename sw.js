@@ -7,8 +7,8 @@
       engine file is extracted/cached.
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
-const SW_BUILD = '20260922-V113-S3-FIX3-INCOME-DUE-DATE';
-const CACHE_NAME = 'hane-v19-4-8-V113-S3-FIX3-INCOME-DUE-DATE';
+const SW_BUILD = '20260922-V113-S3-FIX4-CACHE-UPDATE';
+const CACHE_NAME = 'hane-v19-4-8-V113-S3-FIX4-CACHE-UPDATE';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
@@ -244,8 +244,9 @@ self.addEventListener('fetch',event=>{
       return blocked(503,'HANE çevrimdışı kopyası bulunamadı. İnternete bağlanıp tekrar açın.');
     }
 
-    let hit=await cache.match(canonical);
-    if(hit)return hit;
+    // Mutable app-shell files are network-first so a newly deployed HANE build cannot
+    // remain stuck behind an older Service Worker cache. User finance data is not in
+    // Cache Storage, so this refresh never clears localStorage/IndexedDB.
     try{
       const cleanUrl=new URL(String(canonical).replace(/^\.\//,''),SCOPE).href;
       const fresh=await fetch(new Request(cleanUrl,{method:'GET',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'}));
@@ -254,6 +255,8 @@ self.addEventListener('fetch',event=>{
         return fresh;
       }
     }catch(_){ }
+    const hit=await cache.match(canonical);
+    if(hit)return hit;
     return blocked(503,'HANE application cache could not be repaired. Reload once while online.');
   })());
 });

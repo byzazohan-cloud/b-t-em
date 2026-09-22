@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V113 S3 FIX3: Sabit gelir vade gününden önce plan olarak görünür; gerçekleşen gelir, bakiye ve hareketlere vade günü gelmeden yansımaz.",
+  "message": "V113 S3 FIX4: Yeni sürüm kodu normal pencerede eski cache arkasında kalmaz; kullanıcı finans verileri korunur.",
   "updateUrl": "",
-  "build": "20260922-V113-S3-FIX3-INCOME-DUE-DATE",
-  "version": "19.4.8-V113-S3-FIX3-INCOME-DUE-DATE"
+  "build": "20260922-V113-S3-FIX4-CACHE-UPDATE",
+  "version": "19.4.8-V113-S3-FIX4-CACHE-UPDATE"
 }

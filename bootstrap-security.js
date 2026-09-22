@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260921-V113-VIEW-FUNCTIONS-RESTORE';
+  const BUILD='19.4.8.20260922-V113-S3-FIX4-CACHE-UPDATE';
   const KEY='hane_app_shell_build';
   const RELOAD_KEY='hane_auto_update_reload';
   const CHECK_MS=60*60*1000;
@@ -41,8 +41,8 @@
 
       navigator.serviceWorker.addEventListener('controllerchange',()=>{
         try{
-          if(sessionStorage.getItem(RELOAD_KEY)==='1') return;
-          sessionStorage.setItem(RELOAD_KEY,'1');
+          if(sessionStorage.getItem(RELOAD_KEY)===BUILD) return;
+          sessionStorage.setItem(RELOAD_KEY,BUILD);
         }catch(e){}
         location.reload();
       });

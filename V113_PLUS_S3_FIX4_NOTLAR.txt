@@ -1,0 +1,5 @@
+S3 FIX4 - CACHE / GUNCELLEME
+- Service Worker build kimligi, bootstrap ve ekstre worker beklentisi tek buildde esitlendi.
+- JS/CSS/manifest gibi degisebilir uygulama dosyalari network-first, offline cache fallback oldu.
+- controllerchange yeniden yukleme kilidi build bazli yapildi.
+- localStorage/IndexedDB ve finans verileri silinmez.
