@@ -1,0 +1,7 @@
+HANE V113 + S8
+- Ana Sayfa Profil/Kimlik alani gorunur buton haline getirildi.
+- Ekle butonlari kompakt ve uyumlu hale getirildi.
+- Kredi karti secicide sag/sol oklar eklendi; secili kart buyuk, yan kartlar kucuk.
+- Raporlar > Gider Dagilimi ekranina donut grafik ve kategori lejanti eklendi.
+- Ana sekmelerde yatay swipe kesin olarak engellendi; Ana Sayfa ay swipe, Takvim gun swipe ve kart carousel korunur.
+- Finans/ekstre/TARA veri mantigina dokunulmadi.
