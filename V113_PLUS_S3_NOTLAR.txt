@@ -1,0 +1,5 @@
+HANE V113 + S3
+
+Kümülatif taban: doğrulanmış S2 FIX2.
+S3: Sabit gider + fatura ödeme akışı korunup doğrulandı; sabit gelir her ay otomatik yansıyacak şekilde tamamlandı.
+Patch/yama dosyası eklenmedi; ana app-v19.js içine entegre edildi.

@@ -215,7 +215,7 @@ function goBack(){if(current==='theme')themeDraft=null;const prev=navHistory.pop
 function initBrowserNav(){if(browserNavReady)return;browserNavReady=true;history.replaceState({haneView:current},'');window.addEventListener('popstate',e=>{if(!state)return;const next=e.state?.haneView||navHistory.pop()||'home';if(next!==current){current=next;modal=null;render()}})}
 function summaryDetailBody(kind){
   const m=state.selectedMonth;
-  const inc=state.incomes.filter(x=>String(x.date||'').startsWith(m)).map(x=>({...x,_kind:'income'}));
+  const inc=incomeEntriesForMonth(m).map(x=>({...x,_kind:'income'}));
   const exp=actualExpenseEntriesForMonth(m).map(x=>({...x,_kind:'expense'}));
   const items=(kind==='income'?inc:kind==='expense'?exp:[...inc,...exp]).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
   const T=totals(m),title=kind==='income'?'GELİR DETAYI':kind==='expense'?'GİDER DETAYI':'KALAN DETAYI';
@@ -309,7 +309,21 @@ async function unlock(p){const m=meta();if(!m)return false;try{
 }catch{return false}}
 function def(){return{version:19,selectedMonth:ym(new Date()),profile:{name:'',photo:'',motto:'Disiplin, özgürlüğün kapısını açar.'},settings:{lockMinutes:15,leadDays:3,notifications:false,darkMode:true},theme:{bg:'#05080d',accent:'#47bfff',income:'#2bd48e',expense:'#ff616d',remain:'#58c7ff'},incomes:[],expenses:[],cards:[],accounts:[],flexAccounts:[],customCategories:[],categoryMeta:{},cardTransactions:[],cardPayments:[],statementImports:[],statementCategoryRules:{},fixedPayments:[],flexTransactions:[],installments:[],notes:[],members:[{id:'me',name:'BEN',icon:'👤'}],homeLayout:['summary','quick','monthly','recent'],homeHidden:[]}}
 function applyTheme(){if(!state)return;const t=state.theme||{},dark=state.settings?.darkMode!==false;const z={bg:'#05080d',accent:'#47bfff',income:'#2bd48e',expense:'#ff616d',remain:'#58c7ff'};const legacy=!t||((t.bg||'')==='#000000'&&((t.accent||'')==='#d8ad4f'||(t.accent||'')==='#f0cd77')&&((t.income||'')==='#248ef5')&&((t.expense||'')==='#ff4658')&&((t.remain||'')==='#16d77d'));const a=legacy?z:{bg:t.bg||z.bg,accent:t.accent||z.accent,income:t.income||z.income,expense:t.expense||z.expense,remain:t.remain||z.remain};const rgb=h=>{let s=String(h||'').replace('#','').trim();if(s.length===3)s=s.split('').map(c=>c+c).join('');const n=parseInt(s,16);return Number.isFinite(n)?[(n>>16)&255,(n>>8)&255,n&255]:[71,191,255]},rgba=(h,o)=>{const [r,g,b]=rgb(h);return `rgba(${r},${g},${b},${o})`};const root=document.documentElement;root.classList.toggle('lightMode',!dark);root.classList.toggle('darkMode',dark);root.dataset.skin='z';root.style.setProperty('--bg',dark?a.bg:'#f3f1eb');root.style.setProperty('--gold',a.accent);root.style.setProperty('--gold2',a.accent);root.style.setProperty('--gi',a.income);root.style.setProperty('--ge',a.expense);root.style.setProperty('--gr',a.remain);root.style.setProperty('--green',a.income);root.style.setProperty('--red',a.expense);root.style.setProperty('--blue',a.accent);root.style.setProperty('--z-accent',a.accent);root.style.setProperty('--z-accent-soft',a.remain);root.style.setProperty('--theme-accent',a.accent);root.style.setProperty('--theme-income',a.income);root.style.setProperty('--theme-expense',a.expense);root.style.setProperty('--theme-remain',a.remain);root.style.setProperty('--skin-bg',a.bg);root.style.setProperty('--skin-surface','#0b1118');root.style.setProperty('--skin-surface-2','#0f1720');root.style.setProperty('--skin-text','#eef7ff');root.style.setProperty('--skin-muted','#92a3b5');root.style.setProperty('--skin-border',rgba(a.accent,.22));root.style.setProperty('--skin-border-strong',rgba(a.accent,.52));root.style.setProperty('--skin-glow',rgba(a.accent,.18));root.style.setProperty('--skin-active-bg-1',rgba(a.accent,.22));root.style.setProperty('--skin-active-bg-2',rgba(a.accent,.08));root.style.setProperty('--skin-active-text','#edf9ff');root.style.setProperty('--skin-passive-bg-1','rgba(13,18,26,.98)');root.style.setProperty('--skin-passive-bg-2','rgba(8,12,17,.98)');root.style.setProperty('--skin-passive-text','#8ea0b4');root.style.setProperty('--skin-purple','#a87eff');root.style.setProperty('--skin-purple-soft','rgba(168,126,255,.14)');root.style.setProperty('--icon-active',a.accent);root.style.setProperty('--icon-border',rgba(a.accent,.20));root.style.setProperty('--icon-border-strong',rgba(a.accent,.50));root.style.setProperty('--icon-glow',rgba(a.accent,.16));}
-function totals(m=state.selectedMonth){const i=state.incomes.filter(x=>String(x.date||'').startsWith(m)).reduce((s,x)=>s+(+x.amount||0),0),e=actualExpenseEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0);return{i,e,r:i-e}}
+function recurringIncomeDate(x,m){
+  const base=String(x?.date||iso()),day=Math.max(1,Math.min(31,Number(base.slice(8,10))||1)),[y,mo]=String(m||state.selectedMonth).split('-').map(Number),last=new Date(y,mo,0).getDate();return `${m}-${String(Math.min(day,last)).padStart(2,'0')}`
+}
+function incomeEntriesForMonth(m=state.selectedMonth){
+  const list=state?.incomes||[];
+  return list.filter(x=>!x.recurring&&String(x.date||'').startsWith(m)).map(x=>({...x,_incomeTemplate:false})).concat(
+    list.filter(x=>x.recurring&&String(x.date||'').slice(0,7)<=m).map(x=>({...x,date:recurringIncomeDate(x,m),_incomeTemplate:true,_incomeMonth:m}))
+  )
+}
+function incomeEntriesInRange(start,end){
+  const out=[],seen=new Set();let d=new Date(start+'T12:00:00'),stop=new Date(end+'T12:00:00');
+  while(d<=stop){const m=ym(d);if(!seen.has(m)){seen.add(m);incomeEntriesForMonth(m).forEach(x=>{if(x.date>=start&&x.date<=end)out.push(x)})}d=new Date(d.getFullYear(),d.getMonth()+1,1,12)}
+  return out
+}
+function totals(m=state.selectedMonth){const i=incomeEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0),e=actualExpenseEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0);return{i,e,r:i-e}}
 function cashFlow(m=state.selectedMonth){
   const actual=actualExpenseEntriesForMonth(m),spent=actual.reduce((a,x)=>a+(+x.amount||0),0);
   const directPaid=actual.filter(x=>x.source!=='card').reduce((a,x)=>a+(+x.amount||0),0);
@@ -413,7 +427,7 @@ function monthPaid(){
 }
 function recentMovementsHome(limit=12){
   const m=state.selectedMonth;
-  const incomes=(state.incomes||[]).filter(x=>String(x.date||'').startsWith(m)).map(x=>({...x,_recentKind:'income'}));
+  const incomes=incomeEntriesForMonth(m).map(x=>({...x,_recentKind:'income'}));
   const expenses=actualExpenseEntriesForMonth(m).map(x=>({...x,_recentKind:x.recurring?'fixed':'expense'}));
   const cardPays=(state.cardPayments||[]).filter(x=>String(x.date||'').startsWith(m)).map(x=>({...x,_recentKind:'cardPayment'}));
   const rows=[...incomes,...expenses,...cardPays].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.id||'').localeCompare(String(a.id||''))).slice(0,limit);
@@ -455,7 +469,7 @@ function txAdvancedFilterBody(){
 }
 function transactions(){
   const m=state.selectedMonth,q=txSearch.trim().toLocaleLowerCase('tr-TR');
-  let a=[...state.incomes.map(x=>({...x,type:'income'})),...state.expenses.filter(x=>!x.recurring).map(x=>({...x,type:'expense'})),...state.expenses.filter(x=>x.recurring).map(x=>({...x,type:'fixedExpense',date:fixedPaymentDate(x,m),_paid:fixedPaidForMonth(x,m)})),...(state.cardPayments||[]).map(x=>({...x,type:'cardPayment',source:'card'})),...(state.flexTransactions||[]).map(x=>({...x,type:x.kind==='pay'?'flexPayment':'flexSpend',source:'flex'}))];
+  let a=[...incomeEntriesForMonth(m).map(x=>({...x,type:'income'})),...state.expenses.filter(x=>!x.recurring).map(x=>({...x,type:'expense'})),...state.expenses.filter(x=>x.recurring).map(x=>({...x,type:'fixedExpense',date:fixedPaymentDate(x,m),_paid:fixedPaidForMonth(x,m)})),...(state.cardPayments||[]).map(x=>({...x,type:'cardPayment',source:'card'})),...(state.flexTransactions||[]).map(x=>({...x,type:x.kind==='pay'?'flexPayment':'flexSpend',source:'flex'}))];
   if(!q)a=a.filter(x=>String(x.date||'').startsWith(m));
   if(txFilter==='income')a=a.filter(x=>x.type==='income');else if(txFilter==='expense')a=a.filter(x=>['expense','fixedExpense','flexSpend'].includes(x.type)&&x.source!=='card');else if(txFilter==='card')a=a.filter(x=>x.type==='cardPayment'||x.type==='flexPayment');
   if(txDate)a=a.filter(x=>String(x.date||'')===txDate);if(txCategory)a=a.filter(x=>String(x.category||'')===txCategory);if(txPay)a=a.filter(x=>String(x.source||'cash')===txPay);if(txMin!=='')a=a.filter(x=>(+x.amount||0)>=+txMin);if(txMax!=='')a=a.filter(x=>(+x.amount||0)<=+txMax);if(txMember)a=a.filter(x=>String(x.memberId||'me')===txMember);
@@ -539,10 +553,10 @@ function periodRange(){
   if(reportPeriod==='custom'){const start=reportCustomStart||state.selectedMonth+'-01',end=reportCustomEnd||iso(today);return{start:start<=end?start:end,end:start<=end?end:start,label:(start<=end?start:end)+' → '+(start<=end?end:start)}}
   const [y,m]=state.selectedMonth.split('-').map(Number),last=new Date(y,m,0).getDate();return{start:state.selectedMonth+'-01',end:state.selectedMonth+'-'+String(last).padStart(2,'0'),label:state.selectedMonth}
 }
-function periodTotals(){const r=periodRange(),inside=x=>x.date>=r.start&&x.date<=r.end,i=state.incomes.filter(inside).reduce((a,x)=>a+(+x.amount||0),0),e=actualExpenseEntriesInRange(r.start,r.end).reduce((a,x)=>a+(+x.amount||0),0);return{i,e,r:i-e,range:r}}
+function periodTotals(){const r=periodRange(),i=incomeEntriesInRange(r.start,r.end).reduce((a,x)=>a+(+x.amount||0),0),e=actualExpenseEntriesInRange(r.start,r.end).reduce((a,x)=>a+(+x.amount||0),0);return{i,e,r:i-e,range:r}}
 function prettyDate(v){if(!v)return '-';const d=new Date(v+'T12:00:00');return Number.isNaN(d.getTime())?esc(v):d.toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}
 function calendarItems(date){
- const inc=state.incomes.filter(x=>x.date===date).map(x=>({...x,_kind:'income'}));
+ const inc=incomeEntriesForMonth(String(date||'').slice(0,7)).filter(x=>x.date===date).map(x=>({...x,_kind:'income'}));
  const exp=state.expenses.filter(x=>!x.recurring&&x.source!=='flex'&&x.date===date).map(x=>({...x,_kind:'expense'}));
  const fixed=(state.fixedPayments||[]).filter(x=>x.date===date).map(x=>{const e=state.expenses.find(z=>z.id===x.expenseId);return {...x,title:x.title||e?.title||'SABİT GİDER',category:x.category||e?.category||'Sabit',memberId:e?.memberId||x.memberId||'',_kind:'fixedPayment',expenseId:x.expenseId}});
  const cp=(state.cardPayments||[]).filter(x=>x.date===date).map(x=>({...x,_kind:'cardPayment'}));
@@ -640,7 +654,7 @@ function view(){return({home,transactions,fixed,cards,calendar,reports,profile,b
 function input(n,l,v='',type='text',extra=''){const attrs=type==='text'?'autocapitalize="characters" autocorrect="on" autocomplete="on" spellcheck="true"':'';return`<div class="field"><label>${l}</label><input name="${n}" type="${type}" value="${esc(v)}" ${attrs} ${extra}></div>`}
 function select(n,l,opts,v=''){return`<div class="field"><label>${l}</label><select name="${n}">${opts.map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`}
 function memberSelect(v=''){return `<div class="field"><label>Hane Üyesi <small style="opacity:.65">(isteğe bağlı)</small></label><select name="memberId"><option value="" ${!v?'selected':''}>HANE GENELİ / ATANMAMIŞ</option>${state.members.map(m=>`<option value="${m.id}" ${v===m.id?'selected':''}>${esc(m.icon)} ${esc(m.name)}</option>`).join('')}</select></div>`}
-function incomeForm(x={}){return`<form class="form" id="incomeForm">${input('title','Gelir Adı',x.title||'')}${input('amount','Tutar',x.amount||0,'number')}${input('date','Tarih',x.date||iso(),'date')}${memberSelect(x.memberId||'me')}<div class="field"><label>Sabit Gelir</label><select name="recurring"><option value="false" ${!x.recurring?'selected':''}>Hayır</option><option value="true" ${x.recurring?'selected':''}>Evet</option></select></div><button class="btn gold" type="submit">Kaydet</button>${x.id?`<button type="button" class="btn" data-action="delIncome" data-id="${x.id}">Sil</button>`:''}</form>`}
+function incomeForm(x={}){return`<form class="form" id="incomeForm">${input('title','Gelir Adı',x.title||'')}${input('amount','Tutar',x.amount||0,'number')}${input('date','Tarih',x.date||iso(),'date')}${memberSelect(x.memberId||'me')}<div class="field"><label>Sabit Gelir</label><select name="recurring"><option value="false" ${!x.recurring?'selected':''}>Hayır</option><option value="true" ${x.recurring?'selected':''}>Evet · Her Ay</option></select></div><div class="notice">SABİT GELİR seçilirse başlangıç tarihindeki gün korunarak sonraki aylara otomatik yansır. Örn. maaş her ay aynı gün gelir hesabına katılır.</div><button class="btn gold" type="submit">Kaydet</button>${x.id?`<button type="button" class="btn" data-action="delIncome" data-id="${x.id}">Sil</button>`:''}</form>`}
 function expenseForm(x={}){
   const isRefund=isCardRefund(x),isFixed=!!x.recurring&&!isRefund,isCustomNormal=!isFixed&&x.category&&!NORMAL_C.includes(x.category),currentCat=isCustomNormal?'Diğer':(x.category||(isFixed?'Kira':'Market')),normalCats=NORMAL_C;
   const source=x.source==='card'?'card':'cash',cards=state.cards||[];
