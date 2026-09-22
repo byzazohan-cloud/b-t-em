@@ -2254,3 +2254,12 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .monthlyCategoryDirectList .monthlyLedgerRow,.categoryMovementRow,.categoryExpenseRow{cursor:pointer}
 .monthlyCategoryChevron{margin-left:auto;font-size:24px;opacity:.7}
 .monthlyCategoryRow .monthlyLedgerInfo small,.categoryMovementRow small,.categoryExpenseRow small{letter-spacing:.02em}
+
+/* HANE S14 — Kartlar sekmesi: mevcut kart tasarımını koruyan 3-kart sahnesi */
+.cardStageCarousel{overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;padding:10px 0 16px!important;scroll-snap-type:none!important;isolation:isolate}
+.cardStageCarousel>.haneVerticalCard{flex:0 0 auto!important;transition:transform .24s ease,opacity .24s ease,filter .24s ease!important;margin:0!important}
+.cardStageCarousel>.haneVerticalCard.isSelectedCard{min-width:min(68vw,292px)!important;width:min(68vw,292px)!important;height:430px!important;min-height:430px!important;transform:translateX(0) scale(1)!important;opacity:1!important;filter:none!important;z-index:3!important}
+.cardStageCarousel>.haneVerticalCard.isSideCard{min-width:min(40vw,170px)!important;width:min(40vw,170px)!important;height:345px!important;min-height:345px!important;opacity:.52!important;filter:saturate(.72) brightness(.78)!important;z-index:1!important;pointer-events:none!important}
+.cardStageCarousel>.haneVerticalCard.isPrevCard{margin-right:-72px!important;transform:translateX(12px) scale(.92)!important}
+.cardStageCarousel>.haneVerticalCard.isNextCard{margin-left:-72px!important;transform:translateX(-12px) scale(.92)!important}
+@media(max-width:390px){.cardStageCarousel>.haneVerticalCard.isSelectedCard{min-width:72vw!important;width:72vw!important;height:415px!important;min-height:415px!important}.cardStageCarousel>.haneVerticalCard.isSideCard{min-width:39vw!important;width:39vw!important;height:330px!important;min-height:330px!important}.cardStageCarousel>.haneVerticalCard.isPrevCard{margin-right:-64px!important}.cardStageCarousel>.haneVerticalCard.isNextCard{margin-left:-64px!important}}

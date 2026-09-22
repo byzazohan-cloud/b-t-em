@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.8.20260922-V113-S3-FIX4-CACHE-UPDATE';
+  const BUILD='19.4.16-V113-S14-KART-SAHNESI-CACHE-KILIT';
   const KEY='hane_app_shell_build';
   const RELOAD_KEY='hane_auto_update_reload';
   const CHECK_MS=60*60*1000;

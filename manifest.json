@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.10.20260922-V113-S7-UI-DAVRANIS",
+  "start_url": "./?v=19.4.16-V113-S14-KART-SAHNESI-CACHE-KILIT",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",
@@ -34,5 +34,5 @@
     "productivity",
     "utilities"
   ],
-  "version": "19.4.11-V113-S7-UI-DAVRANIS"
+  "version": "19.4.16-V113-S14-KART-SAHNESI-CACHE-KILIT"
 }

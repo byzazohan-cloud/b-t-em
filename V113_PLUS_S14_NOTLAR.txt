@@ -1,0 +1,6 @@
+HANE V113 + S14
+- S13 kilit sürüm üzerine kurulmuştur.
+- Kartlar sekmesinde yalnız kart sahnesi davranışı değiştirildi: seçili kart ortada büyük, önceki/sonraki kart arkada küçük; ok veya yatay kaydırma ile seçim değişir.
+- Kartların iç tasarımı, bilgileri, renkleri, detay/ekstre işlevleri değiştirilmedi.
+- Build/cache/sürüm kimlikleri S14 altında eşitlendi.
+- Finans, ekstre, TARA ve kullanıcı verisi mantığına dokunulmadı.
