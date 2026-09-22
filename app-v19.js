@@ -513,7 +513,7 @@ function monthlyAccountPreview(limit=4){
   });
   const grouped=[...groupedMap.values()].sort((a,b)=>b.amount-a.amount||a.displayTitle.localeCompare(b.displayTitle,'tr'));
   const rows=grouped.slice(0,limit).map(x=>`<div class="monthlyPreviewRow"><span>${esc(x.displayTitle)}${x.count>1?` <small>(${x.count})</small>`:''}</span><b>${money(x.amount)}</b></div>`).join('');
-  return `<button type="button" class="monthlyPreviewHead" data-tab="monthPaid"><span><small>${monthLabel(m)}</small><b>AYLIK HESAP</b></span><em>TÜMÜ ›</em></button><div class="monthlyPreviewRows">${rows||'<div class="monthlyPreviewEmpty">BU AY ÖDEME KAYDI YOK.</div>'}</div><button type="button" class="monthlyPreviewTotal" data-tab="monthPaid"><span>AY TOPLAMI</span><strong>${money(total)}</strong></button>`;
+  return `<button type="button" class="monthlyPreviewHead" data-tab="monthPaid"><span><small>${monthLabel(m)}</small><b>AYLIK HESAP</b></span><em>TÜMÜ ›</em></button><div class="monthlyPreviewRows" data-tab="monthPaid">${rows||'<div class="monthlyPreviewEmpty">BU AY ÖDEME KAYDI YOK.</div>'}</div><button type="button" class="monthlyPreviewTotal" data-tab="monthPaid"><span>AY TOPLAMI</span><strong>${money(total)}</strong></button>`;
 }
 function home(){const T=totals();return`<button type="button" class="homeHero homeIdentityButton" data-action="showIdentity" aria-label="HANE kimlik kartını aç">
   <div class="homeHeroAvatar ava">${state.profile.photo?`<img src="${state.profile.photo}">`:esc((state.profile.name||'H')[0])}</div>

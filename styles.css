@@ -2263,3 +2263,31 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .cardStageCarousel>.haneVerticalCard.isPrevCard{margin-right:-72px!important;transform:translateX(12px) scale(.92)!important}
 .cardStageCarousel>.haneVerticalCard.isNextCard{margin-left:-72px!important;transform:translateX(-12px) scale(.92)!important}
 @media(max-width:390px){.cardStageCarousel>.haneVerticalCard.isSelectedCard{min-width:72vw!important;width:72vw!important;height:415px!important;min-height:415px!important}.cardStageCarousel>.haneVerticalCard.isSideCard{min-width:39vw!important;width:39vw!important;height:330px!important;min-height:330px!important}.cardStageCarousel>.haneVerticalCard.isPrevCard{margin-right:-64px!important}.cardStageCarousel>.haneVerticalCard.isNextCard{margin-left:-64px!important}}
+
+/* S15 · Mobil kategori satırı hizası + Ana Sayfa Aylık Hesap kartı */
+.monthlyPreview[data-tab="monthPaid"]{cursor:pointer}
+.monthlyCategoryDirectList .monthlyCategoryRow{grid-template-columns:52px minmax(0,1fr) auto 18px!important;gap:12px!important}
+.monthlyCategoryDirectList .monthlyCategoryRow .monthlyLedgerIcon{width:44px!important;height:44px!important;margin:0!important}
+.monthlyCategoryDirectList .monthlyCategoryRow .monthlyLedgerInfo{padding-left:2px!important}
+.monthlyCategoryDirectList .monthlyCategoryRow .monthlyLedgerInfo b{font-size:13px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.monthlyCategoryDirectList .monthlyCategoryRow>strong{min-width:92px;text-align:right;font-size:13px!important;white-space:nowrap!important}
+.monthlyCategoryChevron{width:18px;text-align:right}
+
+.movementList .categoryMovementRow{grid-template-columns:52px minmax(0,1fr) auto!important;gap:12px!important}
+.movementList .categoryMovementRow .premiumIco{width:44px!important;height:44px!important;margin:0!important}
+.movementList .categoryMovementRow .movementMain{padding-left:2px!important}
+.expenseCenterList .categoryExpenseRow{grid-template-columns:52px minmax(0,1fr) auto!important;gap:12px!important}
+.expenseCenterList .categoryExpenseRow .premiumIco{width:44px!important;height:44px!important;margin:0!important}
+.expenseCenterList .categoryExpenseRow .expenseCenterMain{padding-left:2px!important}
+
+@media(max-width:520px){
+ .monthlyCategoryDirectList .monthlyCategoryRow{grid-template-columns:48px minmax(0,1fr) auto 16px!important;gap:10px!important;padding:10px 12px!important}
+ .monthlyCategoryDirectList .monthlyCategoryRow .monthlyLedgerIcon{width:42px!important;height:42px!important}
+ .monthlyCategoryDirectList .monthlyCategoryRow>strong{min-width:88px;font-size:12px!important}
+ .movementList .categoryMovementRow{grid-template-columns:48px minmax(0,1fr) auto!important;gap:10px!important;padding:10px 12px!important}
+ .movementList .categoryMovementRow .premiumIco{width:42px!important;height:42px!important}
+ .movementList .categoryMovementRow .movementAmount{min-width:104px!important}
+ .expenseCenterList .categoryExpenseRow{grid-template-columns:48px minmax(0,1fr) auto!important;gap:10px!important;padding:10px 12px!important}
+ .expenseCenterList .categoryExpenseRow .premiumIco{width:42px!important;height:42px!important}
+ .expenseCenterList .categoryExpenseRow .expenseCenterRight{min-width:96px!important}
+}

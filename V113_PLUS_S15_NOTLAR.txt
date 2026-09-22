@@ -1,0 +1,5 @@
+HANE V113 + S15
+- Ana Sayfa Aylık Hesap önizleme listesinin tamamı tıklanabilir hale getirildi; Tümü zorunluluğu kaldırıldı.
+- Aylık Hesap, Hareketler ve Giderler kategori satırlarında mobil ikon/isim/tutar kolonları ayrıştırıldı.
+- Kategori ikonlarının isimlerle üst üste binmesi ve gereksiz isim kesilmesi giderildi.
+- S14 FIX1 Finans açılış düzeltmesi ve kart sahnesi korunur.
