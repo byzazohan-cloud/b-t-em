@@ -1,0 +1,7 @@
+S12 – DOĞRUDAN KATEGORİ LİSTESİ
+- Giderler NORMAL listesi aylık kategori toplamlarını mevcut satır tasarımında gösterir.
+- Hareketler giderleri aylık kategori toplamları olarak mevcut liste içinde gösterir; ayrı Kategori Bazlı sekmesi kaldırıldı.
+- Aylık Hesap doğrudan aylık gider kategorilerini satır satır gösterir.
+- Kategori satırına dokununca toplamı oluşturan gerçek harcamalar açılır; gerçek harcamaya dokununca mevcut düzenleme ekranı açılır.
+- Diğer, merkezi S10 kuralıyla açıklama/işyeri adına ayrılır.
+- Sabit gider, ekstre, TARA, kart ve finans kayıt mantığı değiştirilmedi.
