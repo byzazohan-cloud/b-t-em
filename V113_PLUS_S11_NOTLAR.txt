@@ -1,0 +1,7 @@
+S11 — MERKEZİ KATEGORİ BAZLI HESAP
+- Giderler ekranına KATEGORİ BAZLI sekmesi eklendi.
+- Hareketler ekranına HAREKETLER / KATEGORİ BAZLI görünüm anahtarı eklendi.
+- Aylık Hesap kategori bölümü gerçek gider kategorilerine bağlandı; kart ödeme yöntemi kategori sayılmaz.
+- Üç ekran aynı categoryStats / expenseCategoryGroup merkezi motorunu kullanır.
+- Diğer kategorisi açıklama/işyeri adına göre ayrı gruplara bölünür.
+- Kategori satırına basınca o kategoriyi oluşturan işlemler açılır.
