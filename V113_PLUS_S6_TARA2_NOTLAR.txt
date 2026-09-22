@@ -1,0 +1,10 @@
+HANE V113 + S6 TARA 2.0 — GÜVENLİ ONARIM
+
+Taban: Kullanıcının kilit S6 sürümü HANE_V113_PLUS_S6_FINAL_MERKEZI_ARAYUZ(1).zip
+- Ekstre motorlarına dokunulmadı.
+- TARA artık sorun satırında ayrıntı ve güvenli ise DÜZELT düğmesi gösterir.
+- Güvenli toplu onarım: eksik finansal kimlik, kanıtlı sabit ödeme durum eşleşmesi, hesaplanabilir kart borcu eşleşmesi.
+- TARA hiçbir kaydı otomatik silmez.
+- Kartı/işlemi tahmin ederek bağlamaz.
+- Gerçek ödeme tarihi/tutarı bilinmeyen eksik sabit ödeme hareketini otomatik üretmez.
+- Kritik/uyarı varsa DURUM=KONTROL; hiç sorun yoksa DURUM=SAĞLAM.

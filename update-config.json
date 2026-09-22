@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.10",
-  "minimumVersion": "19.4.10",
+  "latestVersion": "19.4.11",
+  "minimumVersion": "19.4.11",
   "force": true,
-  "message": "V113 S6: Merkezi buton + ikon/logo arayüz altyapısı.",
+  "message": "V113 S6 TARA 2.0: Güvenli, kullanıcı kontrollü sistem onarımı.",
   "updateUrl": "",
-  "build": "20260922-V113-S6-MERKEZI-ARAYUZ",
-  "version": "19.4.10-V113-S6-MERKEZI-ARAYUZ"
+  "build": "20260922-V113-S6-TARA2-GUVENLI-ONARIM",
+  "version": "19.4.11-V113-S6-TARA2-GUVENLI-ONARIM"
 }

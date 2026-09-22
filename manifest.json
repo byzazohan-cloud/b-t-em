@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.10.20260922-V113-S6-MERKEZI-ARAYUZ",
+  "start_url": "./?v=19.4.10.20260922-V113-S6-TARA2-GUVENLI-ONARIM",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",
@@ -34,5 +34,5 @@
     "productivity",
     "utilities"
   ],
-  "version": "19.4.10-V113-S6-MERKEZI-ARAYUZ"
+  "version": "19.4.11-V113-S6-TARA2-GUVENLI-ONARIM"
 }
