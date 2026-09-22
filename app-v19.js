@@ -152,11 +152,19 @@ function normalizeV19(st){
   // Eski ödeme kayıtlarının kategori bilgisini bağlı oldukları gerçek sabit giderle senkron tut.
   st.fixedPayments.forEach(p=>{const ex=st.expenses.find(x=>x.id===p.expenseId);if(ex)p.category=ex.category||'Diğer';if(p.actualAmount==null)p.actualAmount=+p.amount||0;if(p.expectedAmount==null)p.expectedAmount=ex?fixedBillAmount(ex):(+p.amount||0);p.difference=(+(p.actualAmount??p.amount)||0)-(+p.expectedAmount||0)});
   st.expenses.forEach(x=>{if(x.recurring){if(x.billAmount==null)x.billAmount=+x.amount||0}else if(x.actualAmount==null)x.actualAmount=+x.amount||0});
+  // S3 FIX2 veri temizliği: önceki hatalı S3/FIX1'in otomatik ürettiği, kullanıcı tarafından onaylanmamış
+  // sabit gider hareketlerini kaldır. Onaylı ödeme için aynı ay paidMonths içinde bulunmak zorundadır.
+  if(!st.settings.s3UnpaidFixedMovementCleanup20260922){
+    st.fixedPayments=(st.fixedPayments||[]).filter(p=>{const ex=st.expenses.find(x=>x.id===p.expenseId);if(!ex||!ex.recurring)return true;return (ex.paidMonths||[]).includes(p.month)});
+    st.expenses.filter(x=>x.recurring).forEach(x=>{x.paid=false});
+    st.settings.s3UnpaidFixedMovementCleanup20260922=true;
+  }
   if(!st.settings.financeCoreGroup1Migrated){
     // Eski kart hareketlerinden ana gider kaydı olmayanları veri kaybetmeden gider kaydına taşı.
     (st.cardTransactions||[]).forEach(t=>{if((st.expenses||[]).some(e=>e.cardTxId===t.id))return;st.expenses.push({id:id(),cardTxId:t.id,source:'card',cardId:t.cardId,title:t.title||'KART HARCAMASI',amount:+t.amount||0,actualAmount:+t.amount||0,category:t.category||'Diğer',date:t.date||iso(),dueDate:t.date||iso(),recurring:false,paid:true,attachment:t.attachment||'',installmentGroup:t.installmentGroup,installmentNo:t.installmentNo,installmentCount:t.installmentCount})});
-    // Eski "ödendi" sabit giderleri için eksik ödeme kaydını üret.
-    st.expenses.filter(x=>x.recurring).forEach(x=>{const months=[...(x.paidMonths||[])];if(x.paid&&x.date)months.push(String(x.date).slice(0,7));[...new Set(months)].filter(Boolean).forEach(m=>{if(!st.fixedPayments.some(p=>p.expenseId===x.id&&p.month===m))st.fixedPayments.push({id:id(),expenseId:x.id,month:m,amount:fixedBillAmount(x),actualAmount:fixedBillAmount(x),date:(String(x.dueDate||x.date||'').startsWith(m)?(x.dueDate||x.date):(m+'-'+String(new Date((x.dueDate||x.date||iso())+'T12:00:00').getDate()).padStart(2,'0'))),title:x.title,category:x.category||'Diğer',source:x.source||'cash',cardId:(x.source==='card'?x.cardId:null)})})});
+    // S3 FIX2: Sabit gider plan kaydı asla kendi başına gerçek hareket/ödeme üretmez.
+    // Gerçek hareket yalnız kullanıcı ÖDEMEYİ ONAYLA dediğinde fixedPayments içine yazılır.
+    // paidMonths eski/onaylanmış ödeme bilgisidir; legacy x.paid alanı sabit giderlerde hareket kaynağı değildir.
     // Mevcut görünen kart borcunu aynen koruyacak açılış bakiyesini hesapla.
     st.cards.forEach(c=>{const normal=st.expenses.filter(x=>!x.recurring&&x.source==='card'&&x.cardId===c.id).reduce((a,x)=>a+(+(x.actualAmount??x.amount)||0),0),fixed=st.fixedPayments.filter(p=>p.source==='card'&&p.cardId===c.id).reduce((a,p)=>a+(+(p.actualAmount??p.amount)||0),0),paid=st.cardPayments.filter(p=>p.cardId===c.id).reduce((a,p)=>a+(+p.amount||0),0);c.openingBalance=(+c.balance||0)-normal-fixed+paid});
     st.settings.financeCoreGroup1Migrated=true;
