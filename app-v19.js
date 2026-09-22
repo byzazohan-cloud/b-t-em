@@ -508,11 +508,11 @@ function monthlyAccountPreview(limit=4){
   const rows=all.slice(0,limit).map(x=>`<div class="monthlyPreviewRow"><span>${esc(x.displayTitle||'ÖDEME')}</span><b>${money(x.amount)}</b></div>`).join('');
   return `<button type="button" class="monthlyPreviewHead" data-tab="monthPaid"><span><small>${monthLabel(m)}</small><b>AYLIK HESAP</b></span><em>TÜMÜ ›</em></button><div class="monthlyPreviewRows">${rows||'<div class="monthlyPreviewEmpty">BU AY ÖDEME KAYDI YOK.</div>'}</div><button type="button" class="monthlyPreviewTotal" data-tab="monthPaid"><span>AY TOPLAMI</span><strong>${money(total)}</strong></button>`;
 }
-function home(){const T=totals();return`<div class="homeHero">
+function home(){const T=totals();return`<button type="button" class="homeHero homeIdentityButton" data-action="editProfile" aria-label="Profil ve kimlik bilgilerini düzenle">
   <div class="homeHeroAvatar ava">${state.profile.photo?`<img src="${state.profile.photo}">`:esc((state.profile.name||'H')[0])}</div>
   <div class="homeHeroText"><small>MERHABA</small><h2>${esc(state.profile.name||'HANE')}</h2><div class="date">${new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'long'})}</div></div>
-</div>
-<div class="homeFinancePanel"><div class="homeFinanceMonth">${monthLabel(state.selectedMonth)}</div><div class="homeSummaryNav"><button class="sum" data-action="homeSummaryNav" data-kind="income"><label>Gelir</label><strong style="color:var(--green)">${money(T.i)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="expense"><label>Gider</label><strong style="color:var(--red)">${money(T.e)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="remain"><label>Kalan</label><strong style="color:var(--gr)">${money(T.r)}</strong><span>›</span></button></div></div>
+</button>
+<div class="homeFinancePanel" data-home-month-swipe="1"><div class="homeFinanceMonth">${monthLabel(state.selectedMonth)}</div><div class="homeSummaryNav"><button class="sum" data-action="homeSummaryNav" data-kind="income"><label>Gelir</label><strong style="color:var(--green)">${money(T.i)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="expense"><label>Gider</label><strong style="color:var(--red)">${money(T.e)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="remain"><label>Kalan</label><strong style="color:var(--gr)">${money(T.r)}</strong><span>›</span></button></div></div>
 <div class="homePrimaryActions"><button data-action="addIncome">${premiumIcon('income',25)}<span>GELİR EKLE</span></button><button data-action="addExpense">${premiumIcon('expense',25)}<span>GİDER EKLE</span></button></div>
 <div class="section cleanHomeTitle"><b>HIZLI ERİŞİM</b><span></span></div><div class="card quick premiumQuick v1947Quick cleanQuick"><button data-tab="monthPaid"><i>${premiumIcon("report",27)}</i>AYLIK HESAP</button><button data-tab="fixed"><i>${premiumIcon("fixed",27)}</i>SABİT GİDERLER</button><button data-tab="alerts"><i>${premiumIcon("bell",27)}</i>HATIRLATMALAR</button><button data-action="quickCards"><i>${premiumIcon("cards",27)}</i>KARTLAR</button><button data-tab="notes"><i>${premiumIcon("note",27)}</i>NOTLAR</button></div>
 <div class="card monthlyPreview">${monthlyAccountPreview()}</div>
@@ -814,6 +814,9 @@ function bind(){
       calendarDay=iso(d);calendarMonth=calendarDay.slice(0,7);state.selectedMonth=calendarMonth;calendarView='day';save().then(()=>render());
     },{passive:true});
   }
+  // Ana sekmeler yatay swipe ile DEGISTIRILMEZ. Yatay hareket sadece izinli yerel bilesenlerde kullanilir.
+  const homeMonthSwipe=document.querySelector('[data-home-month-swipe="1"]');
+  if(homeMonthSwipe){let hsx=0,hsy=0,htrack=false;homeMonthSwipe.addEventListener('touchstart',e=>{const t=e.touches&&e.touches[0];if(!t)return;hsx=t.clientX;hsy=t.clientY;htrack=true},{passive:true});homeMonthSwipe.addEventListener('touchend',e=>{if(!htrack)return;htrack=false;const t=e.changedTouches&&e.changedTouches[0];if(!t)return;const dx=t.clientX-hsx,dy=t.clientY-hsy;if(Math.abs(dx)<48||Math.abs(dx)<=Math.abs(dy)*1.15)return;state.selectedMonth=monthShiftValue(state.selectedMonth,dx<0?1:-1);calendarMonth=state.selectedMonth;calendarDay='';save().then(()=>render())},{passive:true});}
   $$('[data-tab]').forEach(x=>x.onclick=()=>{const next=x.dataset.tab;if(next==='theme')themeDraft={...(state.theme||{})};else if(current==='theme')themeDraft=null;goTo(next)});
   $$('[data-action]').forEach(x=>x.onclick=e=>{if(x.closest('form')&&x.type==='submit')return;e.stopPropagation();act(x.dataset.action,x)});
   const liveTxSearch=$('#txSearch');

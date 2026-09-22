@@ -1,0 +1,12 @@
+HANE V113 + S7 — MERKEZI BUTON / ANA SAYFA DAVRANIS
+
+- TARA 2.0 tabani korunmustur.
+- Ekstre motoruna dokunulmamistir.
+- Merkezi buton/bilesen olculeri: Kompakt / Normal / Ana Aksiyon.
+- V113 kilitli ekran yerlesimleri korunur.
+- Ana Sayfa Profil/Kimlik alaninin tamami tiklanabilir.
+- Profil/avatar standardi kare + yumusak kose.
+- Ana Sayfa Gelir/Gider/Kalan panelinde saga/sola swipe ile ay degisir.
+- Ana sekmeler arasinda yatay swipe navigasyonu yoktur; alt menu kullanilir.
+- Takvim kendi gun swipe davranisini korur.
+- Ikon/logo merkezilestirmesi bu pakette degistirilmedi; EN SON asamaya birakildi.
