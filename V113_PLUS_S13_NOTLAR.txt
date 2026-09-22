@@ -1,0 +1,5 @@
+S13 — Ana Sayfa Aylık Hesap Tekilleştirme
+- Aynı isimli aylık hesap satırları tek satırda birleştirilir ve tutarları toplanır.
+- Örn. YOL ÜCRETİ 150 + 150 => YOL ÜCRETİ 300.
+- Gerçek hareketler silinmez/birleştirilmez; yalnız Ana Sayfa önizlemesi gruplanır.
+- S12 kategori detay sistemi korunur.

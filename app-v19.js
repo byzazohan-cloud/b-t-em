@@ -502,7 +502,17 @@ function monthlyAccountPreview(limit=4){
   const fixed=(state.fixedPayments||[]).filter(x=>x.source!=='card'&&String(x.date||'').startsWith(m)).map(x=>{const e=state.expenses.find(z=>z.id===x.expenseId);return {...x,amount:+(x.actualAmount??x.amount??0)||0,displayTitle:x.title||e?.title||'SABİT GİDER'}});
   const flex=(state.flexTransactions||[]).filter(x=>x.kind==='pay'&&String(x.date||'').startsWith(m)).map(x=>{const f=state.flexAccounts.find(z=>z.id===x.flexId);return {...x,displayTitle:x.title||(f?`${f.bank} · ${f.name||'ESNEK HESAP'}`:'ESNEK HESAP ÖDEMESİ')}});
   const all=[...card,...normal,...fixed,...flex].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))),total=all.reduce((n,x)=>n+(+x.amount||0),0);
-  const rows=all.slice(0,limit).map(x=>`<div class="monthlyPreviewRow"><span>${esc(x.displayTitle||'ÖDEME')}</span><b>${money(x.amount)}</b></div>`).join('');
+  // Ana Sayfa Aylık Hesap önizlemesinde aynı isimli ödemeleri tek satırda birleştir.
+  // Gerçek hareketler değişmez; yalnızca önizleme gruplaması yapılır.
+  const groupedMap=new Map();
+  all.forEach(x=>{
+    const title=String(x.displayTitle||'ÖDEME').trim()||'ÖDEME';
+    const key=title.toLocaleUpperCase('tr-TR').replace(/\s+/g,' ');
+    const g=groupedMap.get(key)||{displayTitle:title,amount:0,count:0};
+    g.amount+=(+x.amount||0);g.count++;groupedMap.set(key,g);
+  });
+  const grouped=[...groupedMap.values()].sort((a,b)=>b.amount-a.amount||a.displayTitle.localeCompare(b.displayTitle,'tr'));
+  const rows=grouped.slice(0,limit).map(x=>`<div class="monthlyPreviewRow"><span>${esc(x.displayTitle)}${x.count>1?` <small>(${x.count})</small>`:''}</span><b>${money(x.amount)}</b></div>`).join('');
   return `<button type="button" class="monthlyPreviewHead" data-tab="monthPaid"><span><small>${monthLabel(m)}</small><b>AYLIK HESAP</b></span><em>TÜMÜ ›</em></button><div class="monthlyPreviewRows">${rows||'<div class="monthlyPreviewEmpty">BU AY ÖDEME KAYDI YOK.</div>'}</div><button type="button" class="monthlyPreviewTotal" data-tab="monthPaid"><span>AY TOPLAMI</span><strong>${money(total)}</strong></button>`;
 }
 function home(){const T=totals();return`<button type="button" class="homeHero homeIdentityButton" data-action="showIdentity" aria-label="HANE kimlik kartını aç">
