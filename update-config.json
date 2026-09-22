@@ -2,8 +2,8 @@
   "latestVersion": "19.4.14",
   "minimumVersion": "19.4.14",
   "force": true,
-  "message": "V113 S10: Diğer giderleri tüm kategori özetlerinde açıklama/işyeri adına göre ayrı gösterilir.",
+  "message": "V113 S15 AUDIT FIX: sürüm/cache kimlikleri eşitlendi; S15 işlevleri ve kullanıcı verileri korundu.",
   "updateUrl": "",
-  "build": "20260922-V113-S14-KART-SAHNESI-CACHE-KILIT",
-  "version": "19.4.16-V113-S14-KART-SAHNESI-CACHE-KILIT"
+  "build": "20260922-V113-S15-AUDIT-FIX",
+  "version": "19.4.17-V113-S15-AUDIT-FIX"
 }

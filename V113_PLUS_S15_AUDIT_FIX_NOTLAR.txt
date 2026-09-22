@@ -1,0 +1,5 @@
+HANE V113 S15 AUDIT FIX
+- S15 kilit sürüm tarandı.
+- app-v19.js ile sw.js arasındaki Service Worker build uyuşmazlığı giderildi.
+- manifest, bootstrap, index cache-bust ve update-config sürüm kimlikleri tek S15 AUDIT FIX kimliğinde eşitlendi.
+- Finans, ekstre, TARA, kategori listeleri, kart sahnesi ve kullanıcı verisi mantığı değiştirilmedi.
