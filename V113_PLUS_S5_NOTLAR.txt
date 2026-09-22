@@ -1,0 +1,8 @@
+HANE V113 + S5 — FİNANSAL HESAP MOTORU + TARA
+
+- S4 tabanı korunmuştur.
+- Aylık gelir/gider/kalan için merkezi financeMonthSnapshot motoru eklendi.
+- TARA sistem sağlık denetimi eklendi.
+- TARA: mükerrer kimlik, mükerrer ekstre parmak izi, sabit gider ödeme bağlantıları, kart bağlantıları, finansal kimlikler ve kart borcu tutarlılığını kontrol eder.
+- TARA kullanıcı verisini otomatik silmez; denetler ve raporlar.
+- Ayarlar ve menüden TARA ekranına erişilir.

@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.8",
-  "minimumVersion": "19.4.8",
+  "latestVersion": "19.4.9",
+  "minimumVersion": "19.4.9",
   "force": true,
-  "message": "V113 S4: Yeni sürüm kodu normal pencerede eski cache arkasında kalmaz; kullanıcı finans verileri korunur.",
+  "message": "V113 S5: Tek finansal hesap motoru + TARA sistem sağlık denetimi.",
   "updateUrl": "",
-  "build": "20260922-V113-S4-AKILLI-KATEGORI",
-  "version": "19.4.8-V113-S4-CACHE-UPDATE"
+  "build": "20260922-V113-S5-FINANS-TARA",
+  "version": "19.4.9-V113-S5-FINANS-TARA"
 }
