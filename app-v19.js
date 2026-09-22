@@ -223,7 +223,7 @@ function goBack(){if(current==='theme')themeDraft=null;const prev=navHistory.pop
 function initBrowserNav(){if(browserNavReady)return;browserNavReady=true;history.replaceState({haneView:current},'');window.addEventListener('popstate',e=>{if(!state)return;const next=e.state?.haneView||navHistory.pop()||'home';if(next!==current){current=next;modal=null;render()}})}
 function summaryDetailBody(kind){
   const m=state.selectedMonth;
-  const inc=incomeEntriesForMonth(m).map(x=>({...x,_kind:'income'}));
+  const inc=realizedIncomeEntriesForMonth(m).map(x=>({...x,_kind:'income'}));
   const exp=actualExpenseEntriesForMonth(m).map(x=>({...x,_kind:'expense'}));
   const items=(kind==='income'?inc:kind==='expense'?exp:[...inc,...exp]).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
   const T=totals(m),title=kind==='income'?'GELİR DETAYI':kind==='expense'?'GİDER DETAYI':'KALAN DETAYI';
@@ -326,12 +326,18 @@ function incomeEntriesForMonth(m=state.selectedMonth){
     list.filter(x=>x.recurring&&String(x.date||'').slice(0,7)<=m).map(x=>({...x,date:recurringIncomeDate(x,m),_incomeTemplate:true,_incomeMonth:m}))
   )
 }
+function realizedIncomeEntriesForMonth(m=state.selectedMonth){
+  const today=iso();
+  return incomeEntriesForMonth(m).filter(x=>String(x.date||'')<=today)
+}
 function incomeEntriesInRange(start,end){
-  const out=[],seen=new Set();let d=new Date(start+'T12:00:00'),stop=new Date(end+'T12:00:00');
-  while(d<=stop){const m=ym(d);if(!seen.has(m)){seen.add(m);incomeEntriesForMonth(m).forEach(x=>{if(x.date>=start&&x.date<=end)out.push(x)})}d=new Date(d.getFullYear(),d.getMonth()+1,1,12)}
+  const out=[],seen=new Set(),today=iso(),realEnd=String(end||'')>today?today:end;
+  if(String(start||'')>today)return out;
+  let d=new Date(start+'T12:00:00'),stop=new Date(realEnd+'T12:00:00');
+  while(d<=stop){const m=ym(d);if(!seen.has(m)){seen.add(m);realizedIncomeEntriesForMonth(m).forEach(x=>{if(x.date>=start&&x.date<=realEnd)out.push(x)})}d=new Date(d.getFullYear(),d.getMonth()+1,1,12)}
   return out
 }
-function totals(m=state.selectedMonth){const i=incomeEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0),e=actualExpenseEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0);return{i,e,r:i-e}}
+function totals(m=state.selectedMonth){const i=realizedIncomeEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0),e=actualExpenseEntriesForMonth(m).reduce((s,x)=>s+(+x.amount||0),0);return{i,e,r:i-e}}
 function cashFlow(m=state.selectedMonth){
   const actual=actualExpenseEntriesForMonth(m),spent=actual.reduce((a,x)=>a+(+x.amount||0),0);
   const directPaid=actual.filter(x=>x.source!=='card').reduce((a,x)=>a+(+x.amount||0),0);
@@ -435,7 +441,7 @@ function monthPaid(){
 }
 function recentMovementsHome(limit=12){
   const m=state.selectedMonth;
-  const incomes=incomeEntriesForMonth(m).map(x=>({...x,_recentKind:'income'}));
+  const incomes=realizedIncomeEntriesForMonth(m).map(x=>({...x,_recentKind:'income'}));
   const expenses=actualExpenseEntriesForMonth(m).map(x=>({...x,_recentKind:x.recurring?'fixed':'expense'}));
   const cardPays=(state.cardPayments||[]).filter(x=>String(x.date||'').startsWith(m)).map(x=>({...x,_recentKind:'cardPayment'}));
   const rows=[...incomes,...expenses,...cardPays].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.id||'').localeCompare(String(a.id||''))).slice(0,limit);
@@ -477,7 +483,7 @@ function txAdvancedFilterBody(){
 }
 function transactions(){
   const m=state.selectedMonth,q=txSearch.trim().toLocaleLowerCase('tr-TR');
-  let a=[...incomeEntriesForMonth(m).map(x=>({...x,type:'income'})),...state.expenses.filter(x=>!x.recurring).map(x=>({...x,type:'expense'})),...(state.fixedPayments||[]).map(p=>{const ex=state.expenses.find(x=>x.id===p.expenseId);return {...(ex||{}),...p,id:p.id,expenseId:p.expenseId,type:'fixedExpense',title:p.title||ex?.title||'SABİT GİDER',category:p.category||ex?.category||'Diğer',amount:+(p.actualAmount??p.amount??0)||0,date:p.date||iso(),source:p.source||'cash',cardId:p.cardId||null,_paid:true}}),...(state.cardPayments||[]).map(x=>({...x,type:'cardPayment',source:'card'})),...(state.flexTransactions||[]).map(x=>({...x,type:x.kind==='pay'?'flexPayment':'flexSpend',source:'flex'}))];
+  let a=[...realizedIncomeEntriesForMonth(m).map(x=>({...x,type:'income'})),...state.expenses.filter(x=>!x.recurring).map(x=>({...x,type:'expense'})),...(state.fixedPayments||[]).map(p=>{const ex=state.expenses.find(x=>x.id===p.expenseId);return {...(ex||{}),...p,id:p.id,expenseId:p.expenseId,type:'fixedExpense',title:p.title||ex?.title||'SABİT GİDER',category:p.category||ex?.category||'Diğer',amount:+(p.actualAmount??p.amount??0)||0,date:p.date||iso(),source:p.source||'cash',cardId:p.cardId||null,_paid:true}}),...(state.cardPayments||[]).map(x=>({...x,type:'cardPayment',source:'card'})),...(state.flexTransactions||[]).map(x=>({...x,type:x.kind==='pay'?'flexPayment':'flexSpend',source:'flex'}))];
   if(!q)a=a.filter(x=>String(x.date||'').startsWith(m));
   if(txFilter==='income')a=a.filter(x=>x.type==='income');else if(txFilter==='expense')a=a.filter(x=>['expense','fixedExpense','flexSpend'].includes(x.type)&&x.source!=='card');else if(txFilter==='card')a=a.filter(x=>x.type==='cardPayment'||x.type==='flexPayment');
   if(txDate)a=a.filter(x=>String(x.date||'')===txDate);if(txCategory)a=a.filter(x=>String(x.category||'')===txCategory);if(txPay)a=a.filter(x=>String(x.source||'cash')===txPay);if(txMin!=='')a=a.filter(x=>(+x.amount||0)>=+txMin);if(txMax!=='')a=a.filter(x=>(+x.amount||0)<=+txMax);if(txMember)a=a.filter(x=>String(x.memberId||'me')===txMember);

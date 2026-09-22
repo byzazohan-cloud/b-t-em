@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V113 S1: Kart ortak limit altyapısı ve veri güvenli geçişi eklendi. Mevcut kullanıcı verileri korunur.",
+  "message": "V113 S3 FIX3: Sabit gelir vade gününden önce plan olarak görünür; gerçekleşen gelir, bakiye ve hareketlere vade günü gelmeden yansımaz.",
   "updateUrl": "",
-  "build": "20260922-V113-S1-CARD-SHARED-LIMIT",
-  "version": "19.4.8-V113-S1-CARD-SHARED-LIMIT"
+  "build": "20260922-V113-S3-FIX3-INCOME-DUE-DATE",
+  "version": "19.4.8-V113-S3-FIX3-INCOME-DUE-DATE"
 }
