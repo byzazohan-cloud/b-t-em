@@ -1,0 +1,7 @@
+HANE V113 + S4 AKILLI KATEGORI
+
+- S3 FIX4 tabani korunur.
+- Ekstre kategori ogrenme kurallari kalici tutulur.
+- Ayni isyeri sonraki ekstrelerde ogrenilen kategoriyle gelir.
+- Kategoriler ekraninda ogrenilen isyeri-kategori kurallari gorulur ve tek tek/tumu temizlenebilir.
+- Kategori adi degistirilirse bagli ogrenme kurallari ve finans kayitlari yeni ada tasinir.

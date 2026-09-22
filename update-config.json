@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V113 S3 FIX4: Yeni sürüm kodu normal pencerede eski cache arkasında kalmaz; kullanıcı finans verileri korunur.",
+  "message": "V113 S4: Yeni sürüm kodu normal pencerede eski cache arkasında kalmaz; kullanıcı finans verileri korunur.",
   "updateUrl": "",
-  "build": "20260922-V113-S3-FIX4-CACHE-UPDATE",
-  "version": "19.4.8-V113-S3-FIX4-CACHE-UPDATE"
+  "build": "20260922-V113-S4-AKILLI-KATEGORI",
+  "version": "19.4.8-V113-S4-CACHE-UPDATE"
 }
