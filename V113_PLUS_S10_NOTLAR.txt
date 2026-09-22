@@ -1,0 +1,8 @@
+HANE V113 + S10 — DİĞER KATEGORİ AYRIŞTIRMA
+
+- S9 kilit sürümü üzerine kümülatif hazırlanmıştır.
+- Diğer kategorisindeki giderler veri kaydı değiştirilmeden, özet ve grafiklerde açıklama/işyeri adına göre ayrı gösterilir.
+- Aynı açıklamadaki Diğer giderleri aynı başlık altında toplanır.
+- Raporlar > Gider Dağılımı, Bu Ay Harcanan, merkezi finans byCategory ve Aylık Hesap aynı merkezi kuralı kullanır.
+- Diğer başlığına ait sentetik detay satırına basıldığında doğru işlemler filtrelenir.
+- Ekstre parserları, kart hesapları, TARA ve gerçek kategori verileri değiştirilmemiştir.

@@ -8,7 +8,7 @@
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
 const SW_BUILD = '20260922-V113-S7-UI-DAVRANIS';
-const CACHE_NAME = 'hane-v19-4-12-V113-S8-UI-KART-RAPOR-SWIPE';
+const CACHE_NAME = 'hane-v19-4-14-V113-S10-DIGER-AYRISTIRMA';
 const HANE_CACHE_PREFIX = 'hane-';
 
 

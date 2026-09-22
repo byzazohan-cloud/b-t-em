@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.11",
-  "minimumVersion": "19.4.11",
+  "latestVersion": "19.4.14",
+  "minimumVersion": "19.4.14",
   "force": true,
-  "message": "V113 S6 TARA 2.0: Güvenli, kullanıcı kontrollü sistem onarımı.",
+  "message": "V113 S10: Diğer giderleri tüm kategori özetlerinde açıklama/işyeri adına göre ayrı gösterilir.",
   "updateUrl": "",
-  "build": "20260922-V113-S7-UI-DAVRANIS",
-  "version": "19.4.11-V113-S7-UI-DAVRANIS"
+  "build": "20260922-V113-S10-DIGER-AYRISTIRMA",
+  "version": "19.4.14-V113-S10-DIGER-AYRISTIRMA"
 }
