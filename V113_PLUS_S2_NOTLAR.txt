@@ -1,0 +1,1 @@
+S2: Ekstre + Finansal Kimlik. Kalıcı txIdentity ve transactionLinks ana app-v19.js içine entegre edildi. Patch dosyası yok.
