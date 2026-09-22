@@ -2,8 +2,8 @@
   "latestVersion": "19.4.8",
   "minimumVersion": "19.4.8",
   "force": true,
-  "message": "V111: Açılış/parola sonrası yükleme zincirindeki sürüm uyuşmazlıkları giderildi. Service Worker, bootstrap, uygulama ve cache tek build kimliğine alındı. Kullanıcı verileri ve mevcut ekranlar korunur.",
+  "message": "V113+ S1: Temel mimari ve veri güvenliği. Merkezi finans hesap kaynağı, ileri sürüm veri kapsayıcıları ve sürüm bütünlüğü. Mevcut kullanıcı verileri ve ekranlar korunur.",
   "updateUrl": "",
-  "build": "20260921-V111-BOOT-COHERENCE",
-  "version": "19.4.8-V111-BOOT-COHERENCE"
+  "build": "20260922-V113-PLUS-S1",
+  "version": "19.4.8-V113-PLUS-S1"
 }

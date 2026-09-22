@@ -1,0 +1,22 @@
+HANE V113+ S1 — TEMEL MİMARİ / VERİ GÜVENLİĞİ
+
+Kaynak: HANE_V113_TEMIZ_GERI_DONUS_BASE.zip
+
+Bu sürümde:
+- Mevcut V113 ekran düzeni ve iş akışları korunmuştur.
+- normalizeV19 içine geriye uyumlu yeni veri kapsayıcıları eklendi:
+  transactionLinks, sharedLimitGroups, billIdentityRules, auditState, schemaMeta.
+- Mevcut statementCategoryRules korunmuştur; paralel kategori motoru oluşturulmamıştır.
+- Merkezi financeMonthCore() hesap kaynağı eklendi.
+- totals(), cashFlow() ve paymentSourceStats() aynı gerçekleşmiş gider kaynağından beslenir.
+- Sabit gider gerçekleşmiş hesabı mevcut fixedPayments mimarisini kullanmaya devam eder.
+- Şifreleme, save queue, yedekleme/geri yükleme ve ekstre parser mantığı değiştirilmemiştir.
+- Bu aşamada ortak kart limiti, TARA, eşleştirme veya UI değişikliği etkinleştirilmemiştir; bunlar sonraki kontrollü sürümlerdir.
+
+
+SON TARAMA / 22.09.2026
+- app-v19.js, sw.js, bootstrap-security.js, force-update.js sözdizimi kontrol edildi.
+- manifest.json ve update-config.json JSON bütünlüğü kontrol edildi.
+- Manifest / update-config / Service Worker / index build kimlikleri V113+ S1 altında eşitlendi.
+- Yeni patch/yama JS dosyası oluşturulmadı.
+- S1 değişiklikleri doğrudan mevcut ana dosyalara entegredir.
