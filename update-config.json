@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.9",
-  "minimumVersion": "19.4.9",
+  "latestVersion": "19.4.10",
+  "minimumVersion": "19.4.10",
   "force": true,
-  "message": "V113 S5: Tek finansal hesap motoru + TARA sistem sağlık denetimi.",
+  "message": "V113 S6: Merkezi buton + ikon/logo arayüz altyapısı.",
   "updateUrl": "",
-  "build": "20260922-V113-S5-FINANS-TARA",
-  "version": "19.4.9-V113-S5-FINANS-TARA"
+  "build": "20260922-V113-S6-MERKEZI-ARAYUZ",
+  "version": "19.4.10-V113-S6-MERKEZI-ARAYUZ"
 }

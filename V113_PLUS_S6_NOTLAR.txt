@@ -1,0 +1,8 @@
+HANE V113 + S6 — MERKEZI ARAYUZ ALTYAPISI
+
+Taban: Başarılı S5 Finans Motoru + TARA.
+- Buton tasarım ölçüleri merkezi CSS tokenlarına bağlandı.
+- Ana navigasyon ikon/etiket tanımları HANE_UI merkezine alındı.
+- Logo kaynağı ve sürüm anahtarı HANE_UI.brand merkezine alındı.
+- Mevcut görünüm ve iş mantığı korunmuştur.
+- S1-S5 kümülatif özellikleri korunmuştur.

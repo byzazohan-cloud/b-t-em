@@ -70,12 +70,27 @@ function paymentLabel(x){if(x.source==='card'){const c=state.cards.find(c=>c.id=
 const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2),iso=(d=new Date())=>{const x=d instanceof Date?d:new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')},ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY',minimumFractionDigits:2,maximumFractionDigits:2}).format(+n||0),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
+// S6 — Merkezi arayüz altyapısı. Görünümü değiştirmeden buton, ikon ve logo tanımları tek merkezden yönetilir.
+const HANE_UI=Object.freeze({
+  build:'20260922-V113-S6-MERKEZI-ARAYUZ',
+  brand:Object.freeze({name:'HANE',logo:'icons/hane-app-icon.png',logoVersion:'s6'}),
+  buttons:Object.freeze({base:'btn',primary:'btn gold',icon:'ib premiumTopIcon'}),
+  nav:Object.freeze([
+    Object.freeze({tab:'home',icon:'home',label:'ANA SAYFA'}),
+    Object.freeze({tab:'transactions',icon:'transactions',label:'HAREKETLER'}),
+    Object.freeze({tab:'fixed',icon:'fixed',label:'GİDERLER'}),
+    Object.freeze({tab:'cards',icon:'cards',label:'FİNANS'}),
+    Object.freeze({tab:'calendar',icon:'fixed',label:'TAKVİM'}),
+    Object.freeze({tab:'reports',icon:'report',label:'RAPORLAR'})
+  ])
+});
+function uiButtonClass(kind='base',extra=''){return `${HANE_UI.buttons[kind]||HANE_UI.buttons.base}${extra?' '+extra:''}`}
 function haneLogo(size=54,cls=''){
   const n=Math.max(28,Number(size)||54);
-  return `<img class="haneLogoImg ${cls}" src="icons/hane-app-icon.png?v=1948brand9" width="${n}" alt="HANE">`;
+  return `<img class="haneLogoImg ${cls}" src="${HANE_UI.brand.logo}?v=${HANE_UI.brand.logoVersion}" width="${n}" alt="HANE">`;
 }
 function haneFullLogo(cls=''){
-  return `<img class="haneFullLogo ${cls}" src="icons/hane-app-icon.png?v=1948brand9" alt="HANE">`;
+  return `<img class="haneFullLogo ${cls}" src="${HANE_UI.brand.logo}?v=${HANE_UI.brand.logoVersion}" alt="HANE">`;
 }
 function premiumIcon(name,size=26){
   const p={
@@ -430,7 +445,7 @@ function buildTopBar(){
   const t={tara:'TARA · SİSTEM SAĞLIĞI',transactions:'HAREKETLER',fixed:'GİDERLER',cards:'FİNANS',calendar:'TAKVİM',reports:'RAPORLAR',profile:'PROFİL',backup:'YEDEKLEME',settings:'AYARLAR',members:'HANE ÜYELERİ',homeEdit:'ANA SAYFAYI DÜZENLE',categories:'KATEGORİLER',theme:'TEMA STÜDYOSU',alerts:'HATIRLATMALAR',about:'HAKKINDA',monthSpent:'BU AY HARCANAN',monthPaid:'AYLIK HESAP',notes:'NOTLAR'};
   return`<div class="top"><button class="back" data-action="back">‹</button><div class="brand">${t[current]||'HANE'}</div><div class="topRight"><button class="ib premiumTopIcon" data-tab="alerts">${premiumIcon('bell',28)}</button><button class="ib premiumTopIcon" data-tab="settings">${premiumIcon('settings',28)}</button></div></div>`
 }
-function nav(){const items=[['home','home','ANA SAYFA'],['transactions','transactions','HAREKETLER'],['fixed','fixed','GİDERLER'],['cards','cards','FİNANS'],['calendar','fixed','TAKVİM'],['reports','report','RAPORLAR']];return`<nav class="nav premiumNav v1947CleanNav">${items.map(x=>`<button data-tab="${x[0]}" class="${current===x[0]?'active':''}"><span class="navIcon">${premiumIcon(x[1],30)}</span><span>${x[2]}</span></button>`).join('')}</nav>`}
+function nav(){return`<nav class="nav premiumNav v1947CleanNav">${HANE_UI.nav.map(x=>`<button data-tab="${x.tab}" class="${current===x.tab?'active':''}"><span class="navIcon">${premiumIcon(x.icon,30)}</span><span>${x.label}</span></button>`).join('')}</nav>`}
 function menuBody(){const a=[['home','home','ANA EKRAN'],['transactions','transactions','HAREKETLER'],['fixed','expense','GİDERLER'],['cards','cards','KARTLAR / ESNEK HESAP'],['calendar','fixed','TAKVİM'],['reports','report','RAPORLAR'],['alerts','bell','HATIRLATMALAR'],['notes','note','NOTLAR'],['categories','fixed','KATEGORİLER'],['members','profile','HANE ÜYELERİ'],['profile','profile','PROFİL / KİMLİK'],['tara','report','TARA · SİSTEM SAĞLIĞI'],['settings','settings','AYARLAR']];return `<div class="menuList">${a.map(x=>`<button data-action="menuGo" data-go="${x[0]}"><i>${premiumIcon(x[1],24)}</i><b>${x[2]}</b><span>›</span></button>`).join('')}</div>`}
 
 function monthLabel(m=state.selectedMonth){const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString('tr-TR',{month:'long',year:'numeric'}).toLocaleUpperCase('tr-TR')}
