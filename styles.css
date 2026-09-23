@@ -2295,3 +2295,11 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .categoryIconPicker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}.categoryIconChoice{min-width:0;aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);display:grid;place-items:center;color:var(--text)}.categoryIconChoice.active{border-color:var(--gold2);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold2) 22%,transparent)}.categoryIconChoice .catSvg{stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(max-width:420px){.categoryIconPicker{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}}
 /* S18 — Ekstre Mutabakatı */
 .s18MatchSummary{margin-top:10px}.stmtCountGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}.stmtCountGrid span{min-width:0;padding:9px 7px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.035);text-align:center}.stmtCountGrid small{display:block;font-size:9px;opacity:.68;white-space:normal}.stmtCountGrid b{display:block;margin-top:3px;font-size:15px}.stmtCountGrid.compact{margin:9px 0;grid-template-columns:repeat(4,minmax(0,1fr))}.stmtTypeEdit select[data-stmt-match]{margin-top:7px;width:100%}@media(max-width:520px){.stmtCountGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stmtCountGrid.compact{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* S18 FIX1 — Ekstre eşleşme durumu mobil görünümü */
+.stmtMatchState{display:flex;flex-direction:column;gap:3px;margin-top:8px;padding:8px 10px;border:1px solid var(--skin-border);border-radius:10px;background:rgba(255,255,255,.025)}
+.stmtMatchState b{font-size:11px;letter-spacing:.04em}.stmtMatchState small{font-size:10px;line-height:1.35;color:var(--skin-muted)}
+.stmtMatchState.matched{border-color:rgba(43,212,142,.35)}.stmtMatchState.matched b{color:var(--green)}
+.stmtMatchState.possible{border-color:rgba(240,189,89,.38)}.stmtMatchState.possible b{color:#f0bd59}
+.stmtMatchState.new b{color:var(--z-accent)}
+.stmtMatchChooser{display:block;margin-top:7px}.stmtMatchChooser>span{display:block;margin-bottom:4px;font-size:9px;color:var(--skin-muted);letter-spacing:.08em}.stmtMatchChooser select{display:block;width:100%;min-width:0;max-width:100%;padding:9px 10px;border-radius:9px;white-space:normal}
