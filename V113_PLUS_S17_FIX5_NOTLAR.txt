@@ -1,0 +1,4 @@
+HANE V113 PLUS S17 FIX5
+- DenizBank faiz/vergi/komisyon uzlastirmasi duzeltildi.
+- Is Bankasi FIX2 ve TEB FIX4 davranislari korundu.
+- Eski surum notlari paketten temizlenerek dosya sayisi azaltildi.

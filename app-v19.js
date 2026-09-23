@@ -1864,6 +1864,7 @@ function stmtAllMoneyValues(text){
 function normalizeStatementSummary(text,rows,raw){
   const meta={...(raw||{})},round2=n=>Math.round((+n||0)*100)/100,finite=n=>Number.isFinite(+n);
   const detectedBank=stmtDetectBank(text,statementImportCardId||'');
+  meta.bankProfileId=detectedBank?.id||'generic';
   const pays=(rows||[]).filter(r=>r?.kind==='payment').reduce((a,r)=>a+Math.abs(+r.amount||0),0);
   const paymentCount=(rows||[]).filter(r=>r?.kind==='payment').length;
   const parsedFees=round2((rows||[]).filter(r=>r?.kind==='fee').reduce((a,r)=>a+Math.abs(+r.amount||0),0));
@@ -2092,6 +2093,20 @@ function stmtReconcileRowsToBankSpending(rows,meta){
   const needFee=Math.round((feeTarget-feeParsed)*100)/100,excessSpend=Math.round((parsed-spendTarget)*100)/100;
   if(Number.isFinite(feeTarget)&&feeTarget>0&&Number.isFinite(spendTarget)&&needFee>.001&&Math.abs(needFee-excessSpend)<.011){
     const feeCandidates=list.map((r,i)=>({r,i})).filter(x=>x.r?.kind==='spend'&&stmtFeeLike(`${x.r.rawKey||''} ${x.r.title||''}`));const feeCandidateRows=feeCandidates.map(x=>x.r);const local=stmtUniqueSubsetIndexes(feeCandidateRows,'spend',needFee,4);const idxs=local?.map(j=>feeCandidates[j].i);if(idxs?.length){for(const i of idxs){const r=list[i];r.kind='fee';r.category='Vergi & Faiz';r.refund=false;r.payment=false;r.classificationReason='Banka özeti + faiz/ücret açıklaması';r.semanticKey=(r.semanticKey||'')+'|fee-reconciled'};return{rows:list,removed:0,amount:0,reclassified:idxs.length,reclassifiedAmount:needFee}}
+
+    // S17 FIX5 — DenizBank: PDF metin katmanı bazı vergi/faiz açıklamalarını parçalayabiliyor.
+    // Bankanın ETİKETLİ faiz/ücret toplamı ile harcama fazlası birebir aynıysa ve bu tutarı
+    // yalnızca TEK bir küçük işlem kombinasyonu açıklıyorsa, sadece DenizBank profilinde bu
+    // satırları ücret olarak ayır. Bu kural İş Bankası/TEB'e uygulanmaz.
+    if(meta?.bankProfileId==='denizbank'){
+      const pool=list.map((r,i)=>({r,i})).filter(x=>x.r?.kind==='spend'&&Math.abs(+x.r.amount||0)>0&&Math.abs(+x.r.amount||0)<=needFee+.001);
+      const local2=stmtUniqueSubsetIndexes(pool.map(x=>x.r),'spend',needFee,6);
+      const idxs2=local2?.map(j=>pool[j].i);
+      if(idxs2?.length){
+        for(const i of idxs2){const r=list[i];r.kind='fee';r.category='Vergi & Faiz';r.refund=false;r.payment=false;r.classificationReason='DenizBank etiketli faiz/ücret toplamı ile birebir uzlaştırma';r.semanticKey=(r.semanticKey||'')+'|deniz-fee-summary'}
+        return{rows:list,removed:0,amount:0,reclassified:idxs2.length,reclassifiedAmount:needFee};
+      }
+    }
   }
   // İadeli ekstrelerde banka özetinin iadeyi nasıl mahsuplaştırdığı bankadan bankaya değişebilir.
   // Bu yüzden otomatik satır azaltma yalnızca iadesiz ekstrelerde yapılır.
