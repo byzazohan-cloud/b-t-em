@@ -2371,3 +2371,70 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
  .taraIssue{grid-template-columns:28px minmax(0,1fr) 58px!important}.taraFixBtn,.taraManual{width:58px!important;max-width:58px!important}
  .modal:has([data-action="hanIssueOk"]) .sheet{max-width:390px!important}
 }
+
+/* S19 FIX5 — UI CONSISTENCY: visual scale only, no finance logic */
+:root{
+  --ui-btn-h:44px;
+  --ui-btn-sm-h:36px;
+  --ui-radius:14px;
+  --ui-gap:8px;
+  --ui-text-xs:9px;
+  --ui-text-sm:10px;
+  --ui-text-md:12px;
+  --ui-title:14px;
+}
+/* common action rhythm */
+.btn{min-height:var(--ui-btn-h);border-radius:var(--ui-radius);padding:10px 12px;line-height:1.2;box-sizing:border-box}
+.menuList button,.setting,.item{min-height:54px}
+.cleanManageLinks button{min-height:56px;padding:10px 12px}
+.homePrimaryActions button{min-height:48px;border-radius:14px}
+.expenseTabs button,.movementSeg button,.categoryViewSwitch button{min-height:38px;height:38px;border-radius:11px}
+/* quick access: equal cards and readable labels */
+.cleanQuick button{height:74px!important;padding:7px 3px!important;gap:5px!important;font-size:9px!important}
+.cleanQuick button i{width:29px!important;height:29px!important}
+.quick.premiumQuick .hanQuickButton{font-size:9px!important;line-height:1.15!important;gap:4px!important}
+/* bottom navigation must remain compact but readable */
+.premiumNav button>span:last-child{font-size:8px!important;line-height:1.05!important}
+/* finance/list typography consistency */
+.movementMain b{font-size:12px!important}.movementMain small{font-size:9px!important}
+.movementAmount b{font-size:12px!important}.movementAmount small{font-size:15px!important}
+.monthlyLedgerInfo b{font-size:11px}.monthlyLedgerInfo small{font-size:9px}.monthlyLedgerRow>strong{font-size:12px}
+/* HAN: balanced cards, no edge collisions, readable text */
+.hanGroups{gap:6px!important}
+.hanGroups span{font-size:8.5px!important;padding:8px 6px!important;border-radius:10px!important;line-height:1.2!important}
+.taraIssue{grid-template-columns:32px minmax(0,1fr) 70px!important;gap:8px!important;padding:10px!important;align-items:center!important}
+.taraIssue .ico{width:30px!important;height:30px!important;min-width:30px!important;font-size:14px!important}
+.taraIssue b{font-size:10.5px!important;line-height:1.25!important}
+.taraIssue small{font-size:8.5px!important;line-height:1.4!important;margin-top:3px!important}
+.taraFixBtn,.taraManual{width:70px!important;max-width:70px!important;min-height:34px!important;padding:7px 4px!important;font-size:7.5px!important;border-radius:10px!important}
+/* HAN inspection: compact but not microscopic */
+.modal:has([data-action="hanIssueOk"]) .sheet{width:min(400px,calc(100vw - 20px))!important;max-width:400px!important;padding:12px 12px calc(14px + var(--safeB))!important;border-radius:18px 18px 0 0!important;box-sizing:border-box!important}
+.modal:has([data-action="hanIssueOk"]) .sheetHead{padding:7px 0!important;margin-bottom:7px!important}
+.modal:has([data-action="hanIssueOk"]) .sheetHead b{font-size:13px!important}
+.modal:has([data-action="hanIssueOk"]) .close{width:30px!important;height:30px!important}
+.modal:has([data-action="hanIssueOk"]) .notice{font-size:9px!important;line-height:1.45!important;padding:9px 10px!important}
+.modal:has([data-action="hanIssueOk"]) .section{margin:8px 0 5px!important}
+.modal:has([data-action="hanIssueOk"]) .section b{font-size:11px!important}
+.modal:has([data-action="hanIssueOk"]) .section span{font-size:8px!important}
+.modal:has([data-action="hanIssueOk"]) .hanCompare{padding:9px 10px!important;margin-top:6px!important;border-radius:11px!important}
+.modal:has([data-action="hanIssueOk"]) .hanCompare b{font-size:9.5px!important;line-height:1.3!important}
+.modal:has([data-action="hanIssueOk"]) .hanCompare small{font-size:8.5px!important;line-height:1.4!important}
+.modal:has([data-action="hanIssueOk"]) .hanReviewActions{gap:7px!important;margin-top:7px!important}
+.modal:has([data-action="hanIssueOk"]) .hanReviewActions .btn{min-height:36px!important;padding:8px 5px!important;font-size:8px!important;border-radius:10px!important}
+.modal:has([data-action="hanIssueOk"]) [data-action="hanIssueOk"]{width:100%!important;max-width:none!important;min-height:38px!important;margin:8px 0 0!important;padding:8px 10px!important;font-size:10px!important}
+/* cards and sections keep breathing room */
+.card{box-sizing:border-box}.section{margin-top:15px}.content{overflow-x:hidden}
+@media(max-width:390px){
+  .cleanQuick{gap:4px!important}.cleanQuick button{font-size:8.5px!important}
+  .premiumNav button>span:last-child{font-size:7.5px!important}
+  .taraIssue{grid-template-columns:30px minmax(0,1fr) 66px!important;gap:6px!important;padding:9px!important}
+  .taraFixBtn,.taraManual{width:66px!important;max-width:66px!important;font-size:7.2px!important}
+  .hanGroups span{font-size:8px!important;padding:7px 5px!important}
+  .modal:has([data-action="hanIssueOk"]) .sheet{width:calc(100vw - 12px)!important;max-width:390px!important}
+}
+@media(max-width:360px){
+  .homePrimaryActions{gap:6px}.homePrimaryActions button{font-size:9px!important}
+  .cleanQuick button{font-size:8px!important}
+  .taraIssue{grid-template-columns:28px minmax(0,1fr) 62px!important}
+  .taraFixBtn,.taraManual{width:62px!important;max-width:62px!important}
+}
