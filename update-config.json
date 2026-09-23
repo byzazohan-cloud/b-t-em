@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.19-V113-S16-AUDIT-FIX",
-  "minimumVersion": "19.4.19-V113-S16-AUDIT-FIX",
+  "latestVersion": "19.4.20-V113-S17-EKSTRE2",
+  "minimumVersion": "19.4.20-V113-S17-EKSTRE2",
   "force": true,
-  "message": "V113 S16 AUDIT FIX: kategori yönetimi + build/cache eşitlemesi.",
+  "message": "V113 S17: Ekstre Motoru 2.0; güvenli sınıflandırma ve manuel işlem türü doğrulaması.",
   "updateUrl": "",
-  "build": "20260923-V113-S16-AUDIT-FIX",
-  "version": "19.4.19-V113-S16-AUDIT-FIX"
+  "build": "20260923-V113-S17-EKSTRE2",
+  "version": "19.4.20-V113-S17-EKSTRE2"
 }

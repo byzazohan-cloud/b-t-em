@@ -1,0 +1,5 @@
+S17 EKSTRE MOTORU 2.0
+- Sayısal fark tek başına harcamayı faiz/masrafa çeviremez.
+- Otomatik faiz/masraf ayrımı için açıklama kanıtı gerekir.
+- Önizlemede işlem türü Harcama/Faiz-Masraf/Ödeme/İade olarak elle düzeltilebilir.
+- DenizBank/İş Bankası ters sınıflandırma riskine karşı koruma.
