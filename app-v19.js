@@ -500,7 +500,7 @@ function monthPaid(){
 function recentMovementsHome(limit=12){
   const m=state.selectedMonth;
   const incomes=realizedIncomeEntriesForMonth(m).map(x=>({...x,_recentKind:'income'}));
-  const expenses=actualExpenseEntriesForMonth(m).map(x=>({...x,_recentKind:x.recurring?'fixed':'expense'}));
+  const expenses=actualExpenseEntriesForMonth(m).filter(x=>!x.recurring||(x.paymentId&&fixedPaidForMonth(state.expenses.find(e=>e.id===x.expenseId)||x,m))).map(x=>({...x,_recentKind:x.recurring?'fixed':'expense'}));
   const cardPays=(state.cardPayments||[]).filter(x=>String(x.date||'').startsWith(m)).map(x=>({...x,_recentKind:'cardPayment'}));
   const rows=[...incomes,...expenses,...cardPays].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.id||'').localeCompare(String(a.id||''))).slice(0,limit);
   const html=rows.map(x=>{let action='editExpense',rid=x.id,label='GİDER',sign='-',color='var(--red)',ico=catPremiumIcon(x.category||'Diğer');if(x._recentKind==='income'){action='editIncome';label='GELİR';sign='+';color='var(--green)';ico=premiumIcon('income',22)}else if(x._recentKind==='fixed'){action='editFixedPayment';rid=x.expenseId||x.id;label='SABİT GİDER';ico=catPremiumIcon(x.category||'Diğer')}else if(x._recentKind==='cardPayment'){action='editCardPayment';label='KART ÖDEMESİ';sign='';color='var(--gold2)';ico=premiumIcon('cards',22)}const card=x.cardId?state.cards.find(c=>c.id===x.cardId):null;const pay=(x._recentKind==='expense'||x._recentKind==='fixed')?(x.source==='card'?'KART'+(card?' · '+esc(card.name):''):'NAKİT'):'';return `<div class="item recentHomeItem" data-action="${action}" data-id="${rid}"><div class="ico premiumIco">${ico}</div><div><b>${esc(x.title||label)}</b><small>${x.date||''} · ${label}${pay?' · '+pay:''}</small></div><div class="right"><b style="color:${color}">${sign}${money(x.amount)}</b><small class="tapDetailHint">AYRINTI ›</small></div></div>`}).join('');
@@ -509,8 +509,8 @@ function recentMovementsHome(limit=12){
 function monthlyAccountPreview(limit=4){
   const m=state.selectedMonth;
   const card=(state.cardPayments||[]).filter(x=>String(x.date||'').startsWith(m)).map(x=>{const c=state.cards.find(z=>z.id===x.cardId);return {...x,displayTitle:c?`${c.bank} · ${c.name||'KREDİ KARTI'}`:(x.title||'KREDİ KARTI ÖDEMESİ')}});
-  const normal=(state.expenses||[]).filter(x=>!x.recurring&&x.source!=='card'&&String(x.date||'').startsWith(m)&&x.paid===true).map(x=>({...x,amount:+(x.actualAmount??x.amount??0)||0,displayTitle:x.title||'GİDER'}));
-  const fixed=(state.fixedPayments||[]).filter(x=>x.source!=='card'&&String(x.date||'').startsWith(m)).map(x=>{const e=state.expenses.find(z=>z.id===x.expenseId);return {...x,amount:+(x.actualAmount??x.amount??0)||0,displayTitle:x.title||e?.title||'SABİT GİDER'}});
+  const normal=(state.expenses||[]).filter(x=>!x.recurring&&x.source!=='card'&&String(x.date||'').startsWith(m)&&x.paid===true).map(x=>({...x,amount:+(x.actualAmount??x.amount??0)||0,displayTitle:expenseCategoryGroup(x)}));
+  const fixed=(state.fixedPayments||[]).filter(x=>{const e=state.expenses.find(z=>z.id===x.expenseId),pm=x.month||String(x.date||'').slice(0,7);return x.source!=='card'&&String(x.date||'').startsWith(m)&&!!e&&(e.paidMonths||[]).includes(pm)}).map(x=>{const e=state.expenses.find(z=>z.id===x.expenseId);return {...x,amount:+(x.actualAmount??x.amount??0)||0,displayTitle:expenseCategoryGroup({...e,...x})}});
   const flex=(state.flexTransactions||[]).filter(x=>x.kind==='pay'&&String(x.date||'').startsWith(m)).map(x=>{const f=state.flexAccounts.find(z=>z.id===x.flexId);return {...x,displayTitle:x.title||(f?`${f.bank} · ${f.name||'ESNEK HESAP'}`:'ESNEK HESAP ÖDEMESİ')}});
   const all=[...card,...normal,...fixed,...flex].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))),total=all.reduce((n,x)=>n+(+x.amount||0),0);
   // Ana Sayfa Aylık Hesap önizlemesinde aynı isimli ödemeleri tek satırda birleştir.
