@@ -1,0 +1,1 @@
+S19 HAN FIX2: HAN inceleme ekranına Düzenle, Sil ve Bunda Sıkıntı Yok eklendi. Silme onay ister. Bunda Sıkıntı Yok finansal kaydı değiştirmez ve aynı uyarıyı kalıcı olarak gizler.
