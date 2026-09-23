@@ -1,0 +1,5 @@
+S17 FIX1
+- İş Bankası ekstrelerinde FAİZ VE ÜCRET(LER) işlem açıklaması faiz/ücret olarak tanınır.
+- Gerçek POS harcamaları yalnız tutar farkı nedeniyle faiz olarak çevrilmez.
+- Banka özeti ile işlem toplamları uyuşmazsa içe aktarma kilidi korunur.
+- App / bootstrap / manifest / service worker / update-config sürüm kimlikleri eşitlendi.
