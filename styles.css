@@ -2291,3 +2291,5 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
  .expenseCenterList .categoryExpenseRow .premiumIco{width:42px!important;height:42px!important}
  .expenseCenterList .categoryExpenseRow .expenseCenterRight{min-width:96px!important}
 }
+/* S16 kategori ikon seçici */
+.categoryIconPicker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}.categoryIconChoice{min-width:0;aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:var(--card);display:grid;place-items:center;color:var(--text)}.categoryIconChoice.active{border-color:var(--gold2);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold2) 22%,transparent)}.categoryIconChoice .catSvg{stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(max-width:420px){.categoryIconPicker{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}}

@@ -1,0 +1,4 @@
+S16 AUDIT FIX
+- S16 kategori yönetimi korunur.
+- app / service worker / update-config build kimlikleri eşitlendi.
+- Eski S16 test paketindeki build kimliği uyumsuzluğu giderildi.

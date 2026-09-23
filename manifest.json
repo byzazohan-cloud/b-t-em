@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.17-V113-S15-AUDIT-FIX",
+  "start_url": "./?v=19.4.18-V113-S16-KATEGORI",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",
@@ -34,5 +34,5 @@
     "productivity",
     "utilities"
   ],
-  "version": "19.4.17-V113-S15-AUDIT-FIX"
+  "version": "19.4.18-V113-S16-KATEGORI"
 }

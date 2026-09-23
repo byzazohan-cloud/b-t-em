@@ -1,0 +1,13 @@
+HANE V113 + S16 — KATEGORİ YÖNETİMİ
+
+TABAN: HANE_V113_PLUS_S15_AUDIT_FIX.zip
+
+EKLENENLER:
+- Mevcut Normal Gider / Sabit Gider seçimi korundu ve doğrulandı.
+- Kategori ekleme/düzenleme korundu.
+- SVG ikon seçici eklendi.
+- Kategori birleştirme eklendi (kaynak -> hedef, etkilenen kayıt sayısı, onay).
+- Kategori silmede bağlı kayıtlar varsa hedef kategoriye aktarma zorunlu; finansal kayıt silinmez.
+- Kira + Aidat rapor/gruplama görünümünde Konut altında toplanır; ham kayıt kategorileri korunur.
+- Elektrik/Su/Doğalgaz/İnternet/Cep Telefonu rapor/gruplama görünümünde Faturalar altında toplanır; ham kayıt türleri korunur.
+- S15 ekstre, kart, TARA, finans ve kullanıcı verisi işleyişine dokunulmadı.

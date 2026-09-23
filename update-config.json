@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.14",
-  "minimumVersion": "19.4.14",
+  "latestVersion": "19.4.19-V113-S16-AUDIT-FIX",
+  "minimumVersion": "19.4.19-V113-S16-AUDIT-FIX",
   "force": true,
-  "message": "V113 S15 AUDIT FIX: sürüm/cache kimlikleri eşitlendi; S15 işlevleri ve kullanıcı verileri korundu.",
+  "message": "V113 S16 AUDIT FIX: kategori yönetimi + build/cache eşitlemesi.",
   "updateUrl": "",
-  "build": "20260922-V113-S15-AUDIT-FIX",
-  "version": "19.4.17-V113-S15-AUDIT-FIX"
+  "build": "20260923-V113-S16-AUDIT-FIX",
+  "version": "19.4.19-V113-S16-AUDIT-FIX"
 }
