@@ -2486,3 +2486,11 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .statementPrivacyNote{margin:7px 0 9px!important;padding:8px 10px!important;border-radius:10px!important;font-size:8px!important;}
 .statementItem{min-height:58px!important;padding:9px 10px!important}.statementItem b{font-size:10px!important}.statementItem small{font-size:8px!important}.statementItem .ico{width:36px!important;height:36px!important;min-width:36px!important;}
 @media(max-width:390px){.statementCardActions{gap:6px!important}.statementCardActions .btn{min-height:31px!important;height:31px!important;font-size:7.5px!important;padding:4px 6px!important}.statementHero h2{font-size:20px!important}.statementEquation span{padding:7px 5px!important}}
+/* S19 STATEMENT UI FIX2 · restore full detail hierarchy */
+.haneOnlyStatement{display:block!important}
+.haneOnlyEquation{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.statementBankSummary,.statementCompare{display:block!important;visibility:visible!important}
+.statementCardActions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+.statementCardActions .btn{height:30px!important;min-height:30px!important;font-size:7.5px!important;padding:4px 7px!important}
+@media(min-width:391px){.statementEquation{grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch}.statementEquation.haneOnlyEquation{grid-template-columns:repeat(4,minmax(0,1fr))!important}.statementEquation i{align-self:center;text-align:center}.statementCompare{font-size:9px}}
+@media(max-width:390px){.statementEquation,.statementEquation.haneOnlyEquation{grid-template-columns:repeat(2,minmax(0,1fr))!important}.statementEquation i{display:none!important}}
