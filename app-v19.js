@@ -1856,6 +1856,31 @@ function normalizeStatementSummary(text,rows,raw){
   const parsedRefunds=round2((rows||[]).filter(r=>r?.kind==='refund').reduce((a,r)=>a+Math.abs(+r.amount||0),0));
   const feeCount=(rows||[]).filter(r=>r?.kind==='fee').length;
   let repaired=false;
+  // S17 FIX2 — İş Bankası: matematik farkından faiz/ücret ÜRETME.
+  // İş Bankası Maximum ekstrelerinde ayrı bir faiz/ücret işlem satırı yoksa,
+  // gerçek POS harcamalarının bir kombinasyonu banka özeti farkını açıklıyor diye
+  // bu tutar faiz sayılmaz. İşlem tablosu sınıflandırması esas alınır.
+  if(detectedBank?.id==='isbank'){
+    const explicitFeeRows=(rows||[]).filter(r=>r?.kind==='fee');
+    if(explicitFeeRows.length===0){
+      if(!finite(meta.feesTotal)||Math.abs(+meta.feesTotal)>.01)repaired=true;
+      meta.feesTotal=0;
+      meta.isbankNoExplicitFeeRows=true;
+      if(parsedSpend>0&&(!finite(meta.spendingTotal)||Math.abs(+meta.spendingTotal-parsedSpend)>.01))repaired=true;
+      if(parsedSpend>0)meta.spendingTotal=parsedSpend;
+      if(pays>0){if(!finite(meta.paymentsTotal)||Math.abs(+meta.paymentsTotal-pays)>.01)repaired=true;meta.paymentsTotal=round2(pays)}
+      if(finite(meta.previousBalance)&&finite(meta.periodDebt)&&finite(meta.paymentsTotal)){
+        const expectedSpend=round2((+meta.periodDebt)-(+meta.previousBalance)+(+meta.paymentsTotal)+parsedRefunds);
+        meta.isbankRowEquationOk=Math.abs(expectedSpend-parsedSpend)<.02;
+      }
+      meta.summaryRepaired=repaired;
+      meta.summaryEquationOk=finite(meta.previousBalance)&&finite(meta.spendingTotal)&&finite(meta.paymentsTotal)&&finite(meta.periodDebt)
+        ?Math.abs((+meta.previousBalance)+(+meta.spendingTotal)-(+meta.paymentsTotal)-parsedRefunds-(+meta.periodDebt))<.02:false;
+      // Burada dön: aşağıdaki genel "spendPlusFees" aday araması İş Bankası için
+      // yeniden sahte faiz/ücret türetemez.
+      return meta;
+    }
+  }
   // V87: Halkbank/Paraf özetini banka etiketlerinden doğrudan oku.
   // Regex literal kullanılır; JS string içindeki \\s kaçışlarının bozulmasına izin verilmez.
   if(detectedBank?.id==='halkbank'){

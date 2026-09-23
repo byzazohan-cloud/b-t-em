@@ -1,0 +1,4 @@
+S17 FIX2
+- İş Bankası: açık faiz/ücret işlem satırı yoksa matematik farkından sahte faiz/ücret üretilmez.
+- Gerçek POS harcamaları harcama olarak korunur.
+- İş Bankası özet harcaması işlem satırlarıyla doğrulanır; ödeme ve dönem borcu muhasebe eşitliğiyle kontrol edilir.
