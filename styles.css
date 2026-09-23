@@ -2501,3 +2501,58 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .hanGroups button{appearance:none;width:100%;min-width:0;padding:8px 6px;border:1px solid var(--z-line);border-radius:10px;background:rgba(255,255,255,.025);color:inherit;text-align:center;font:inherit;font-size:8.5px;font-weight:850;line-height:1.2;overflow-wrap:anywhere}
 .hanGroups button.active{border-color:rgba(216,173,79,.75);background:rgba(216,173,79,.10);color:var(--gold2);box-shadow:inset 0 0 0 1px rgba(216,173,79,.10)}
 @media(max-width:390px){.hanScanBtn{min-width:62px;height:32px;padding:0 10px;font-size:8px}.hanGroups button{font-size:7.5px;padding:7px 5px}}
+
+/* S19 FIX7 — Kart ekstresi satır hizalama */
+.statementItem{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) 104px!important;
+  column-gap:10px!important;
+  align-items:center!important;
+  min-height:66px;
+}
+.statementItem>.ico,
+.statementItem>.premiumIco{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  margin:0!important;
+  padding:0!important;
+  align-self:center!important;
+  justify-self:start!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+}
+.statementItem>.ico>.catGem,
+.statementItem>.premiumIco>.catGem{
+  width:38px!important;
+  height:38px!important;
+  margin:0!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.statementItem>div:nth-child(2){min-width:0!important;align-self:center!important;}
+.statementItem>div:nth-child(2)>b,
+.statementItem>div:nth-child(2)>small{display:block!important;margin:0!important;}
+.statementItem>div:nth-child(2)>small{margin-top:4px!important;}
+.statementItem>.right{
+  width:104px!important;
+  min-width:104px!important;
+  margin:0!important;
+  align-self:center!important;
+  justify-self:end!important;
+  text-align:right!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  gap:5px!important;
+}
+.statementItem>.right>b,
+.statementItem>.right>.tapDetailHint{margin:0!important;line-height:1.15!important;white-space:nowrap!important;}
+@media(max-width:390px){
+  .statementItem{grid-template-columns:40px minmax(0,1fr) 94px!important;column-gap:8px!important;}
+  .statementItem>.ico,.statementItem>.premiumIco{width:38px!important;height:38px!important;min-width:38px!important;}
+  .statementItem>.ico>.catGem,.statementItem>.premiumIco>.catGem{width:36px!important;height:36px!important;}
+  .statementItem>.right{width:94px!important;min-width:94px!important;}
+}
