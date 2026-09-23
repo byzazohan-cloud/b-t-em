@@ -2494,3 +2494,10 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .statementCardActions .btn{height:30px!important;min-height:30px!important;font-size:7.5px!important;padding:4px 7px!important}
 @media(min-width:391px){.statementEquation{grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch}.statementEquation.haneOnlyEquation{grid-template-columns:repeat(4,minmax(0,1fr))!important}.statementEquation i{align-self:center;text-align:center}.statementCompare{font-size:9px}}
 @media(max-width:390px){.statementEquation,.statementEquation.haneOnlyEquation{grid-template-columns:repeat(2,minmax(0,1fr))!important}.statementEquation i{display:none!important}}
+/* S19 HAN FILTER + TOP SCAN */
+.hanTopRow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin-bottom:8px}
+.hanTopRow .section{margin:0!important;min-width:0}
+.hanScanBtn{min-width:70px;height:34px;padding:0 13px;border:1px solid rgba(216,173,79,.65);border-radius:10px;background:linear-gradient(180deg,#17130c,#0b0a08);color:var(--gold2);font-size:9px;font-weight:900;letter-spacing:.5px}
+.hanGroups button{appearance:none;width:100%;min-width:0;padding:8px 6px;border:1px solid var(--z-line);border-radius:10px;background:rgba(255,255,255,.025);color:inherit;text-align:center;font:inherit;font-size:8.5px;font-weight:850;line-height:1.2;overflow-wrap:anywhere}
+.hanGroups button.active{border-color:rgba(216,173,79,.75);background:rgba(216,173,79,.10);color:var(--gold2);box-shadow:inset 0 0 0 1px rgba(216,173,79,.10)}
+@media(max-width:390px){.hanScanBtn{min-width:62px;height:32px;padding:0 10px;font-size:8px}.hanGroups button{font-size:7.5px;padding:7px 5px}}
