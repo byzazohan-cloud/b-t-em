@@ -2338,3 +2338,36 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .hanCompare{overflow:hidden!important}.hanReviewActions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}.hanReviewActions .btn{min-width:0!important;width:100%!important;padding:10px 5px!important;font-size:8px!important;box-sizing:border-box!important}
 .content .card>.btn[data-action="hanRun"],.content .card>.btn[data-action="hanIssueOk"]{width:100%!important;max-width:100%!important;box-sizing:border-box!important;margin:10px 0 0!important;padding:11px 8px!important;min-height:42px!important}
 @media(max-width:390px){.quick.premiumQuick .hanQuickLogo{width:42px!important;height:40px!important}.hanGroups{gap:5px!important}.hanGroups span{font-size:7.2px!important;padding:8px 5px!important}.taraIssue{grid-template-columns:34px minmax(0,1fr) 68px!important;gap:6px!important;padding:8px!important}.taraIssue .ico{width:32px!important;height:32px!important;min-width:32px!important}.taraFixBtn,.taraManual{width:68px!important;max-width:68px!important;font-size:6.6px!important;padding:7px 3px!important}}
+
+
+/* S19 HAN FIX4 — guaranteed logo + compact/symmetric HAN UI */
+.quick.premiumQuick .hanQuickButton{font-size:8px!important;line-height:1.1!important;gap:4px!important}
+.quick.premiumQuick .hanQuickLogo{width:40px!important;height:40px!important;border-radius:11px!important;flex:0 0 40px!important}
+.quick.premiumQuick .hanQuickLogo img{width:40px!important;height:40px!important;object-fit:cover!important}
+.hanGroups{gap:5px!important;margin:7px 0 9px!important}
+.hanGroups span{font-size:7px!important;padding:7px 5px!important;border-radius:9px!important;line-height:1.15!important}
+.taraIssue{grid-template-columns:30px minmax(0,1fr) 62px!important;gap:6px!important;padding:8px!important;border-radius:14px!important}
+.taraIssue .ico{width:28px!important;height:28px!important;min-width:28px!important;font-size:14px!important}
+.taraIssue b{font-size:10px!important;line-height:1.18!important}
+.taraIssue small{font-size:7.5px!important;line-height:1.35!important;margin-top:3px!important}
+.taraFixBtn,.taraManual{width:62px!important;max-width:62px!important;font-size:6.5px!important;padding:7px 3px!important;min-height:32px!important;border-radius:10px!important}
+/* HAN inspection modal only */
+.modal:has([data-action="hanIssueOk"]) .sheet{max-width:400px!important;padding:13px 12px calc(16px + var(--safeB))!important;border-radius:19px 19px 0 0!important}
+.modal:has([data-action="hanIssueOk"]) .sheetHead{padding:9px 0 7px!important;margin-bottom:8px!important}
+.modal:has([data-action="hanIssueOk"]) .sheetHead b{font-size:14px!important}
+.modal:has([data-action="hanIssueOk"]) .close{width:30px!important;height:30px!important}
+.modal:has([data-action="hanIssueOk"]) .notice{font-size:8px!important;line-height:1.45!important;padding:9px 10px!important;border-radius:11px!important}
+.modal:has([data-action="hanIssueOk"]) .section{margin:9px 0 6px!important}
+.modal:has([data-action="hanIssueOk"]) .section b{font-size:12px!important}
+.modal:has([data-action="hanIssueOk"]) .section span{font-size:7px!important}
+.modal:has([data-action="hanIssueOk"]) .hanCompare{padding:9px 10px!important;border-radius:12px!important;margin-top:6px!important}
+.modal:has([data-action="hanIssueOk"]) .hanCompare b{font-size:9px!important}
+.modal:has([data-action="hanIssueOk"]) .hanCompare small{font-size:7.5px!important;line-height:1.35!important}
+.modal:has([data-action="hanIssueOk"]) .hanReviewActions{gap:6px!important;margin-top:7px!important}
+.modal:has([data-action="hanIssueOk"]) .hanReviewActions .btn{font-size:7px!important;padding:8px 4px!important;min-height:34px!important;border-radius:10px!important}
+.modal:has([data-action="hanIssueOk"]) [data-action="hanIssueOk"]{width:auto!important;max-width:190px!important;min-height:36px!important;padding:8px 12px!important;font-size:10px!important;margin:8px 0!important}
+@media(max-width:390px){
+ .quick.premiumQuick .hanQuickLogo,.quick.premiumQuick .hanQuickLogo img{width:36px!important;height:36px!important}.quick.premiumQuick .hanQuickLogo{flex-basis:36px!important}
+ .taraIssue{grid-template-columns:28px minmax(0,1fr) 58px!important}.taraFixBtn,.taraManual{width:58px!important;max-width:58px!important}
+ .modal:has([data-action="hanIssueOk"]) .sheet{max-width:390px!important}
+}
