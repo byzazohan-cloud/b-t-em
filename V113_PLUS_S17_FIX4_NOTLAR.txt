@@ -1,0 +1,9 @@
+HANE V113 PLUS S17 EKSTRE MOTORU 2.0 FIX4
+
+- FIX3 DenizBank ve FIX2 İş Bankası düzeltmeleri korunur.
+- TEB çok sayfalı ekstrelerde işlem taraması ilk sayfa sonundaki footer/özet nedeniyle kesilmez.
+- TEB tarih segmentinde gerçek hareket tutarı ilk TL işlem tutarından alınır; Güncel Toplam işlem tutarı sayılmaz.
+- TEB önceki bakiye, ödeme, dönem borcu ve harcama özeti birbirine kopyalanmadan ayrı tutulur.
+- Ödeme toplamı gerçek ödeme satırlarıyla doğrulanır.
+- Matematik farkından sahte işlem veya faiz üretilmez.
+- Build/cache kimlikleri FIX4 olarak eşitlendi.

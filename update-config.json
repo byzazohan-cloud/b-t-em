@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.21-V113-S17-FIX2",
-  "minimumVersion": "19.4.21-V113-S17-FIX2",
+  "latestVersion": "19.4.23-V113-S17-FIX4",
+  "minimumVersion": "19.4.23-V113-S17-FIX4",
   "force": true,
   "message": "V113 S17: Ekstre Motoru 2.0; güvenli sınıflandırma ve manuel işlem türü doğrulaması.",
   "updateUrl": "",
-  "build": "20260923-V113-S17-FIX2",
-  "version": "19.4.21-V113-S17-FIX2"
+  "build": "20260923-V113-S17-FIX4",
+  "version": "19.4.23-V113-S17-FIX4"
 }

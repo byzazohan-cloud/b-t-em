@@ -1,0 +1,8 @@
+HANE V113 PLUS S17 EKSTRE MOTORU 2.0 FIX3
+
+- DenizBank işlem satırlarında faiz/vergi/komisyon/BSMV/KKDF sınıflandırması güçlendirildi.
+- Sınıflandırma yalnız satır açıklamasına dayanır; banka toplam farkından faiz/masraf üretilmez.
+- Normal POS/alışveriş satırları harcama olarak korunur.
+- İş Bankası FIX2 davranışı korunur.
+- TEB bu sürümde değiştirilmedi; sonraki ayrı düzeltmede ele alınacak.
+- Build/cache kimlikleri FIX3 olarak eşitlendi.

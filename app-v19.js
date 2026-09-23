@@ -1312,6 +1312,13 @@ function stmtFeeLike(blockText){
   const u=String(blockText||'').toLocaleUpperCase('tr-TR');
   return /\bKKDF\b|\bBSMV\b|\bBSMW\b|BANKA\s+VE\s+SİGORTA\s+MUAMELE|BANKA\s+VE\s+SIGORTA\s+MUAMELE|KREDİ\s+KARTI\s+FAİZ|KREDI\s+KARTI\s+FAIZ|KREDİ\s+FAİZ|KREDI\s+FAIZ|ALIŞVERİŞ\s+FAİZ|ALISVERIS\s+FAIZ|NAKİT\s+AVANS\s+FAİZ|NAKIT\s+AVANS\s+FAIZ|GECİKME\s+FAİZ|GECIKME\s+FAIZ|AKDİ\s+FAİZ|AKDI\s+FAIZ|TEMERRÜT\s+FAİZ|TEMERRUT\s+FAIZ|FAİZ\s+TUTARI|FAIZ\s+TUTARI|TAKSİT(?:LENDİRME)?\s+FAİZ|TAKSIT(?:LENDIRME)?\s+FAIZ|PEŞİNE\s+TAKSİT\s+FAİZ|PESINE\s+TAKSIT\s+FAIZ|KART\s+AİDAT|KART\s+AIDAT|BANKA\s+MASRAF|KOMİSYON|KOMISYON|İŞLEM\s+ÜCRET|ISLEM\s+UCRET|FAİZ\s+VE\s+(?:ÜCRET|ÜCRETLER)|FAIZ\s+VE\s+(?:UCRET|UCRETLER)/.test(u)
 }
+// S17 FIX3 — DenizBank'a özel banka masrafı sınıflandırması.
+// Yalnızca işlem satırının kendi açıklamasına bakar; banka toplam farkından tür üretmez.
+function stmtDenizFeeLike(blockText){
+  const u=String(blockText||'').toLocaleUpperCase('tr-TR').replace(/İ/g,'I').replace(/Ş/g,'S').replace(/Ğ/g,'G').replace(/Ü/g,'U').replace(/Ö/g,'O').replace(/Ç/g,'C').replace(/\s+/g,' ').trim();
+  if(!u)return false;
+  return /(?:^|\b)(?:BSMV|BSMW|KKDF)(?:\b|$)|BANKA\s+VE\s+SIGORTA\s+MUAMELE(?:LERI)?\s+VERGISI|KAYNAK\s+KULLANIMI\s+DESTEKLEME\s+FONU|(?:ALISVERIS|NAKIT\s+AVANS|GECIKME|AKDI|TEMERRUT|KREDI\s+KARTI|KREDI|TAKSIT(?:LENDIRME)?)\s+FAIZ(?:I|LERI)?|FAIZ\s+(?:TUTARI|TAHAKKUKU)|(?:KART|YILLIK\s+KART)\s+AIDAT(?:I)?|(?:BANKA|KART|ISLEM)\s+(?:MASRAF|UCRET)(?:I|LERI)?|KOMISYON(?:U|LARI)?|VERGI\s+(?:TUTARI|TAHAKKUKU)/.test(u);
+}
 function stmtPaymentLike(blockText){
   const u=String(blockText||'').toLocaleUpperCase('tr-TR');
   return /(?:ŞUBE|SUBE)?\s*-?\s*OTOMATİK\s*ÖDEME|OTOMATIK\s*ODEME|İNTERAKTİF\s*ÖDEME|INTERAKTIF\s*ODEME|İNTERNET\s*ŞUBE(?:Sİ)?\s*ÖDEME|INTERNET\s*SUBE(?:SI)?\s*ODEME|MOBİL\s*ÖDEME|MOBIL\s*ODEME|ÖDEME\s*-?\s*TEŞEKK|ODEME\s*-?\s*TESEKK|HESAPTAN\s+ÖDEME|HESAPTAN\s+ODEME|KART\s*ÖDEMESİ|KART\s*ODEMESI|KREDİ\s*KARTI\s*ÖDEME|KREDI\s*KARTI\s*ODEME|BORÇ\s*ÖDEME|BORC\s*ODEME|HESAPTAN\s+AKTARIM.{0,40}İNTERAKTİF|HESAPTAN\s+AKTARIM.{0,40}INTERAKTIF|CEPTETEB\s+ÖDEME|CEPTETEB\s+ODEME/.test(u)
@@ -1396,6 +1403,13 @@ function stmtParseDenizBankFixedEngine(text,cardId,profile){
     const raw=end[0],value=stmtMoney(raw);if(!Number.isFinite(value)||value===0)continue;
     const pick={raw,value,index:Math.max(0,rest.length-raw.length),currency:'TL',score:1000};
     const row=stmtMakeRow(cardId,di,rest,pick,i,profile.id,seen,true);if(!row)continue;
+    // DenizBank'ta komisyon/vergi/faiz satırları normal POS harcaması değildir.
+    // Açıklama açıkça banka masrafıysa türü burada kesinleştir; tutar farkına göre ASLA sınıflandırma yapma.
+    if(!row.payment&&!row.refund&&stmtDenizFeeLike(rest)){
+      row.kind='fee';row.category='Vergi & Faiz';row.refund=false;row.payment=false;
+      row.classificationReason='DenizBank faiz/vergi/komisyon açıklaması';
+      row.semanticKey=(row.semanticKey||'')+'|deniz-fee';
+    }
     row.sourceEnd=i;row.physicalKey=`DENIZ|${i}|${row.semanticKey}`;row.parserStrategy='deniz-fixed-right-column';rows.push(row)
   }
   return rows
@@ -1497,11 +1511,11 @@ function stmtParseTebSegmentEngine(text,cardId,profile){
   if(profile?.id!=='teb')return[];
   const anchor=stmtAnchorInfo(text),rows=[],seen={};
   let flat=String(text||'').replace(/\r/g,' ').replace(/\n/g,' ').replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim();
-  // İşlem tablosundan önceki özet ve işlem tablosundan sonraki toplam/bilgilendirme alanlarını kes.
+  // S17 FIX4 — TEB çok sayfalı ekstre: ilk sayfanın footer/özet metni ikinci sayfadaki
+  // işlem tablosunu kesmemeli. Bu yüzden global stopPos kullanılmaz; bütün PDF tek akış olarak
+  // taranır ve her tarih segmentinde gerçek işlem tutarı ayrıca seçilir.
   const tablePos=flat.search(/İŞLEM\s+TARİHİ\s+İŞLEM\s+AÇIKLAMASI\s+TUTAR/i);
   if(tablePos>=0)flat=flat.slice(tablePos);
-  const stopPos=flat.search(/BU\s+KARTINIZLA\s+YAPILAN\s+İŞLEM\s+TOPLAMLARI|GENEL\s+TOPLAM|Kart'a\s+ait\s+MN/i);
-  if(stopPos>=0)flat=flat.slice(0,stopPos);
   const dateRx=/(\d{1,2}[.\/-]\d{1,2}[.\/-](?:20\d{2}|\d{2}))/g;
   const hits=[...flat.matchAll(dateRx)];
   for(let j=0;j<hits.length;j++){
@@ -1509,11 +1523,12 @@ function stmtParseTebSegmentEngine(text,cardId,profile){
     const dateRaw=hits[j][1],di=stmtDateInfo(dateRaw,anchor);if(!di)continue;
     let seg=flat.slice(start,end).trim();
     if(stmtCarryForwardLike(seg))continue;
-    // TEB hareket tutarı, segment içindeki TL. formatlı son parasal değerdir.
-    // Segment sonuna toplam satırları ulaşamaz; yukarıda kesin kesildi.
+    // TEB'de gerçek hareket tutarı tarih + açıklamadan sonra gelen İLK TL tutarıdır.
+    // Son işlem segmentinin devamında "BU KARTINIZLA... / GÜNCEL TOPLAM" bulunabildiği için
+    // son TL değerini almak banka toplamını işlem tutarı sanabiliyordu.
     const vals=[...seg.matchAll(/-?\s*(?:TL|TRY|₺)\.?\s*[+-]?\s*(?:(?:\d{1,3}(?:[.]\d{3})+|\d+)(?:,\d{2}|,-)?)/gi)];
     if(!vals.length)continue;
-    const m=vals.at(-1),raw=m[0],value=stmtMoney(raw);if(!Number.isFinite(value)||value===0)continue;
+    const m=vals[0],raw=m[0],value=stmtMoney(raw);if(!Number.isFinite(value)||value===0)continue;
     const pick={raw,value,index:m.index||0,currency:'TL',score:1200};
     const row=stmtMakeRow(cardId,di,seg,pick,start,profile.id,seen,true);if(!row)continue;
     row.sourceEnd=end;row.physicalKey=`TEBSEG|${start}|${row.semanticKey}`;row.parserStrategy='teb-date-segment';rows.push(row)
@@ -1880,6 +1895,18 @@ function normalizeStatementSummary(text,rows,raw){
       // yeniden sahte faiz/ücret türetemez.
       return meta;
     }
+  }
+  // S17 FIX4 — TEB: banka özetindeki etiketli değerleri koru; ödeme toplamını gerçek
+  // işlem satırlarından doğrula. Önceki bakiye/ödeme aynı tutarda olsa bile birbirine kopyalanmaz.
+  if(detectedBank?.id==='teb'){
+    if(paymentCount&&pays>0){if(!finite(meta.paymentsTotal)||Math.abs(+meta.paymentsTotal-pays)>.01)repaired=true;meta.paymentsTotal=round2(pays)}
+    if(parsedFees>0&&(!finite(meta.feesTotal)||Math.abs(+meta.feesTotal-parsedFees)>.01)){meta.feesTotal=parsedFees;repaired=true}
+    if(!finite(meta.feesTotal))meta.feesTotal=parsedFees||0;
+    meta.summaryRepaired=repaired;
+    meta.summaryEquationOk=finite(meta.previousBalance)&&finite(meta.spendingTotal)&&finite(meta.feesTotal)&&finite(meta.paymentsTotal)&&finite(meta.periodDebt)
+      ?Math.abs((+meta.previousBalance)+(+meta.spendingTotal)+(+meta.feesTotal)-(+meta.paymentsTotal)-parsedRefunds-(+meta.periodDebt))<.02:false;
+    meta.tebExplicitSummary=true;
+    return meta;
   }
   // V87: Halkbank/Paraf özetini banka etiketlerinden doğrudan oku.
   // Regex literal kullanılır; JS string içindeki \\s kaçışlarının bozulmasına izin verilmez.
