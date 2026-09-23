@@ -2438,3 +2438,25 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
   .taraIssue{grid-template-columns:28px minmax(0,1fr) 62px!important}
   .taraFixBtn,.taraManual{width:62px!important;max-width:62px!important}
 }
+
+/* S19 FIX6 · Reports range + realized fixed expenses + category display polish */
+.reportMonthRow{grid-template-columns:minmax(0,1fr) auto!important;gap:6px!important;width:100%;}
+.reportMonthRow .monthNavigator{min-width:0!important;grid-template-columns:36px minmax(0,1fr) 36px 48px!important;gap:4px!important;padding:6px!important;}
+.reportMonthRow .monthNavigator button{min-width:0!important;padding:0 4px!important;}
+.reportMonthRow .monthNavigator b{min-width:0!important;font-size:11px!important;white-space:nowrap!important;}
+.reportMonthRow .monthNavigator .monthToday{padding:0 4px!important;font-size:8px!important;}
+.reportRange{flex:0 0 auto!important;white-space:nowrap!important;}
+.reportRange button{width:43px!important;padding:0 4px!important;font-size:8px!important;}
+
+/* S19 FIX7 — ana özet inceltme + rapor ödeme dağılımı */
+.homeFinancePanel{padding-top:10px!important;padding-bottom:10px!important}
+.homeFinanceMonth{margin-bottom:7px!important}
+.homeSummaryNav .sum{min-height:68px!important;padding:9px 7px!important}
+.homeSummaryNav .sum label{margin-bottom:4px!important;font-size:9px!important}
+.homeSummaryNav .sum strong{font-size:16px!important}
+.homeSummaryNav .sum>span{display:none!important}
+.reportPaymentPanel{margin-top:12px!important}
+.reportPaymentPanel .paySummaryGrid{margin:8px 0 0!important}
+.reportPaymentPanel .paySummaryGrid button{min-height:82px!important;padding:11px 12px!important}
+.reportPaymentPanel .paySummaryGrid b{font-size:17px!important;margin:6px 0!important}
+@media(max-width:390px){.homeSummaryNav .sum{min-height:62px!important;padding:8px 5px!important}.homeSummaryNav .sum strong{font-size:14px!important}.reportPaymentPanel .paySummaryGrid button{min-height:76px!important;padding:9px!important}}

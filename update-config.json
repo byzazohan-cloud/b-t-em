@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.31-V113-S19-HAN-FIX4",
-  "minimumVersion": "19.4.31-V113-S19-HAN-FIX4",
+  "latestVersion": "19.4.34-V113-S19-HAN-FIX7",
+  "minimumVersion": "19.4.34-V113-S19-HAN-FIX7",
   "force": true,
   "message": "V113 S19: HAN finansal denetim asistanı; otomatik finansal düzeltme yapmaz.",
   "updateUrl": "",
-  "build": "20260923-V113-S19-HAN-FIX3",
-  "version": "19.4.31-V113-S19-HAN-FIX4"
+  "build": "20260923-V113-S19-HAN-FIX7",
+  "version": "19.4.34-V113-S19-HAN-FIX7"
 }
