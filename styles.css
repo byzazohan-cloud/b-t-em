@@ -2312,3 +2312,13 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .statementImportRow .stmtMatchChooser{width:100%;min-width:0;}
 .statementImportRow .stmtMatchChooser select{width:100%!important;max-width:100%!important;min-width:0!important;}
 @media(max-width:640px){.statementImportRow .stmtMatchState{flex-direction:column!important;align-items:flex-start;gap:3px}.statementImportRow .stmtMatchState b{white-space:normal}}
+
+/* S18 FIX3 — stmtTypeEdit must occupy content column, never checkbox column */
+.statementImportRow>.stmtTypeEdit{grid-column:2!important;width:100%!important;min-width:0!important;box-sizing:border-box;}
+.statementImportRow>.stmtTypeEdit>.stmtMatchState{width:100%!important;min-width:0!important;max-width:100%!important;}
+.statementImportRow>.stmtTypeEdit>.stmtMatchState small{word-break:normal!important;overflow-wrap:break-word!important;white-space:normal!important;}
+@media(max-width:640px){
+ .statementImportRow>.stmtTypeEdit{grid-column:2!important;}
+ .statementImportRow>.stmtTypeEdit>.stmtMatchState{display:block!important;}
+ .statementImportRow>.stmtTypeEdit>.stmtMatchState b,.statementImportRow>.stmtTypeEdit>.stmtMatchState small{display:block!important;width:auto!important;}
+}
