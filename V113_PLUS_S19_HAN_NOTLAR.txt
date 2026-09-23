@@ -1,0 +1,8 @@
+S19 HAN
+- Eski TARA arayüz adı HAN oldu.
+- Otomatik finansal düzeltme kaldırıldı.
+- Veri, finans, ekstre, kart kontrolleri.
+- Olası mükerrer/benzer işlem: aynı gün, <=50 TL, benzer açıklama, ödeme kaynağından bağımsız.
+- Kategori tutarsızlığı ve aynı gün çoklu ulaşım kontrolü.
+- Şüpheli kayıttan mevcut düzenleme ekranına geçiş.
+- S18 FIX3 ekstre mutabakatı ve S17 banka parserları korunur.
