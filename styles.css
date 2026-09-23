@@ -2460,3 +2460,13 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
 .reportPaymentPanel .paySummaryGrid button{min-height:82px!important;padding:11px 12px!important}
 .reportPaymentPanel .paySummaryGrid b{font-size:17px!important;margin:6px 0!important}
 @media(max-width:390px){.homeSummaryNav .sum{min-height:62px!important;padding:8px 5px!important}.homeSummaryNav .sum strong{font-size:14px!important}.reportPaymentPanel .paySummaryGrid button{min-height:76px!important;padding:9px!important}}
+
+/* S19 FIX9 — kart carousel merkezleme + daha kompakt kart */
+.cardStageCarousel{position:relative!important;height:390px!important;overflow:hidden!important;display:block!important;padding:8px 0 12px!important}
+.cardStageCarousel>.haneVerticalCard{position:absolute!important;top:8px!important;left:50%!important;margin:0!important;transform-origin:center center!important}
+.cardStageCarousel>.haneVerticalCard.isSelectedCard{min-width:min(62vw,264px)!important;width:min(62vw,264px)!important;height:382px!important;min-height:382px!important;transform:translateX(-50%) scale(1)!important;opacity:1!important;z-index:3!important}
+.cardStageCarousel>.haneVerticalCard.isSideCard{min-width:min(39vw,166px)!important;width:min(39vw,166px)!important;height:322px!important;min-height:322px!important;top:38px!important;opacity:.48!important;z-index:1!important;pointer-events:none!important}
+.cardStageCarousel>.haneVerticalCard.isPrevCard{left:0!important;transform:translateX(-46%) scale(.9)!important}
+.cardStageCarousel>.haneVerticalCard.isNextCard{left:100%!important;transform:translateX(-54%) scale(.9)!important}
+.cardStageCarousel .hvcDebt b{font-size:20px!important}.cardStageCarousel .hvcGrid.compact>div{min-height:56px!important}.cardStageCarousel .hvcGrid b{font-size:13px!important}
+@media(max-width:390px){.cardStageCarousel{height:372px!important}.cardStageCarousel>.haneVerticalCard.isSelectedCard{min-width:66vw!important;width:66vw!important;height:365px!important;min-height:365px!important}.cardStageCarousel>.haneVerticalCard.isSideCard{min-width:36vw!important;width:36vw!important;height:305px!important;min-height:305px!important}}
