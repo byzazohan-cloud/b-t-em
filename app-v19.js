@@ -75,7 +75,7 @@ const money=n=>state?.settings?.privacy?'••••••':new Intl.NumberForm
 const upper=v=>String(v??'').toLocaleUpperCase('tr-TR');
 // S6 — Merkezi arayüz altyapısı. Görünümü değiştirmeden buton, ikon ve logo tanımları tek merkezden yönetilir.
 const HANE_UI=Object.freeze({
-  build:'20260923-V113-S19-HAN-FIX1',
+  build:'20260923-V113-S19-HAN-FIX3',
   brand:Object.freeze({name:'HANE',logo:'icons/hane-app-icon.png',logoVersion:'s6'}),
   buttons:Object.freeze({base:'btn',primary:'btn gold',icon:'ib premiumTopIcon'}),
   nav:Object.freeze([
@@ -531,7 +531,7 @@ function home(){const T=totals();return`<button type="button" class="homeHero ho
 </button>
 <div class="homeFinancePanel" data-home-month-swipe="1"><div class="homeFinanceMonth">${monthLabel(state.selectedMonth)}</div><div class="homeSummaryNav"><button class="sum" data-action="homeSummaryNav" data-kind="income"><label>Gelir</label><strong style="color:var(--green)">${money(T.i)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="expense"><label>Gider</label><strong style="color:var(--red)">${money(T.e)}</strong><span>›</span></button><button class="sum" data-action="homeSummaryNav" data-kind="remain"><label>Kalan</label><strong style="color:var(--gr)">${money(T.r)}</strong><span>›</span></button></div></div>
 <div class="homePrimaryActions"><button data-action="addIncome">${premiumIcon('income',25)}<span>GELİR EKLE</span></button><button data-action="addExpense">${premiumIcon('expense',25)}<span>GİDER EKLE</span></button></div>
-<div class="section cleanHomeTitle"><b>HIZLI ERİŞİM</b><span></span></div><div class="card quick premiumQuick v1947Quick cleanQuick"><button data-tab="monthPaid"><i>${premiumIcon("report",27)}</i>AYLIK HESAP</button><button data-tab="fixed"><i>${premiumIcon("fixed",27)}</i>SABİT GİDERLER</button><button data-tab="alerts"><i>${premiumIcon("bell",27)}</i>HATIRLATMALAR</button><button data-action="quickCards"><i>${premiumIcon("cards",27)}</i>KARTLAR</button><button data-tab="notes"><i>${premiumIcon("note",27)}</i>NOTLAR</button></div>
+<div class="section cleanHomeTitle"><b>HIZLI ERİŞİM</b><span></span></div><div class="card quick premiumQuick v1947Quick cleanQuick"><button data-tab="monthPaid"><i>${premiumIcon("report",27)}</i>AYLIK HESAP</button><button data-tab="fixed"><i>${premiumIcon("fixed",27)}</i>SABİT GİDERLER</button><button data-tab="tara" class="hanQuickButton"><i class="hanQuickLogo"><img src="icons/han-logo.png?v=s19fix3" alt="HAN"></i>HAN</button><button data-action="quickCards"><i>${premiumIcon("cards",27)}</i>KARTLAR</button><button data-tab="notes"><i>${premiumIcon("note",27)}</i>NOTLAR</button></div>
 <div class="card monthlyPreview">${monthlyAccountPreview()}</div>
 ${recentMovementsHome(5)}`}
 
@@ -2229,9 +2229,9 @@ const HANE_OCR_CORE='./__hane_engine__/tesseract/core';
 const HANE_PDF_MODULE='./__hane_engine__/pdf/pdf.min.mjs';
 const HANE_PDF_WORKER='./__hane_engine__/pdf/pdf.worker.min.mjs';
 let statementOcrWorker=null,statementOcrLabel='OCR',statementPdfjs=null,statementPdfWorker=null,statementPrivacyPrepared=false,statementPrivacyPreparePromise=null,statementEngineMode='local';
-const HANE_SW_BUILD='20260923-V113-S19-HAN-FIX1';
+const HANE_SW_BUILD='20260923-V113-S19-HAN-FIX3';
 const HANE_SW_URL='./sw.js?v='+encodeURIComponent(HANE_SW_BUILD);
-const HANE_ENGINE_CACHE='hane-engine-19.4.30-V113-S19-HAN-FIX2';
+const HANE_ENGINE_CACHE='hane-engine-19.4.30-V113-S19-HAN-FIX3';
 const HANE_ENGINE_PACKAGES=[
   {url:'https://registry.npmjs.org/tesseract.js/-/tesseract.js-5.1.1.tgz',integrity:'sha512-lzVl/Ar3P3zhpUT31NjqeCo1f+D5+YfpZ5J62eo2S14QNVOmHBTtbchHm/YAbOOOzCegFnKf4B3Qih9LuldcYQ==',files:{'package/dist/tesseract.min.js':'__hane_engine__/tesseract/tesseract.min.js','package/dist/worker.min.js':'__hane_engine__/tesseract/worker.min.js'}},
   {url:'https://registry.npmjs.org/tesseract.js-core/-/tesseract.js-core-5.1.1.tgz',integrity:'sha512-KX3bYSU5iGcO1XJa+QGPbi+Zjo2qq6eBhNjSGR5E5q0JtzkoipJKOUQD7ph8kFyteCEfEQ0maWLu8MCXtvX5uQ==',files:{'package/tesseract-core.wasm.js':'__hane_engine__/tesseract/core/tesseract-core.wasm.js','package/tesseract-core-simd.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm.js','package/tesseract-core-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm.js','package/tesseract-core-simd-lstm.wasm.js':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm.js','package/tesseract-core.wasm':'__hane_engine__/tesseract/core/tesseract-core.wasm','package/tesseract-core-simd.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd.wasm','package/tesseract-core-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-lstm.wasm','package/tesseract-core-simd-lstm.wasm':'__hane_engine__/tesseract/core/tesseract-core-simd-lstm.wasm'}},
