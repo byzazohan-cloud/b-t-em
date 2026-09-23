@@ -2322,5 +2322,3 @@ html,body,.phone,.content{overscroll-behavior-x:none!important}.content{touch-ac
  .statementImportRow>.stmtTypeEdit>.stmtMatchState{display:block!important;}
  .statementImportRow>.stmtTypeEdit>.stmtMatchState b,.statementImportRow>.stmtTypeEdit>.stmtMatchState small{display:block!important;width:auto!important;}
 }
-/* S19 HAN */
-.hanGroups{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}.hanGroups span{border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:10px;letter-spacing:.3px}.taraIssue>div:nth-child(2){min-width:0;flex:1}.taraIssue small{display:block;white-space:normal;overflow-wrap:anywhere}.taraFixBtn{white-space:nowrap}

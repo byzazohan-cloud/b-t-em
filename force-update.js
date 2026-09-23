@@ -13,5 +13,5 @@
       await Promise.all(ks.filter(k=>k.startsWith('hane-')).map(k=>caches.delete(k)));
     }
   }catch(e){}
-  location.replace('./?v=19.4.28-V113-S19-HAN&fresh='+Date.now());
+  location.replace('./?v=19.4.29-V113-S19-HAN-FIX1&fresh='+Date.now());
 })();
