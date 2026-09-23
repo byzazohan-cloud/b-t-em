@@ -1,0 +1,8 @@
+HANE V113 PLUS S18 EKSTRE MUTABAKATI
+Temel: S17 FIX5 CLEAN kilit sürüm.
+- Manuel HANE kaydı ile banka hareketi eşleştirme
+- Aynı kart+tarih+tutar tek aday ise otomatik öneri/seçim
+- Yakın tarih (±2 gün) + aynı tutar olası eşleşme; kullanıcı onayı
+- Banka açıklaması ayrı korunur
+- Banka/Eşleşen/Olası/Yeni/Faiz-Ödeme sayaçları
+- Kart ekstre ekranında banka-HANE borç mutabakatı

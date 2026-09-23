@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const BUILD='19.4.23-V113-S17-FIX5';
+  const BUILD='19.4.24-V113-S18-MUTABAKAT';
   const KEY='hane_app_shell_build';
   const RELOAD_KEY='hane_auto_update_reload';
   const CHECK_MS=60*60*1000;
