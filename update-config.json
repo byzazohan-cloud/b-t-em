@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.34-V113-S19-HAN-FIX7",
-  "minimumVersion": "19.4.34-V113-S19-HAN-FIX7",
+  "latestVersion": "19.4.38-V113-S19-HAN-AUDIT-FIX1",
+  "minimumVersion": "19.4.38-V113-S19-HAN-AUDIT-FIX1",
   "force": true,
-  "message": "V113 S19: HAN finansal denetim asistanı; otomatik finansal düzeltme yapmaz.",
+  "message": "HAN Dikkat Panosu denetim düzeltmeleri: 15 TL yakın işlem kuralı, gelecek tarih kontrolü ve sürüm/cache uyumu.",
   "updateUrl": "",
-  "build": "20260923-V113-S19-HAN-FIX7",
-  "version": "19.4.34-V113-S19-HAN-FIX7"
+  "build": "20260924-V113-S19-HAN-AUDIT-FIX1",
+  "version": "19.4.38-V113-S19-HAN-AUDIT-FIX1"
 }

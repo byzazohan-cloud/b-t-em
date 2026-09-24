@@ -1,0 +1,9 @@
+HANE S19 · HAN AUDIT FIX1
+
+- HAN yakın işlem eşiği 15 TL olarak gerçek kurala bağlandı. Aynı gün + aynı ödeme kaynağı/kart + aynı kategori + fark <=15 TL ise açıklama benzerliği şartı olmadan incelenir.
+- Ulaşım/Yol kayıtları yakın-tutar mükerrer kontrolünden hariç tutulmaya devam eder; günlük yoğunluk denetimi ayrı çalışır.
+- Gelecek tarihli normal/gerçek giderler HAN tarafından uyarılır.
+- Dikkat Panosu üçüncü kutudaki sahte Bilgi=0 sayacı kaldırıldı; Toplam Açık Bulgu gösterilir.
+- app/index/manifest/service worker/update-config sürüm ve cache kimlikleri eşitlendi.
+- Bunda Sıkıntı Yok davranışı korunur: kayıt imzası değişmedikçe bulgu tekrar gösterilmez.
+- Finansal kayıtlar otomatik değiştirilmez.
