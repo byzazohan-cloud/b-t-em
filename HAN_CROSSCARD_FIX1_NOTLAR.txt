@@ -1,0 +1,5 @@
+HAN çapraz kart yakın işlem kontrolü eklendi.
+- Aynı tarih + aynı kategori + iki kart işlemi + tutar farkı <= 15 TL ise, kartlar farklı olsa bile OLASI MÜKERRER / FARKLI KART uyarısı oluşturulur.
+- HAN otomatik kayıt değiştirmez veya silmez.
+- Ulaşım/Yol kayıtları bu genel kuralın dışında tutulmaya devam eder.
+- Mevcut aynı kart yakın işlem kontrolü korunmuştur.
