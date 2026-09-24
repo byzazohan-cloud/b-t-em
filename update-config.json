@@ -1,9 +1,9 @@
 {
-  "latestVersion": "19.4.38-V113-S19-HAN-AUDIT-FIX1",
-  "minimumVersion": "19.4.38-V113-S19-HAN-AUDIT-FIX1",
+  "latestVersion": "19.4.40-V113-S19-HAN-SCHEMA-FIX1",
+  "minimumVersion": "19.4.40-V113-S19-HAN-SCHEMA-FIX1",
   "force": true,
   "message": "HAN Dikkat Panosu denetim düzeltmeleri: 15 TL yakın işlem kuralı, gelecek tarih kontrolü ve sürüm/cache uyumu.",
   "updateUrl": "",
   "build": "20260924-V113-S19-HAN-AUDIT-FIX1",
-  "version": "19.4.38-V113-S19-HAN-AUDIT-FIX1"
+  "version": "19.4.40-V113-S19-HAN-SCHEMA-FIX1"
 }

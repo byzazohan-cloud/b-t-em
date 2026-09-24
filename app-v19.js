@@ -119,6 +119,9 @@ note:`<path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>`
   return `<svg class="premiumSvg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${p[name]||p.home}</svg>`;
 }
 function normalizeV19(st){
+  // HAN Schema Guard: eski HANE verisini kayıp olmadan V19 şemasına yükselt.
+  // Gelecekteki (>19) bir şemayı asla otomatik düşürme.
+  const sourceSchemaVersion=Number(st?.version);
   st.cardPayments=Array.isArray(st.cardPayments)?st.cardPayments:[];
   st.fixedPayments=Array.isArray(st.fixedPayments)?st.fixedPayments:[];
   st.flexTransactions=Array.isArray(st.flexTransactions)?st.flexTransactions:[];
@@ -186,6 +189,16 @@ function normalizeV19(st){
     // Mevcut görünen kart borcunu aynen koruyacak açılış bakiyesini hesapla.
     st.cards.forEach(c=>{const normal=st.expenses.filter(x=>!x.recurring&&x.source==='card'&&x.cardId===c.id).reduce((a,x)=>a+(+(x.actualAmount??x.amount)||0),0),fixed=st.fixedPayments.filter(p=>p.source==='card'&&p.cardId===c.id).reduce((a,p)=>a+(+(p.actualAmount??p.amount)||0),0),paid=st.cardPayments.filter(p=>p.cardId===c.id).reduce((a,p)=>a+(+p.amount||0),0);c.openingBalance=(+c.balance||0)-normal-fixed+paid});
     st.settings.financeCoreGroup1Migrated=true;
+  }
+  // Tüm V19 normalizasyonları başarıyla tamamlandıysa eski/boş sürüm numarasını güvenle yükselt.
+  // Bu işlem finans kayıtlarını silmez; yalnız şema kimliği ve migrasyon günlüğünü günceller.
+  const schemaCoreOk=st.settings&&Array.isArray(st.expenses)&&Array.isArray(st.incomes)&&Array.isArray(st.cards)&&Array.isArray(st.cardPayments)&&Array.isArray(st.fixedPayments)&&Array.isArray(st.cardTransactions)&&Array.isArray(st.statementImports)&&st.statementCategoryRules&&typeof st.statementCategoryRules==='object';
+  if(schemaCoreOk&&(!Number.isFinite(sourceSchemaVersion)||sourceSchemaVersion<19)){
+    st.settings.schemaMigrationHistory=Array.isArray(st.settings.schemaMigrationHistory)?st.settings.schemaMigrationHistory:[];
+    const from=Number.isFinite(sourceSchemaVersion)?sourceSchemaVersion:'eski/belirsiz';
+    if(!st.settings.schemaMigrationHistory.some(x=>x&&x.to===19&&String(x.from)===String(from)))st.settings.schemaMigrationHistory.push({from,to:19,at:new Date().toISOString(),mode:'safe-normalize'});
+    st.settings.schemaV19Migrated=true;
+    st.version=19;
   }
   return st;
 }
@@ -271,7 +284,7 @@ function hanAudit(){
  const runtimeBuild=String(HANE_UI?.build||'');if(runtimeBuild!=='20260924-V113-S19-HAN-AUDIT-FIX1')add('warn','CACHE-BUILD','BUILD KİMLİĞİ UYUŞMUYOR',`Çalışan arayüz kimliği: ${runtimeBuild||'yok'}. Beklenen: 20260924-V113-S19-HAN-AUDIT-FIX1.`);
  if(!('serviceWorker' in navigator))add('warn','CACHE-BUILD','SERVICE WORKER DESTEĞİ YOK','Bu tarayıcı PWA önbellek denetimini desteklemiyor.');
  // YEDEK: şema ve şifreli depo için gerekli temel yapı.
- if(+state.version!==19)add('bad','YEDEK','VERİ ŞEMASI SÜRÜMÜ UYUŞMUYOR',`Beklenen şema 19, bulunan ${String(state.version)}`);if(!state.settings||!Array.isArray(state.expenses)||!Array.isArray(state.incomes)||!Array.isArray(state.cards))add('bad','YEDEK','YEDEK ŞEMASI EKSİK','Temel HANE veri alanlarından biri eksik.');try{const m=meta();if(!m||!m.salt)add('warn','YEDEK','ŞİFRELİ DEPO METASI EKSİK','PIN/şifreli veri metası doğrulanamadı.')}catch(e){add('warn','YEDEK','YEDEK METASI OKUNAMADI','Şifreli depo metası okunurken hata oluştu.')}
+ if(+state.version!==19)add('bad','YEDEK','VERİ ŞEMASI SÜRÜMÜ UYUŞMUYOR',+state.version>19?`Bu veri daha yeni bir şema kullanıyor: ${String(state.version)}. Otomatik düşürme yapılmadı.`:`V19 güvenli migrasyonu tamamlanamadı. Beklenen 19, bulunan ${String(state.version)}`);if(!state.settings||!Array.isArray(state.expenses)||!Array.isArray(state.incomes)||!Array.isArray(state.cards))add('bad','YEDEK','YEDEK ŞEMASI EKSİK','Temel HANE veri alanlarından biri eksik.');try{const m=meta();if(!m||!m.salt)add('warn','YEDEK','ŞİFRELİ DEPO METASI EKSİK','PIN/şifreli veri metası doğrulanamadı.')}catch(e){add('warn','YEDEK','YEDEK METASI OKUNAMADI','Şifreli depo metası okunurken hata oluştu.')}
  const ignored=new Set((state.settings?.hanIgnored||[]).map(String));const visibleIssues=issues.filter(x=>!ignored.has(hanIssueKey(x.title,x.recordId,x.recordId2)));const month=financeMonthSnapshot(state.selectedMonth);return {issues:visibleIssues,month,checked:all.length,ok:visibleIssues.length===0}
 }
 function hanRecordSignature(id){
