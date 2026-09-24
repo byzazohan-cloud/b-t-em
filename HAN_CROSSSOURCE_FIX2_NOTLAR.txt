@@ -1,0 +1,7 @@
+HANE HAN CROSSSOURCE FIX2
+
+- Farklı kartlardaki yakın tutarlı işlemlerde kategori eşitliği zorunluluğu kaldırıldı.
+- Aynı tarih + iki kart kaydı + tutar farkı <= 15 TL ise HAN uyarır.
+- Ekstre içe aktarılmış kayıt ile manuel kayıt farklı kategoride/farklı kartta olsa da aday olarak gösterilir.
+- Ulaşım/Yol kayıtları bu genel kuraldan hariç tutulmaya devam eder.
+- HAN hiçbir finansal kaydı otomatik değiştirmez.
