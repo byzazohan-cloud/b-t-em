@@ -8,7 +8,7 @@
    4) Runtime is cache-only: no page/worker request is allowed to reach the network.
 */
 const SW_BUILD = '20260923-V113-S19-HAN-FILTER1';
-const CACHE_NAME = 'hane-19.4.38-V113-S19-HAN-AUDIT-FIX1';
+const CACHE_NAME = 'hane-19.4.39-V113-S19-HAN-UI-FIX2';
 const HANE_CACHE_PREFIX = 'hane-';
 
 
