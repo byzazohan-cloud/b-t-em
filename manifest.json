@@ -1,7 +1,7 @@
 {
   "name": "HANE - Premium Ev Bütçesi",
   "short_name": "HANE",
-  "start_url": "./?v=19.4.37-V113-S19-HAN-DIKKAT1",
+  "start_url": "./?v=20260925-V113-S19-HAN2-MERGE1",
   "scope": "./",
   "display": "standalone",
   "background_color": "#05080d",
@@ -34,5 +34,5 @@
     "productivity",
     "utilities"
   ],
-  "version": "19.4.40-V113-S19-HAN-SCHEMA-FIX1"
+  "version": "19.4.41-V113-S19-HAN2-MERGE1"
 }

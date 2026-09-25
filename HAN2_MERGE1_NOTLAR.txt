@@ -1,0 +1,8 @@
+HANE V113 PLUS S19 HAN2 MERGE1
+- CROSSSOURCE FIX2 temel alındı.
+- Ortak HAN 2.1 veri kalitesi, gelişmiş mükerrer ve anomali denetimleri eklendi.
+- Farklı kartlarda aynı gün <=15 TL kontrolü ve Ulaşım/Yol istisnası korundu.
+- Bunda Sıkıntı Yok hafızası ve ayrıntılı inceleme/düzenle/sil akışı korundu.
+- HAN Dikkat Panosu açıklamaları güncellendi.
+- Build/cache kimlikleri tekleştirildi.
+- Otomatik finansal veri değişikliği yoktur.
